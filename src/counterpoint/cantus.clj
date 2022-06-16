@@ -2,7 +2,8 @@
   (:require [counterpoint.core :refer [interval]]
             [counterpoint.intervals :refer [A10 get-interval
                                             interval-less-than-or-equal? make-interval]]
-            [counterpoint.melody :refer [melody-range]]))
+            [counterpoint.melody :refer [melody-range]]
+            [counterpoint.utils :refer [rule-warning]]))
 
 (defn make-cantus-firmus [key melody]
   [key melody])
@@ -29,11 +30,6 @@
       (or (= (get-interval final-interval) -2)
           (= final-interval (make-interval 2 :minor))))))
 
-(defn rule-warning [rule message]
-  (when (not rule)
-    (prn message))
-  rule)
-
 (defn- no-tone-repetitions-helper? [note notes]
   (if (empty? notes)
     true
@@ -45,9 +41,9 @@
 
 (defn cantus-rules? [cantus]
   (let [melody (get-melody cantus)]
-    (and (rule-warning (maximum-range-M10? melody) (str "Maximum range violation! " (melody-range melody)))
-         (rule-warning (first-last-same melody) "First & Last note violation!")
-         (rule-warning (final-note-approach? melody) "Second to last note interval violation!")
-         (rule-warning (ending-note? cantus) "Ending note violation!")
-         (rule-warning (no-tone-repetitions? melody) "Tone repetitions violation!"))))
+    (and (rule-warning (maximum-range-M10? melody) #(str "Maximum range violation! " (melody-range melody)))
+         (rule-warning (first-last-same melody) #(str "First & Last note violation!"))
+         (rule-warning (final-note-approach? melody) #(str "Second to last note interval violation!"))
+         (rule-warning (ending-note? cantus) #(str "Ending note violation!"))
+         (rule-warning (no-tone-repetitions? melody) #(str "Tone repetitions violation!")))))
 

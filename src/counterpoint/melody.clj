@@ -17,6 +17,12 @@
   (interval (lowest-note melody)
             (highest-note melody)))
 
+(defn last-interval [melody]
+  (let [size (count melody)
+        before-last (nth melody (dec (dec size)))
+        last (last melody)]
+    (interval before-last last)))
+
 (comment
   (def melody (make-melody notes/a4 notes/c3 notes/e3 notes/e4 notes/b4 notes/a4))
   (def melody (make-melody notes/a4 notes/c3 notes/e3 notes/e4 notes/g#3 notes/a4))
