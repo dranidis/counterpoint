@@ -18,6 +18,7 @@
 (def f#3 (make-note :f 3 :sharp))
 (def g2 (make-note :g 2))
 (def g3 (make-note :g 3))
+(def g4 (make-note :g 4))
 (def g#3 (make-note :g 3 :sharp))
 (def g5 (make-note :g 5))
 (def a3 (make-note :a 3))

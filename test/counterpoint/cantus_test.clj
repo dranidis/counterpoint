@@ -1,6 +1,7 @@
 (ns counterpoint.cantus-test
   (:require [clojure.test :refer [deftest is testing]]
-            [counterpoint.cantus :refer [final-note-approach? first-last-same
+            [counterpoint.cantus :refer [cantus-rules? final-note-approach?
+                                         first-last-same make-cantus-firmus
                                          maximum-range-M10?]]
             [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as notes]))
@@ -41,14 +42,26 @@
 
   (testing "second"
     (is (= true (final-note-approach? (make-melody notes/a4 notes/c3 notes/e3 notes/f4 notes/b4 notes/a4)))))
-  
+
   (testing "second min"
     (is (= true (final-note-approach? (make-melody notes/a4 notes/c3 notes/e3 notes/f4 notes/c4 notes/b4)))))
 
   (testing "leading tone"
     (is (= true (final-note-approach? (make-melody notes/a4 notes/c3 notes/e3 notes/f3)))))
-  
+
   (testing "leading tone low"
     (is (= false (final-note-approach? (make-melody notes/a4 notes/c3 notes/e3 notes/f#3))))))
+
+
+(deftest cantus-test
+  
+  (testing "correct"
+    (is (= true (cantus-rules? (make-cantus-firmus notes/a4 (make-melody notes/a4 notes/c4 notes/e4 notes/b4 notes/a4))))))
+  
+  (testing "wrong mode"
+    (is (= false (cantus-rules? (make-cantus-firmus notes/c4 (make-melody notes/a4 notes/c4 notes/e4 notes/b4 notes/a4))))))
+  
+  (testing "note repetition"
+    (is (= false (cantus-rules? (make-cantus-firmus notes/a4 (make-melody notes/a4 notes/c4 notes/c4 notes/e4 notes/b4 notes/a4)))))))
 
 
