@@ -1,8 +1,11 @@
 (ns counterpoint.first-species
-  (:require [counterpoint.core :refer [interval simple-interval]]
+  (:require [clojure.java.shell :refer [sh]]
+            [counterpoint.core :refer [interval simple-interval]]
             [counterpoint.intervals :refer [get-interval get-quality
                                             make-interval P1 P8]]
-            [counterpoint.melody :refer [last-interval]]
+            [counterpoint.melody :refer [last-interval make-melody
+                                         melody->lily transpose]]
+            [counterpoint.notes :as n]
             [counterpoint.utils :refer [rule-warning]]))
 
 (defn  make-first-species [cantus-firmus counterpoint-melody position]
@@ -70,8 +73,8 @@
   (let [interval1 (get-interval (simple-interval n1 next1))
         interval2 (get-interval (simple-interval n2 next2))]
     (rule-warning (or (= interval1 1)
-        (= interval2 1)
-        (neg? (* interval1 interval2))) #(str "Direct motion from " n1 n2 " to " next1 next2 " intervals: " (interval n1 n2) (interval next1 next2)))))
+                      (= interval2 1)
+                      (neg? (* interval1 interval2))) #(str "Direct motion from " n1 n2 " to " next1 next2 " intervals: " (interval n1 n2) (interval next1 next2)))))
 
 (defn- no-direct-motion-to-perfect-iter [position n1 n2 notes1 notes2]
   (if (empty? notes1)
@@ -102,3 +105,61 @@
    (no-direct-motion-to-perfect? species)
 ;;    avoid consecutive perfect intervals
    ))
+
+(defn first-species->lily [species]
+  (let [cantus (get-cantus species)
+        counter (get-counter species)
+        position (get-position species)]
+    (spit "resources/temp.ly"
+          (str "\\version \"2.22.2\"
+\\language \"english\"
+\\score {
+  \\new Staff <<
+  \\set Staff.midiInstrument = #\"choir aahs\"
+  \\new Voice = \"first\"
+    \\relative c { \\voiceOne "
+               (if (= position :above)
+                 (melody->lily counter)
+                 (melody->lily cantus))
+
+               "}
+  \\new Voice= \"second\"
+    \\relative c { \\voiceTwo "
+               (if (= position :above)
+                 (melody->lily cantus)
+                 (melody->lily counter))
+
+               "}
+
+>>
+  \\layout { }
+  \\midi { }
+}
+"))
+    (sh "lilypond" "-o" "resources" "resources/temp.ly")))
+
+(comment
+  (def species (let [counterpoint-melody
+                     (make-melody n/d3 n/d3 n/a4 n/f3 n/e3 n/d3 n/c3 n/e3 n/d3 n/c#3 n/d3)
+                     cantus-firmus
+                     (make-melody n/d4 n/f4 n/e4 n/d4 n/g4 n/f4 n/a5 n/g4 n/f4 n/e4 n/d4)]
+                 (make-first-species cantus-firmus counterpoint-melody :below)))
+  
+  (def species (let [counterpoint-melody
+                     (make-melody n/a4 n/a4 n/g3 n/a4 n/b4 n/c4 n/c4 n/b4 n/d4 n/c#4 n/d4)
+                     cantus-firmus
+                     (make-melody n/d3 n/f3 n/e3 n/d3 n/g3 n/f3 n/a4 n/g3 n/f3 n/e3 n/d3)]
+                 (make-first-species cantus-firmus counterpoint-melody :above)))
+  
+  species
+  
+  (first-species-rules? species)
+
+  (first-species->lily species)
+
+  (sh "timidity" "resources/temp.midi")
+
+  (print (first-species->lily species))
+
+  ;
+  )
