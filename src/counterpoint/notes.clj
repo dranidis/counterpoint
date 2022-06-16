@@ -14,6 +14,7 @@
 
 (def f2 (make-note :f 2))
 (def f3 (make-note :f 3))
+(def f4 (make-note :f 4))
 (def f#3 (make-note :f 3 :sharp))
 (def g2 (make-note :g 2))
 (def g3 (make-note :g 3))
@@ -24,6 +25,7 @@
 (def b3 (make-note :b 3))
 (def b#3 (make-note :b 3 :sharp))
 (def c3 (make-note :c 3))
+(def c4 (make-note :c 4))
 (def c#3 (make-note :c 3 :sharp))
 (def e3 (make-note :e 3))
 (def e4 (make-note :e 4))

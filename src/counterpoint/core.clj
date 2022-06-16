@@ -13,7 +13,7 @@
                    :g 6)]
     (+ num-note (* (get-octave note) 7))))
 
-(defn- note->number-of-semitones [note]
+(defn note->number-of-semitones [note]
   (let [num-note (case (get-note note)
                    :a 0
                    :b 2
@@ -59,5 +59,6 @@
        (inc distance)
        (dec distance)) 
      quality]))
+
 
 

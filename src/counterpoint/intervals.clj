@@ -3,6 +3,14 @@
 (defn make-interval [n q]
   [n q])
 
+(defn get-interval [[n _]] n)
+(defn get-quality [[_ q]] q)
+
+(defn interval-less-than-or-equal? [interval1 interval2]
+  (<= (Math/abs (get-interval interval1))
+     (Math/abs (get-interval interval2))))
+
+
 (def P1 (make-interval 1 :perfect))
 (def m2 (make-interval 2 :minor))
 (def M2 (make-interval 2 :major))
@@ -43,6 +51,9 @@
 (def A5 (make-interval 5 :aug))
 (def A6 (make-interval 6 :aug))
 (def A7 (make-interval 7 :aug))
+(def A8 (make-interval 8 :aug))
+(def A9 (make-interval 9 :aug))
+(def A10 (make-interval 10 :aug))
 
 (def m2- (make-interval -2 :minor))
 (def M2- (make-interval -2 :major))
