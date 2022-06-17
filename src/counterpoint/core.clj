@@ -12,8 +12,11 @@
                    :d 3
                    :e 4
                    :f 5
-                   :g 6)]
-    (+ num-note (* (get-octave note) 7))))
+                   :g 6
+                   nil)]
+    (if (nil? num-note)
+      (throw (Exception. (str "note->number: Unknown note: " note)))
+      (+ num-note (* (get-octave note) 7)))))
 
 (defn note->number-of-semitones [note]
   (let [num-note (case (get-note note)

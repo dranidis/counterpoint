@@ -1,10 +1,10 @@
 (ns counterpoint.first-species-test
   (:require [clojure.test :refer [deftest is testing]]
-            [counterpoint.first-species :refer [correct-intervals ending?
-                                                last-interval? make-first-species
-                                                no-direct-motion-to-perfect?
-                                                first-species-rules?]]
-            [counterpoint.melody :refer [make-melody]]
+            [counterpoint.first-species :refer [allowed-melodic-intervals?
+                                                correct-intervals ending?
+                                                first-species->lily first-species-rules? last-interval? make-first-species
+                                                no-direct-motion-to-perfect?]]
+            [counterpoint.melody :refer [make-melody melodic-intervals]]
             [counterpoint.notes :as n]))
 
 (deftest harmonic-intervals
@@ -102,6 +102,24 @@
             cantus-firmus
             (make-melody n/d4 n/f4 n/e4 n/d4 n/g4 n/f4 n/a5 n/g4 n/f4 n/e4 n/d4)]
         (is (= false (no-direct-motion-to-perfect? (make-first-species cantus-firmus counterpoint-melody :below))))))))
+
+(deftest melody-test
+  (testing "correct"
+    (let [counterpoint-melody
+          (make-melody n/d3 n/d3 n/a4 n/f3 n/e3 n/d3 n/c3 n/e3 n/d3 n/c#3 n/d3)
+          cantus-firmus
+          (make-melody n/d4 n/f4 n/e4 n/d4 n/g4 n/f4 n/a5 n/g4 n/f4 n/e4 n/d4)
+          species (make-first-species cantus-firmus counterpoint-melody :below)]
+      (is (= true (allowed-melodic-intervals? (melodic-intervals counterpoint-melody)))))
+
+    (testing "M6"
+      (let [counterpoint-melody
+            (make-melody n/d3 n/b4 n/a4 n/g3 n/e3 n/d3 n/c3 n/e3 n/d3 n/c#3 n/d3)
+            cantus-firmus
+            (make-melody n/d4 n/f4 n/e4 n/d4 n/g4 n/f4 n/a5 n/g4 n/f4 n/e4 n/d4)
+            species (make-first-species cantus-firmus counterpoint-melody :below)
+            _ (first-species->lily species)]
+        (is (= false (allowed-melodic-intervals? (melodic-intervals counterpoint-melody))))))))
 
 (deftest species-test
   (testing "correct"

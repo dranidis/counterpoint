@@ -1,10 +1,10 @@
 (ns counterpoint.first-species
   (:require [clojure.java.shell :refer [sh]]
             [counterpoint.core :refer [interval simple-interval]]
-            [counterpoint.intervals :refer [get-interval get-quality
+            [counterpoint.intervals :refer [get-interval get-quality m6
                                             make-interval P1 P8]]
             [counterpoint.melody :refer [last-interval make-melody
-                                         melody->lily transpose]]
+                                         melodic-intervals melody->lily]]
             [counterpoint.notes :as n]
             [counterpoint.utils :refer [rule-warning]]))
 
@@ -95,6 +95,21 @@
         position (get-position species)]
     (no-direct-motion-to-perfect-iter position (first cantus) (first counter) (rest cantus) (rest counter))))
 
+(defn- allowed-melodic-interval [interval]
+  (rule-warning
+   (or (<= (Math/abs (get-interval interval)) 5)
+       (= interval m6)
+       (= interval P8))
+   #(str "Not allowed interval in melody: " interval)))
+
+(Math/abs 3)
+
+(defn allowed-melodic-intervals? [counter-intervals]
+  (if (empty? counter-intervals)
+    true
+    (and (allowed-melodic-interval (first counter-intervals))
+         (allowed-melodic-intervals? (rest counter-intervals)))))
+
 (defn first-species-rules? [species]
   (and
    (rule-warning (= (count (get-cantus species)) (count (get-counter species)))
@@ -103,6 +118,7 @@
    (ending? species)
    (correct-intervals species)
    (no-direct-motion-to-perfect? species)
+   (allowed-melodic-intervals? (melodic-intervals (get-counter species)))
 ;;    avoid consecutive perfect intervals
    ))
 
@@ -144,15 +160,23 @@
                      cantus-firmus
                      (make-melody n/d4 n/f4 n/e4 n/d4 n/g4 n/f4 n/a5 n/g4 n/f4 n/e4 n/d4)]
                  (make-first-species cantus-firmus counterpoint-melody :below)))
-  
+
   (def species (let [counterpoint-melody
                      (make-melody n/a4 n/a4 n/g3 n/a4 n/b4 n/c4 n/c4 n/b4 n/d4 n/c#4 n/d4)
                      cantus-firmus
                      (make-melody n/d3 n/f3 n/e3 n/d3 n/g3 n/f3 n/a4 n/g3 n/f3 n/e3 n/d3)]
                  (make-first-species cantus-firmus counterpoint-melody :above)))
-  
-  species
-  
+
+  (def species
+    (let [counterpoint-melody
+          (make-melody n/e4 n/f4 n/g4 n/a5 n/e4 n/f4 n/f4 n/d4 n/e4)
+          _ (print (melodic-intervals counterpoint-melody))
+          cantus-firmus
+          (make-melody n/e3 n/d3 n/e3 n/f3 n/g3 n/a4 n/d3 n/f3 n/e3)]
+      (make-first-species cantus-firmus counterpoint-melody :above)))
+
+
+
   (first-species-rules? species)
 
   (first-species->lily species)

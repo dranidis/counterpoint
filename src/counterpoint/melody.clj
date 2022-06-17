@@ -23,6 +23,18 @@
         last (last melody)]
     (interval before-last last)))
 
+(defn- melodic-intervals-iter [note notes]
+  (if (empty? notes)
+    []
+    (into [(interval note (first notes))]
+          (melodic-intervals-iter (first notes) (rest notes))))
+  )
+
+(defn melodic-intervals [melody]
+  (if (> (count melody) 1)
+    (melodic-intervals-iter (first melody) (rest melody))
+    []))
+
 (defn transpose [melody octaves]
   (map #(make-note (get-note %) (+ (get-octave %) octaves) (get-acc %)) melody))
 

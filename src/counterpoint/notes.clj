@@ -5,12 +5,9 @@
   ([n o accidental]
    [n o accidental]))
 
-(defn get-note
-  [[n _ _]] n)
-(defn get-octave
-  [[_ o _]] o)
-(defn get-acc
-  [[_ _ acc]] acc)
+(defn get-note   [[n _ _]] n)
+(defn get-octave [[_ o _]] o)
+(defn get-acc    [[_ _ acc]] acc)
 
 (def f2 (make-note :f 2))
 (def f3 (make-note :f 3))
@@ -57,4 +54,5 @@
 (def e4 (make-note :e 4))
 (def e5 (make-note :e 5))
 (def b4 (make-note :b 4))
+(def b5 (make-note :b 5))
 (def c#4 (make-note :c 4 :sharp))
