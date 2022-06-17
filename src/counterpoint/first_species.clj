@@ -1,19 +1,16 @@
 (ns counterpoint.first-species
   (:require [clojure.java.shell :refer [sh]]
             [counterpoint.core :refer [interval simple-interval]]
+            [counterpoint.first-species-type :refer [get-cantus get-counter
+                                                     get-position]]
             [counterpoint.intervals :refer [get-interval get-quality m6
                                             make-interval P1 P8]]
             [counterpoint.melody :refer [last-interval make-melody
-                                         melodic-intervals melody->lily]]
+                                         melodic-intervals]]
             [counterpoint.notes :as n]
             [counterpoint.utils :refer [rule-warning]]))
 
-(defn  make-first-species [cantus-firmus counterpoint-melody position]
-  [cantus-firmus counterpoint-melody position])
 
-(defn get-cantus [[c _ _]] c)
-(defn get-counter [[_ m _]] m)
-(defn get-position [[_ _ p]] p)
 
 (defn- correct-interval [note1 note2]
   (let [harmony (simple-interval note1 note2)
@@ -122,37 +119,7 @@
 ;;    avoid consecutive perfect intervals
    ))
 
-(defn first-species->lily [species]
-  (let [cantus (get-cantus species)
-        counter (get-counter species)
-        position (get-position species)]
-    (spit "resources/temp.ly"
-          (str "\\version \"2.22.2\"
-\\language \"english\"
-\\score {
-  \\new Staff <<
-  \\set Staff.midiInstrument = #\"choir aahs\"
-  \\new Voice = \"first\"
-    \\relative c { \\voiceOne "
-               (if (= position :above)
-                 (melody->lily counter)
-                 (melody->lily cantus))
 
-               "}
-  \\new Voice= \"second\"
-    \\relative c { \\voiceTwo "
-               (if (= position :above)
-                 (melody->lily cantus)
-                 (melody->lily counter))
-
-               "}
-
->>
-  \\layout { }
-  \\midi { }
-}
-"))
-    (sh "lilypond" "-o" "resources" "resources/temp.ly")))
 
 (comment
   (def species (let [counterpoint-melody
@@ -177,9 +144,11 @@
 
 
 
+
   (first-species-rules? species)
 
   (first-species->lily species)
+
 
   (sh "timidity" "resources/temp.midi")
 
@@ -187,3 +156,4 @@
 
   ;
   )
+
