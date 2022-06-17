@@ -2,9 +2,10 @@
   (:require [clojure.test :refer [deftest is testing]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?
                                                 correct-intervals ending?
-                                                first-species->lily first-species-rules? last-interval? make-first-species
-                                                no-direct-motion-to-perfect?]]
-            [counterpoint.melody :refer [make-melody melodic-intervals]]
+                                                first-species-rules? last-interval? no-direct-motion-to-perfect?]]
+            [counterpoint.first-species-type :refer [make-first-species]]
+            [counterpoint.lilypond :refer [first-species->lily]]
+            [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as n]))
 
 (deftest harmonic-intervals
@@ -110,7 +111,7 @@
           cantus-firmus
           (make-melody n/d4 n/f4 n/e4 n/d4 n/g4 n/f4 n/a5 n/g4 n/f4 n/e4 n/d4)
           species (make-first-species cantus-firmus counterpoint-melody :below)]
-      (is (= true (allowed-melodic-intervals? (melodic-intervals counterpoint-melody)))))
+      (is (= true (allowed-melodic-intervals? species))))
 
     (testing "M6"
       (let [counterpoint-melody
@@ -119,7 +120,7 @@
             (make-melody n/d4 n/f4 n/e4 n/d4 n/g4 n/f4 n/a5 n/g4 n/f4 n/e4 n/d4)
             species (make-first-species cantus-firmus counterpoint-melody :below)
             _ (first-species->lily species)]
-        (is (= false (allowed-melodic-intervals? (melodic-intervals counterpoint-melody))))))))
+        (is (= false (allowed-melodic-intervals? species)))))))
 
 (deftest species-test
   (testing "correct"

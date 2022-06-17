@@ -2,9 +2,11 @@
   (:require [clojure.java.shell :refer [sh]]
             [counterpoint.core :refer [interval simple-interval]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
-                                                     get-position]]
+                                                     get-position
+                                                     make-first-species]]
             [counterpoint.intervals :refer [get-interval get-quality m6
                                             make-interval P1 P8]]
+            [counterpoint.lilypond :refer [first-species->lily]]
             [counterpoint.melody :refer [last-interval make-melody
                                          melodic-intervals]]
             [counterpoint.notes :as n]
@@ -53,7 +55,6 @@
 (defn ending? [species]
   (let [cantus (get-cantus species)
         counter (get-counter species)
-        position (get-position species)
         last-cantus (last-interval cantus)
         last-counter (last-interval counter)]
     (rule-warning (or (and (= last-cantus (make-interval -2 :major))
@@ -101,11 +102,14 @@
 
 (Math/abs 3)
 
-(defn allowed-melodic-intervals? [counter-intervals]
+(defn allowed-melodic-intervals-iter? [counter-intervals]
   (if (empty? counter-intervals)
     true
     (and (allowed-melodic-interval (first counter-intervals))
-         (allowed-melodic-intervals? (rest counter-intervals)))))
+         (allowed-melodic-intervals-iter? (rest counter-intervals)))))
+
+(defn allowed-melodic-intervals? [species]
+  (allowed-melodic-intervals-iter? (melodic-intervals (get-counter species))))
 
 (defn first-species-rules? [species]
   (and
@@ -115,7 +119,7 @@
    (ending? species)
    (correct-intervals species)
    (no-direct-motion-to-perfect? species)
-   (allowed-melodic-intervals? (melodic-intervals (get-counter species)))
+   (allowed-melodic-intervals? species)
 ;;    avoid consecutive perfect intervals
    ))
 
