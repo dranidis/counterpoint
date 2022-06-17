@@ -32,7 +32,6 @@
            (if (pos? interval-from-previous) "'" ",")))))
 
 (defn- to-lily-iter [previous note notes]
-
   (into [(if (nil? previous)
            (note->lily note)
            (note->lily-relative note previous))]
@@ -52,9 +51,9 @@
            "\\score {
   \\new Staff <<\n"
 
-           "\\set Staff.midiInstrument = #\"voice oohs\"\n"
+           "  \\set Staff.midiInstrument = #\"voice oohs\"\n"
 
-           "\\new Voice = \"first\"
+           "  \\new Voice = \"first\"
     \\relative c { \\voiceOne "
            (if (= position :above)
              (melody->lily counter)
@@ -66,9 +65,7 @@
            (if (= position :above)
              (melody->lily cantus)
              (melody->lily counter))
-
            "}
-
 >>
   \\layout { }
   \\midi { }

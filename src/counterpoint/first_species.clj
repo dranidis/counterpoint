@@ -117,9 +117,9 @@
                  #(str "Cantus and counterpoint have different number of notes"))
    (last-interval? species)
    (ending? species)
+   (allowed-melodic-intervals? species)
    (correct-intervals species)
    (no-direct-motion-to-perfect? species)
-   (allowed-melodic-intervals? species)
 ;;    avoid consecutive perfect intervals
    ))
 
