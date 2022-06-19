@@ -1,19 +1,12 @@
 (ns counterpoint.core
   (:require [counterpoint.intervals :refer [get-interval get-quality
                                             make-interval]]
-            [counterpoint.notes :refer [get-acc get-note get-octave]]))
+            [counterpoint.notes :refer [get-acc get-note get-octave note->num]]
+            ))
 
 
 (defn- note->number [note]
-  (let [num-note (case (get-note note)
-                   :a 0
-                   :b 1
-                   :c 2
-                   :d 3
-                   :e 4
-                   :f 5
-                   :g 6
-                   nil)]
+  (let [num-note (note->num (get-note note))]
     (if (nil? num-note)
       (throw (Exception. (str "note->number: Unknown note: " note)))
       (+ num-note (* (get-octave note) 7)))))

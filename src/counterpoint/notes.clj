@@ -1,5 +1,8 @@
 (ns counterpoint.notes)
 
+(defn make-note-nooctave [n acc]
+  [n acc])
+
 (defn make-note
   ([n o] (make-note n o :natural))
   ([n o accidental]
@@ -8,6 +11,45 @@
 (defn get-note   [[n _ _]] n)
 (defn get-octave [[_ o _]] o)
 (defn get-acc    [[_ _ acc]] acc)
+
+
+
+(defn note->num [note]
+  (case note
+    :a 0
+    :b 1
+    :c 2
+    :d 3
+    :e 4
+    :f 5
+    :g 6
+    nil))
+
+(defn num->note [num]
+ (case (mod num 7)
+   0 :a
+   1 :b
+   2 :c
+   3 :d
+   4 :e
+   5 :f
+   6 :g))
+
+(defn num2->note [num]
+  (let [num-mod (mod num 7)
+        note (num->note num-mod) 
+        octave (quot (if (pos? num)
+                       (+ num num-mod)
+                       (- num num-mod)) 7)]
+    [note octave]))
+
+(mod -3 7)
+(num2->note -6)
+
+
+(quot 6 7)
+
+
 
 (def f2 (make-note :f 2))
 (def f3 (make-note :f 3))
