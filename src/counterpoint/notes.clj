@@ -3,6 +3,8 @@
 (defn make-note-nooctave [n acc]
   [n acc])
 
+(defn get-not-nooctave [[n _]] n)
+
 (defn make-note
   ([n o] (make-note n o :natural))
   ([n o accidental]
