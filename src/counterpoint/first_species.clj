@@ -115,9 +115,14 @@
    ))
 
 (defn figured-bass-iter [low high lows highs]
-  (str "<" (get-interval (interval low high)) ">" (if (empty? lows)
+  (let [i (interval low high)
+        in (get-interval i)
+        bass (if (neg? in)
+               (get-interval (interval high low))
+               in)]
+    (str "<" bass ">" (if (empty? lows)
                                                     ""
-                                                    (figured-bass-iter (first lows) (first highs) (rest lows) (rest highs)))))
+                                                    (figured-bass-iter (first lows) (first highs) (rest lows) (rest highs))))))
 
 (defn figured-bass [species]
   (let [cantus (get-cantus species)

@@ -1,7 +1,8 @@
-(ns counterpoint.first-species-examples 
+(ns counterpoint.first-species-examples
   (:require [clojure.java.shell :as sh]
             [counterpoint.first-species :refer [first-species-rules?]]
             [counterpoint.first-species-type :refer [make-first-species]]
+            [counterpoint.generate-first-species :refer [generate-random-counterpoint]]
             [counterpoint.lilypond :refer [first-species->lily]]
             [counterpoint.melody :refer [make-melody melodic-intervals]]
             [counterpoint.notes :as n]))
@@ -40,14 +41,29 @@
                      cantus-firmus ;; salieri
                      (make-melody n/c3 n/f3 n/e3 n/a4 n/g3 n/f3 n/e3 n/d3 n/c3)]
                  (make-first-species cantus-firmus counterpoint-melody :above)))
-  (first-species-rules? species)
-  (first-species->lily species)
 
 
-  (sh/sh "timidity" "resources/temp.midi")
+  (def haydn (make-melody n/d3 n/e3 n/f3 n/d3 n/a4 n/f3 n/e3 n/g3 n/f3 n/e3 n/d3))
+  (generate-random-counterpoint :c haydn)
+  (make-first-species haydn (generate-random-counterpoint :c haydn) :above)
+  (def species (make-first-species haydn (generate-random-counterpoint :c haydn) :above))
 
-  (print (first-species->lily species))
+  (first-species->lily (make-first-species haydn (generate-random-counterpoint :c haydn) :above))
+  
+
+species
+
+
+
+(first-species-rules? species)
+(first-species->lily species)
+
+
+
+
+(sh/sh "timidity" "resources/temp.midi")
+
+(print (first-species->lily species)
 
   ;
-  )
-  
+       )
