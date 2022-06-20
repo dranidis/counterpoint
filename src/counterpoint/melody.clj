@@ -1,5 +1,6 @@
 (ns counterpoint.melody
-  (:require [counterpoint.core :refer [interval note->number-of-semitones]]
+  (:require [counterpoint.core :refer [interval]]
+            [counterpoint.intervals :refer [note->number-of-semitones]]
             [counterpoint.notes :as n :refer [get-acc get-note get-octave
                                               make-note]]))
 

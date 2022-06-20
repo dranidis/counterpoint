@@ -1,7 +1,7 @@
 (ns counterpoint.core
   (:require [counterpoint.intervals :refer [get-interval get-quality
-                                            make-interval]]
-            [counterpoint.notes :refer [get-acc get-note get-octave note->num]]
+                                            make-interval distance-in-semitones]]
+            [counterpoint.notes :refer [get-note get-octave note->num]]
             ))
 
 
@@ -11,24 +11,7 @@
       (throw (Exception. (str "note->number: Unknown note: " note)))
       (+ num-note (* (get-octave note) 7)))))
 
-(defn note->number-of-semitones [note]
-  (let [num-note (case (get-note note)
-                   :a 0
-                   :b 2
-                   :c 3
-                   :d 5
-                   :e 7
-                   :f 8
-                   :g 10)
-        acc->num (case (get-acc note)
-                   :natural 0
-                   :flat -1
-                   :sharp +1)]
-    (+ (* (get-octave note) 12) num-note acc->num)))
 
-(defn- distance-in-semitones [note1 note2]
-  (- (note->number-of-semitones note2)
-     (note->number-of-semitones note1)))
 
 (defn- interval-quality [octave-distance distance-semitones]
   (case octave-distance

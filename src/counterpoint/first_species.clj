@@ -1,17 +1,9 @@
 (ns counterpoint.first-species
-  (:require [clojure.java.shell :refer [sh]]
-            [counterpoint.core :refer [interval simple-interval]]
-            [counterpoint.first-species-type :refer [get-cantus get-counter
-                                                     get-position
-                                                     make-first-species]]
-            [counterpoint.intervals :refer [get-interval get-quality m6
-                                            make-interval P1 P8]]
-            [counterpoint.melody :refer [last-interval make-melody
-                                         melodic-intervals]]
-            [counterpoint.notes :as n]
+  (:require [counterpoint.core :refer [interval simple-interval]]
+            [counterpoint.first-species-type :refer [get-cantus get-counter get-position]]
+            [counterpoint.intervals :refer [get-interval get-quality m6 make-interval P1 P8]]
+            [counterpoint.melody :refer [last-interval melodic-intervals]]
             [counterpoint.utils :refer [rule-warning]]))
-
-
 
 (defn- correct-interval [note1 note2]
   (let [harmony (simple-interval note1 note2)
@@ -123,20 +115,18 @@
    ))
 
 (defn figured-bass-iter [low high lows highs]
-  (str "<" (get-interval (interval low high)) ">" (if (empty? lows) 
-               ""
-               (figured-bass-iter (first lows) (first highs) (rest lows) (rest highs))))
-  )
+  (str "<" (get-interval (interval low high)) ">" (if (empty? lows)
+                                                    ""
+                                                    (figured-bass-iter (first lows) (first highs) (rest lows) (rest highs)))))
 
 (defn figured-bass [species]
   (let [cantus (get-cantus species)
         counter (get-counter species)
         position (get-position species)
         [high low] (if (= position :above)
-               [counter cantus]
-               [cantus counter])]
-      (figured-bass-iter (first low) (first high) (rest low) (rest high))
-      ))
+                     [counter cantus]
+                     [cantus counter])]
+    (figured-bass-iter (first low) (first high) (rest low) (rest high))))
 
 
 

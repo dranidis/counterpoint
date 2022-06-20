@@ -3,7 +3,7 @@
 (defn make-note-nooctave [n acc]
   [n acc])
 
-(defn get-not-nooctave [[n _]] n)
+(defn get-note-nooctave [[n _]] n)
 
 (defn make-note
   ([n o] (make-note n o :natural))
@@ -13,6 +13,12 @@
 (defn get-note   [[n _ _]] n)
 (defn get-octave [[_ o _]] o)
 (defn get-acc    [[_ _ acc]] acc)
+
+(defn get-nooctave [[n _ acc]]
+  (make-note-nooctave n acc))
+
+(defn nooctave->note [[n acc] o]
+  (make-note n o acc))
 
 
 
@@ -37,19 +43,33 @@
    5 :f
    6 :g))
 
+;; (defn num2->note [num]
+;;   (let [num-mod (mod num 7)
+;;         note (num->note num-mod) 
+;;         octave (quot (if (pos? num)
+;;                        (+ num num-mod)
+;;                        (- num num-mod)) 7)]
+;;     [note octave]))
+
 (defn num2->note [num]
   (let [num-mod (mod num 7)
-        note (num->note num-mod) 
-        octave (quot (if (pos? num)
-                       (+ num num-mod)
-                       (- num num-mod)) 7)]
+        note (num->note num-mod)
+        octave (+ (quot num 7) (if (and 
+                                    (neg? num)
+                                    (not= num-mod 0)) -1 0))]
     [note octave]))
 
-(mod -3 7)
-(num2->note -6)
+
+(comment
+  
+  (num2->note -7)
+(map num2->note (range -15 1))
+
+  ;
+  )
 
 
-(quot 6 7)
+
 
 
 
@@ -58,6 +78,7 @@
 (def f4 (make-note :f 4))
 
 (def f#3 (make-note :f 3 :sharp))
+(def f#4 (make-note :f 4 :sharp))
 
 (def g2 (make-note :g 2))
 (def g3 (make-note :g 3))
