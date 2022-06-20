@@ -1,7 +1,7 @@
 (ns counterpoint.intervals
   (:require [counterpoint.key :refer [get-note-acc-at-key]]
-            [counterpoint.notes :refer [c4 get-acc get-note get-note-nooctave
-                                        get-octave make-note
+            [counterpoint.notes :refer [a3 c4 get-acc get-nooctave get-note
+                                        get-note-nooctave get-octave make-note
                                         make-note-nooctave note->num num->note num2->note]]))
 
 (defn make-interval [n q]
@@ -202,8 +202,3 @@
 (def A6- (make-interval -6 :aug))
 (def A7- (make-interval -7 :aug))
 
-
-(comment
-  (map #(note-at-melodic-interval c4 %) [m2 M2 m3 M3 P4 P5 m6 P8])
-  (map #(note-at-melodic-interval c4 %) [m2- M2- m3- M3- P4- P5- P8-])
-  )
