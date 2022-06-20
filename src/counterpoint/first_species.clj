@@ -123,7 +123,21 @@
 ;;    avoid consecutive perfect intervals
    ))
 
+(defn figured-bass-iter [low high lows highs]
+  (str "<" (get-interval (interval low high)) ">" (if (empty? lows) 
+               ""
+               (figured-bass-iter (first lows) (first highs) (rest lows) (rest highs))))
+  )
 
+(defn figured-bass [species]
+  (let [cantus (get-cantus species)
+        counter (get-counter species)
+        position (get-position species)
+        [high low] (if (= position :above)
+               [counter cantus]
+               [cantus counter])]
+      (figured-bass-iter (first low) (first high) (rest low) (rest high))
+      ))
 
 (comment
   (def species (let [counterpoint-melody
@@ -148,9 +162,18 @@
 
 
 
-
+  (def species (let [counterpoint-melody
+                     (make-melody n/d4 n/c4 n/d4 n/f4 n/e4 n/a5 n/g4 n/e4 n/d4 n/c#4 n/d4)
+                     cantus-firmus ;; haydn
+                     (make-melody n/d3 n/e3 n/f3 n/d3 n/a4 n/f3 n/e3 n/g3 n/f3 n/e3 n/d3)]
+                 (make-first-species cantus-firmus counterpoint-melody :above)))
+  
+    (def species (let [counterpoint-melody
+                       (make-melody n/c4 n/a4 n/b4 n/c4 n/e4 n/d4 n/g3 n/b4 n/c4)
+                       cantus-firmus ;; salieri
+                       (make-melody n/c3 n/f3 n/e3 n/a4 n/g3 n/f3 n/e3 n/d3 n/c3)]
+                   (make-first-species cantus-firmus counterpoint-melody :above)))
   (first-species-rules? species)
-
   (first-species->lily species)
 
 
