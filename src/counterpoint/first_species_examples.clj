@@ -1,7 +1,8 @@
 (ns counterpoint.first-species-examples
   (:require [clojure.java.shell :as sh]
             [counterpoint.first-species :refer [first-species-rules?]]
-            [counterpoint.first-species-type :refer [make-first-species]]
+            [counterpoint.first-species-type :refer [get-counter
+                                                     make-first-species]]
             [counterpoint.generate-first-species :refer [generate-random-counterpoint-above
                                                          generate-reverse-random-counterpoint-above]]
             [counterpoint.lilypond :refer [first-species->lily]]
@@ -45,6 +46,8 @@
 
 
   (def haydn (make-melody n/d3 n/e3 n/f3 n/d3 n/a4 n/f3 n/e3 n/g3 n/f3 n/e3 n/d3))
+  (def salieri (make-melody n/c3 n/f3 n/e3 n/a4 n/g3 n/f3 n/e3 n/d3 n/c3))
+
   (generate-random-counterpoint-above :c haydn)
   (make-first-species haydn (generate-random-counterpoint-above :c haydn) :above)
   (def species (make-first-species haydn (generate-random-counterpoint-above :c haydn) :above))
@@ -57,8 +60,9 @@
                         (generate-random-counterpoint-above :c haydn) :above))
 
   (def species (make-first-species
-                haydn
-                (generate-reverse-random-counterpoint-above :c haydn) :above))
+                salieri
+                (generate-reverse-random-counterpoint-above :c salieri) :above))
+  (get-counter species)
   (first-species-rules? species)
   (first-species->lily species)
   (sh/sh "timidity" "resources/temp.midi")

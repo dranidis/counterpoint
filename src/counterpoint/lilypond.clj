@@ -16,14 +16,24 @@
          "")))
 
 (defn- note->lily [note]
-  (str (single-note->lily note)
+  (if (or (= (get-note note) :a)
+          (= (get-note note) :b))
+    (str (single-note->lily note)
+         (case (get-octave note)
+           0 ",,,"
+           1 ",,"
+           2 ","
+           3 ""
+           4 "'"
+           5 "''"))
+    (str (single-note->lily note)
        (case (get-octave note)
          0 ",,"
          1 ","
          2 ""
          3 "'"
          4 "''"
-         5 "'''")))
+         5 "'''"))))
 
 (defn- note->lily-relative [note previous]
   (let [interval-from-previous (get-interval (interval previous note))]
@@ -40,8 +50,14 @@
           []
           (to-lily-iter note (first notes) (rest notes)))))
 
+(defn- fixed-to-lily-iter [previous note notes]
+  (into [(note->lily note)]
+        (if (empty? notes)
+          []
+          (fixed-to-lily-iter note (first notes) (rest notes)))))
+
 (defn melody->lily [[note & notes]]
-  (apply str (to-lily-iter nil note notes)))
+  (apply str (fixed-to-lily-iter nil note notes)))
 
 (defn first-species->lily [species]
   (let [cantus (get-cantus species)
@@ -55,14 +71,14 @@
            "  \\set Staff.midiInstrument = #\"voice oohs\"\n"
 
            "  \\new Voice = \"first\"
-    \\relative c { \\voiceOne "
+     { \\voiceOne "
            (if (= position :above)
              (melody->lily counter)
              (melody->lily cantus))
 
            "}
   \\new Voice= \"second\"
-    \\relative c { \\voiceTwo "
+     { \\voiceTwo "
            (if (= position :above)
              (melody->lily cantus)
              (melody->lily counter))
