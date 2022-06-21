@@ -55,8 +55,16 @@
           :high [m2 M2 m3 M3]
           :low [m2- M2- m3- M3-]
                                 ;;  [P1 m2 M2 m3 M3 m2- M2- m3- M3-]
-          :no-leap-high [P1 m2 M2 m3 M3 P4 P5 P8 m2- M2- m3- M3-]
-          [P1 m2 M2 m3 M3 m2- M2- m3- M3- P4- P5- m6- P8-])
+          :no-leap-high [
+                        ;;  P1 
+                         m2 M2 m3 M3 P4 P5 
+                        ;;  P8 
+                         m2- M2- m3- M3-]
+          [
+          ;;  P1 
+           m2 M2 m3 M3 m2- M2- m3- M3- P4- P5- m6- 
+          ;;  P8-
+           ])
         _ (println "MEL INT:" next-melodic-intervals)
         next-melodic-candidates (map #(note-at-melodic-interval previous-melody-note %)
                                      next-melodic-intervals)

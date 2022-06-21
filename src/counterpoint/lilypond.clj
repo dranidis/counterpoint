@@ -1,4 +1,4 @@
-(ns counterpoint.lilypond 
+(ns counterpoint.lilypond
   (:require [clojure.java.shell :as sh]
             [counterpoint.core :refer [interval]]
             [counterpoint.first-species :refer [figured-bass]]
@@ -27,13 +27,13 @@
            4 "'"
            5 "''"))
     (str (single-note->lily note)
-       (case (get-octave note)
-         0 ",,"
-         1 ","
-         2 ""
-         3 "'"
-         4 "''"
-         5 "'''"))))
+         (case (get-octave note)
+           0 ",,"
+           1 ","
+           2 ""
+           3 "'"
+           4 "''"
+           5 "'''"))))
 
 (defn- note->lily-relative [note previous]
   (let [interval-from-previous (get-interval (interval previous note))]
@@ -84,10 +84,10 @@
              (melody->lily counter))
            "}
   \\figures {"
-(figured-bass species)           
+           (figured-bass species)
 
-           
-"}
+
+           "}
  >>
   \\layout { }
   \\midi { }

@@ -117,6 +117,11 @@
 ;;    avoid consecutive perfect intervals
    ))
 
+;; avoid consecutive perfect harmonic intervals
+;; prefer stepwise movement
+
+
+
 (defn figured-bass-iter [low high lows highs]
   (let [i (interval low high)
         in (get-interval i)
