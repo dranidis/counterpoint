@@ -1,7 +1,6 @@
 (ns counterpoint.first-species-examples
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [haydn haydn-a
-                                                        mozart-c1]]
+            [counterpoint.cantus-firmi-examples :refer [fux-d haydn haydn-a]]
             [counterpoint.first-species :refer [first-species-rules?]]
             [counterpoint.first-species-type :refer [make-first-species]]
             [counterpoint.generate-first-species :refer [generate-random-counterpoint-above
@@ -63,8 +62,8 @@
                 (generate-reverse-random-counterpoint-above :c haydn-a) :above))
   (first-species-rules? species)
   (first-species->lily (make-first-species
-                        haydn
-                        (generate-reverse-random-counterpoint-above :c haydn) :above))
+                        fux-d
+                        (generate-reverse-random-counterpoint-above :c fux-d) :above))
   
   (sh/sh "timidity" "resources/temp.midi") 
 

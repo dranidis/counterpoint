@@ -14,5 +14,6 @@
 (def salieri (make-melody n/c3 n/f3 n/e3 n/a4 n/g3 n/f3 n/e3 n/d3 n/c3))
 
 (def mozart-c1 (make-melody n/c3 n/g3 n/e3 n/a4 n/g3 n/c3 n/f3 n/d3 n/e3 n/c3 n/d3 n/c3))
+(def mozart-c2 (make-melody n/c3 n/f3 n/e3 n/d3 n/g3 n/f3 n/e3 n/a4 n/d3 n/g3 n/c3 n/e3 n/f3 n/e3 n/d3 n/c3))
 
 
