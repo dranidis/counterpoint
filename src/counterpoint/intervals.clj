@@ -21,8 +21,10 @@
                    :g 10)
         acc->num (case (get-acc note)
                    :natural 0
+                   :double-flat -2
                    :flat -1
-                   :sharp +1)]
+                   :sharp +1
+                   :double-sharp +2)]
     (+ (* (get-octave note) 12) num-note acc->num)))
 
 (defn distance-in-semitones [note1 note2]
