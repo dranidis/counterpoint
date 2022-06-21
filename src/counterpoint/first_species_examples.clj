@@ -1,8 +1,9 @@
 (ns counterpoint.first-species-examples
   (:require [clojure.java.shell :as sh]
+            [counterpoint.cantus-firmi-examples :refer [haydn haydn-a
+                                                        mozart-c1]]
             [counterpoint.first-species :refer [first-species-rules?]]
-            [counterpoint.first-species-type :refer [get-counter
-                                                     make-first-species]]
+            [counterpoint.first-species-type :refer [make-first-species]]
             [counterpoint.generate-first-species :refer [generate-random-counterpoint-above
                                                          generate-reverse-random-counterpoint-above]]
             [counterpoint.lilypond :refer [first-species->lily]]
@@ -45,13 +46,6 @@
                  (make-first-species cantus-firmus counterpoint-melody :above)))
 
 
-  (def fux-d (make-melody n/d3 n/f3 n/e3 n/d3 n/g3 n/f3 n/a4 n/g3 n/f3 n/e3 n/d3))
-  (def fux-e (make-melody n/e3 n/c3 n/d3 n/c3 n/a3 n/a4 n/g3 n/e3 n/f3 n/e3))
-  (def fux-g (make-melody n/g2 n/c3 n/b3 n/g2 n/c3 n/e3 n/d3 n/g3 n/e3 n/c3 n/d3 n/b3 n/a3 n/g2))
-  (def fux-a (make-melody n/a3 n/c3 n/b3 n/d3 n/c3 n/e3 n/f3 n/e3 n/d3 n/c3 n/b3 n/a3))
-
-  (def haydn (make-melody n/d3 n/e3 n/f3 n/d3 n/a4 n/f3 n/e3 n/g3 n/f3 n/e3 n/d3))
-  (def salieri (make-melody n/c3 n/f3 n/e3 n/a4 n/g3 n/f3 n/e3 n/d3 n/c3))
 
   (generate-random-counterpoint-above :c haydn)
   (make-first-species haydn (generate-random-counterpoint-above :c haydn) :above)
@@ -61,15 +55,18 @@
 
 
   (first-species->lily (make-first-species
-                        haydn
-                        (generate-random-counterpoint-above :c haydn) :above))
+                        haydn-a
+                        (generate-random-counterpoint-above :c haydn-a) :above))
 
   (def species (make-first-species
-                fux-a
-                (generate-reverse-random-counterpoint-above :c fux-a) :above))
+                haydn-a
+                (generate-reverse-random-counterpoint-above :c haydn-a) :above))
   (first-species-rules? species)
-  (first-species->lily species)
-  (sh/sh "timidity" "resources/temp.midi")
+  (first-species->lily (make-first-species
+                        haydn
+                        (generate-reverse-random-counterpoint-above :c haydn) :above))
+  
+  (sh/sh "timidity" "resources/temp.midi") 
 
 
   (print (first-species->lily species))

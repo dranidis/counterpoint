@@ -73,6 +73,8 @@
 
 
 
+(def d2 (make-note :d 2))
+(def e2 (make-note :e 2))
 (def f2 (make-note :f 2))
 (def f3 (make-note :f 3))
 (def f4 (make-note :f 4))
