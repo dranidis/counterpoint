@@ -45,6 +45,8 @@
                  (make-first-species cantus-firmus counterpoint-melody :above)))
 
 
+  (def fux-d (make-melody n/d3 n/f3 n/e3 n/d3 n/g3 n/f3 n/a4 n/g3 n/f3 n/e3 n/d3))
+  (def fux-e (make-melody n/e3 n/c3 n/d3 n/c3 n/a3 n/a4 n/g3 n/e3 n/f3 n/e3))
   (def haydn (make-melody n/d3 n/e3 n/f3 n/d3 n/a4 n/f3 n/e3 n/g3 n/f3 n/e3 n/d3))
   (def salieri (make-melody n/c3 n/f3 n/e3 n/a4 n/g3 n/f3 n/e3 n/d3 n/c3))
 
@@ -60,9 +62,8 @@
                         (generate-random-counterpoint-above :c haydn) :above))
 
   (def species (make-first-species
-                salieri
-                (generate-reverse-random-counterpoint-above :c salieri) :above))
-  (get-counter species)
+                fux-e
+                (generate-reverse-random-counterpoint-above :c fux-e) :above))
   (first-species-rules? species)
   (first-species->lily species)
   (sh/sh "timidity" "resources/temp.midi")
