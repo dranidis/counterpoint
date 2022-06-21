@@ -1,12 +1,12 @@
 (ns counterpoint.generate-first-species
   (:require [counterpoint.cantus :refer [maximum-range-M10?]]
-            [counterpoint.core :refer [interval]]
-            [counterpoint.intervals :refer [get-interval m2 M2 m2- M2- m3 M3
-                                            m3- M3- m6 M6 m6-
+            [counterpoint.core :refer [interval simple-interval]]
+            [counterpoint.intervals :refer [d5 get-interval m2 M2 m2- M2- m3
+                                            M3 m3- M3- m6 M6 m6-
                                             note-at-diatonic-interval note-at-melodic-interval P4 P4- P5 P5- P8 P8-]]
             [counterpoint.melody :refer [append-to-melody make-melody]]
             [counterpoint.motion :refer [direct-perfect?
-                                         reverse-direct-perfect? type-of-motion]]
+                                         reverse-direct-perfect?]]
             [counterpoint.notes :refer [get-nooctave] :as n]))
 
 (defn next-candidates [key melody previous-melody-note previous-cantus-note next-cantus-note]
@@ -60,6 +60,7 @@
         next-harmonic-candidates
         (map #(note-at-diatonic-interval key (get-nooctave next-cantus-note) %) next-harmonic-intervals)]
     (->> next-melodic-candidates
+         (filter #(not= d5 (simple-interval next-cantus-note %)))
          (filter #((set next-harmonic-candidates) (get-nooctave %)))
          (filter #(pos? (get-interval (interval next-cantus-note %))))
          (filter #(not (reverse-direct-perfect? previous-cantus-note previous-melody-note next-cantus-note %)))
