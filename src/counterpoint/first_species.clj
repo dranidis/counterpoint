@@ -1,8 +1,11 @@
 (ns counterpoint.first-species
   (:require [counterpoint.core :refer [interval simple-interval]]
-            [counterpoint.first-species-type :refer [get-cantus get-counter get-position]]
-            [counterpoint.intervals :refer [get-interval get-quality m6 make-interval P1 P8]]
+            [counterpoint.first-species-type :refer [get-cantus get-counter
+                                                     get-position]]
+            [counterpoint.intervals :refer [get-interval get-quality m6
+                                            make-interval P1 P8 P8-]]
             [counterpoint.melody :refer [last-interval melodic-intervals]]
+            [counterpoint.motion :refer [type-of-motion]]
             [counterpoint.utils :refer [rule-warning]]))
 
 (defn- correct-interval [note1 note2]
@@ -59,11 +62,9 @@
                   #(str "Does not approach the ending by contrary motion and leading tone " last-cantus last-counter))))
 
 (defn- no-direct-motion? [n1 n2 next1 next2]
-  (let [interval1 (get-interval (simple-interval n1 next1))
-        interval2 (get-interval (simple-interval n2 next2))]
-    (rule-warning (or (= interval1 1)
-                      (= interval2 1)
-                      (neg? (* interval1 interval2))) #(str "Direct motion from " n1 n2 " to " next1 next2 " intervals: " (interval n1 n2) (interval next1 next2)))))
+  (rule-warning (not= :similar (type-of-motion n1 n2 next1 next2))
+                #(str "Direct motion from " n1 n2 " to " next1 next2 " intervals: "
+                      (interval n1 n2) (interval next1 next2))))
 
 (defn- no-direct-motion-to-perfect-iter [position n1 n2 notes1 notes2]
   (if (empty? notes1)
@@ -71,7 +72,8 @@
     (let [next1 (first notes1)
           next2 (first notes2)
           next-interval (interval next1 next2)]
-      (and (or (not= (get-quality next-interval) :perfect)
+      (and 
+       (or (not= (get-quality next-interval) :perfect)
                (if (= position :above)
                  (no-direct-motion? n1 n2 next1 next2)
                  (no-direct-motion? n2 n1 next2 next1)))
@@ -88,7 +90,8 @@
   (rule-warning
    (or (<= (Math/abs (get-interval interval)) 5)
        (= interval m6)
-       (= interval P8))
+       (= interval P8)
+       (= interval P8-))
    #(str "Not allowed interval in melody: " interval)))
 
 (Math/abs 3)
@@ -121,8 +124,8 @@
                (get-interval (interval high low))
                in)]
     (str "<" bass ">" (if (empty? lows)
-                                                    ""
-                                                    (figured-bass-iter (first lows) (first highs) (rest lows) (rest highs))))))
+                        ""
+                        (figured-bass-iter (first lows) (first highs) (rest lows) (rest highs))))))
 
 (defn figured-bass [species]
   (let [cantus (get-cantus species)

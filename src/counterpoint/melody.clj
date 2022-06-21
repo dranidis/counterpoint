@@ -7,6 +7,14 @@
 (defn make-melody [note & notes]
   (into [note] notes))
 
+(defn append-to-melody [melody note]
+  (into melody [note]))
+
+(comment
+ (append-to-melody (make-melody n/a4) n/b4)
+    ;
+  )
+
 (defn- lowest-note [melody]
   (second (apply min-key #(note->number-of-semitones (second %)) (map-indexed vector melody))))
 
