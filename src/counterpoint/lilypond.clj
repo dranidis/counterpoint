@@ -1,7 +1,7 @@
 (ns counterpoint.lilypond
   (:require [clojure.java.shell :as sh]
             [counterpoint.core :refer [interval]]
-            [counterpoint.first-species :refer [figured-bass]]
+            [counterpoint.figured-bass :refer [figured-bass figured-bass-second]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
                                                      get-position]]
             [counterpoint.intervals :refer [get-interval]]
@@ -15,8 +15,8 @@
          :flat "es"
          "")))
 
-(defn- note->lily [note]
-  (if (or (= (get-note note) :a)
+(defn- note->lily [duration note]
+  (str (if (or (= (get-note note) :a)
           (= (get-note note) :b))
     (str (single-note->lily note)
          (case (get-octave note)
@@ -33,7 +33,8 @@
            2 ""
            3 "'"
            4 "''"
-           5 "'''"))))
+           5 "'''"))
+    ) duration))
 
 (defn- note->lily-relative [note previous]
   (let [interval-from-previous (get-interval (interval previous note))]
@@ -42,24 +43,24 @@
            ""
            (if (pos? interval-from-previous) "'" ",")))))
 
-(defn- to-lily-iter [previous note notes]
+(defn- to-lily-iter [duration previous note notes]
   (into [(if (nil? previous)
-           (note->lily note)
+           (note->lily duration note)
            (note->lily-relative note previous))]
         (if (empty? notes)
           []
-          (to-lily-iter note (first notes) (rest notes)))))
+          (to-lily-iter duration note (first notes) (rest notes)))))
 
-(defn- fixed-to-lily-iter [previous note notes]
-  (into [(note->lily note)]
+(defn- fixed-to-lily-iter [duration previous note notes]
+  (into [(note->lily duration note)]
         (if (empty? notes)
           []
-          (fixed-to-lily-iter note (first notes) (rest notes)))))
+          (fixed-to-lily-iter duration note (first notes) (rest notes)))))
 
-(defn melody->lily [[note & notes]]
-  (apply str (fixed-to-lily-iter nil note notes)))
+(defn melody->lily [duration [note & notes]]
+  (apply str (fixed-to-lily-iter duration nil note notes)))
 
-(defn first-species->lily [species]
+(defn first-species->lily [species] 
   (let [cantus (get-cantus species)
         counter (get-counter species)
         position (get-position species)]
@@ -73,18 +74,54 @@
            "  \\new Voice = \"first\"
      { \\voiceOne "
            (if (= position :above)
-             (melody->lily counter)
-             (melody->lily cantus))
+             (melody->lily 4 counter)
+             (melody->lily 4 cantus))
 
            "}
   \\new Voice= \"second\"
      { \\voiceTwo "
            (if (= position :above)
-             (melody->lily cantus)
-             (melody->lily counter))
+             (melody->lily 4 cantus)
+             (melody->lily 4 counter))
            "}
   \\figures {"
            (figured-bass species)
+
+
+           "}
+ >>
+  \\layout { }
+  \\midi { }
+}
+"))
+    (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
+
+(defn second-species->lily [species]
+  (let [cantus (get-cantus species)
+        counter (get-counter species)
+        position (get-position species)]
+    (spit "resources/temp.ly"
+          (str
+           "\\score {
+  \\new Staff <<\n"
+
+           "  \\set Staff.midiInstrument = #\"voice oohs\"\n"
+
+           "  \\new Voice = \"first\"
+     { \\voiceOne "
+           (if (= position :above)
+             (melody->lily 4 counter)
+             (melody->lily 2 cantus))
+
+           "}
+  \\new Voice= \"second\"
+     { \\voiceTwo "
+           (if (= position :above)
+             (melody->lily 2 cantus)
+             (melody->lily 4 counter))
+           "}
+  \\figures {"
+           (figured-bass-second species)
 
 
            "}

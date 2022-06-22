@@ -45,4 +45,11 @@
 (defn transpose [melody octaves]
   (map #(make-note (get-note %) (+ (get-octave %) octaves) (get-acc %)) melody))
 
+(defn double-melody [melody]
+  (into [] (flatten (map #(into [%] [%]) melody))))
+
+(comment
+  
+  (into [] (flatten (map #(into [%] [%]) [1 2 3])))
+)
 
