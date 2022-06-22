@@ -64,6 +64,7 @@
   (first-species->lily (make-first-species
                         fux-d
                         (generate-reverse-random-counterpoint-above :c fux-d) :above))
+                        
     (sh/sh "timidity" "resources/temp.midi") 
 
 

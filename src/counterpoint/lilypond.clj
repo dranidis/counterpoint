@@ -67,22 +67,22 @@
     (spit "resources/temp.ly"
           (str
            "\\score {
-  \\new Staff <<\n"
-
-           "  \\set Staff.midiInstrument = #\"voice oohs\"\n"
+  \\new Staff <<
+            \\tempo 2 = 120
+            \\set Staff.midiInstrument = #\"voice oohs\"\n"
 
            "  \\new Voice = \"first\"
      { \\voiceOne "
            (if (= position :above)
-             (melody->lily 4 counter)
-             (melody->lily 4 cantus))
+             (melody->lily 1 counter)
+             (melody->lily 1 cantus))
 
            "}
   \\new Voice= \"second\"
      { \\voiceTwo "
            (if (= position :above)
-             (melody->lily 4 cantus)
-             (melody->lily 4 counter))
+             (melody->lily 1 cantus)
+             (melody->lily 1 counter))
            "}
   \\figures {"
            (figured-bass species)
@@ -103,22 +103,22 @@
     (spit "resources/temp.ly"
           (str
            "\\score {
-  \\new Staff <<\n"
-
-           "  \\set Staff.midiInstrument = #\"voice oohs\"\n"
+  \\new Staff <<
+           \\tempo 2 = 70
+           \\set Staff.midiInstrument = #\"voice oohs\"\n"
 
            "  \\new Voice = \"first\"
      { \\voiceOne "
            (if (= position :above)
-             (melody->lily 4 counter)
-             (melody->lily 2 cantus))
+             (melody->lily 2 counter)
+             (melody->lily 1 cantus))
 
            "}
   \\new Voice= \"second\"
      { \\voiceTwo "
            (if (= position :above)
-             (melody->lily 2 cantus)
-             (melody->lily 4 counter))
+             (melody->lily 1 cantus)
+             (melody->lily 2 counter))
            "}
   \\figures {"
            (figured-bass-second species)
@@ -131,3 +131,5 @@
 }
 "))
     (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
+
+

@@ -11,7 +11,7 @@
   (into melody [note]))
 
 (comment
- (append-to-melody (make-melody n/a4) n/b4)
+  (append-to-melody (make-melody n/a4) n/b4)
     ;
   )
 
@@ -45,11 +45,16 @@
 (defn transpose [melody octaves]
   (map #(make-note (get-note %) (+ (get-octave %) octaves) (get-acc %)) melody))
 
-(defn double-melody [melody]
-  (into [] (flatten (map #(into [%] [%]) melody))))
+(defn- double-melody-iter [melody note notes]
+  (let [mel (-> melody 
+                (append-to-melody note)
+                (append-to-melody note))]
+    (if (empty? notes) 
+      mel
+      (double-melody-iter mel (first notes) (rest notes)))))
 
-(comment
-  
-  (into [] (flatten (map #(into [%] [%]) [1 2 3])))
-)
+(defn double-melody [melody]
+  (double-melody-iter [] (first melody) (rest melody)))
+
+
 
