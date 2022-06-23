@@ -19,7 +19,7 @@
                  (= interval 6))
       false)))
 
-(defn- correct-intervals-iter [position note1 note2 notes1 notes2]
+(defn correct-intervals-iter [position note1 note2 notes1 notes2]
   (and (if (= position :above)
          (rule-warning (correct-interval note1 note2)
                        #(str "Not allowed harmonic interval " note1 note2 (interval note1 note2)))

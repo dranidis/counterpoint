@@ -6,7 +6,6 @@
             [counterpoint.melody :refer [double-melody]]))
 
 (defn figured-bass-iter [duration low high lows highs]
-  (println "figured-bass-iter" low high)
   (if (or (nil? high)
           (nil? low))
           (str "< _ >" duration )
