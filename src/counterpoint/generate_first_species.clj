@@ -5,33 +5,8 @@
                                             M3 m3- M3- m6 M6 m6-
                                             note-at-diatonic-interval note-at-melodic-interval P1 P4 P4- P5 P5- P8 P8-]]
             [counterpoint.melody :refer [append-to-melody make-melody]]
-            [counterpoint.motion :refer [direct-perfect?
-                                         reverse-direct-perfect?]]
+            [counterpoint.motion :refer [reverse-direct-perfect?]]
             [counterpoint.notes :refer [get-nooctave] :as n]))
-
-(defn next-candidates [key melody previous-melody-note previous-cantus-note next-cantus-note]
-  (let [next-melodic-candidates (map #(note-at-melodic-interval previous-melody-note %)
-                                     [m2 M2 m3 M3 P4 P5 m6 P8 m2- M2- m3- M3- P4- P5- P8-])
-        next-harmonic-candidates
-        (map #(note-at-diatonic-interval key (get-nooctave next-cantus-note) %) [1 3 5 6])]
-    (->> next-melodic-candidates
-         (filter #((set next-harmonic-candidates) (get-nooctave %)))
-         (filter #(not (direct-perfect? previous-cantus-note previous-melody-note next-cantus-note %)))
-         (filter #(maximum-range-M10? (append-to-melody melody %))))))
-
-(defn- generate-random-counterpoint-iter [key melody previous-melody previous-cantus cantus-note cantus-notes]
-  (let [current (if (nil? previous-melody)
-                  (note-at-melodic-interval cantus-note P8)
-                  (rand-nth (next-candidates key melody previous-melody previous-cantus cantus-note)))]
-    (into [current]
-          (if (empty? cantus-notes)
-            []
-            (generate-random-counterpoint-iter key
-                                               (into melody [current])
-                                               current cantus-note (first cantus-notes) (rest cantus-notes))))))
-
-(defn generate-random-counterpoint-above [key cantus]
-  (generate-random-counterpoint-iter key [] nil nil (first cantus) (rest cantus)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -42,6 +17,7 @@
   (let [i (get-interval (interval (nth melody (- (count melody) 2)) (last melody)))]
     (println "Melody int" melody i)
     (cond
+      (= (Math/abs i) 1) :unison
       (> i 3) :low
       (< i -3) :high
       (neg? i) :no-leap-high
@@ -52,18 +28,23 @@
   (let [_ (println (melody-reverse-leap melody))
         next-melodic-intervals
         (case (melody-reverse-leap melody)
+          :unison [m2 M2 m3 M3
+                   m2- M2- m3- M3-] 
           :high [m2 M2 m3 M3]
           :low [m2- M2- m3- M3-]
                                 ;;  [P1 m2 M2 m3 M3 m2- M2- m3- M3-]
           :no-leap-high [
-                        ;;  P1 
-                         m2 M2 m3 M3 P4 P5 
-                        ;;  P8 
+                         P1 
+                         m2 M2 m3 M3 
+                         P4 P5 
+                         P8 
                          m2- M2- m3- M3-]
           [
-          ;;  P1 
-           m2 M2 m3 M3 m2- M2- m3- M3- P4- P5- m6- 
-          ;;  P8-
+           P1 
+           m2 M2 m3 M3 
+           m2- M2- m3- M3- 
+           P4- P5- m6- 
+           P8-
            ])
         _ (println "MEL INT:" next-melodic-intervals)
         next-melodic-candidates (map #(note-at-melodic-interval previous-melody-note %)
@@ -77,12 +58,13 @@
         next-harmonic-candidates
         (map #(note-at-diatonic-interval key (get-nooctave next-cantus-note) %) next-harmonic-intervals)]
     (->> next-melodic-candidates
-         ((fn [l] (println "ALL: " l) l))
+        ;;  ((fn [l] (println "ALL: " l) l))
          (filter #(not= d5 (simple-interval next-cantus-note %)))
          (filter #((set next-harmonic-candidates) (get-nooctave %)))
-         (filter #(pos? (get-interval (interval next-cantus-note %))))
+         (filter #(pos? (get-interval (interval next-cantus-note %)))) ;; only above bass
          (filter #(not (reverse-direct-perfect? previous-cantus-note previous-melody-note next-cantus-note %)))
-         (filter #(maximum-range-M10? (append-to-melody melody %))))))
+         (filter #(maximum-range-M10? (append-to-melody melody %)))
+         (filter #(< (get-interval (interval next-cantus-note %)) 13))))) ;; no 13s and above
 
 (defn- generate-reverse-random-counterpoint-iter [key melody m36s previous-melody previous-cantus cantus-note cantus-notes]
   (println (reverse melody))
