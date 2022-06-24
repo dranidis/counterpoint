@@ -1,6 +1,6 @@
 (ns counterpoint.melody
   (:require [counterpoint.core :refer [interval]]
-            [counterpoint.intervals :refer [note->number-of-semitones]]
+            [counterpoint.intervals :refer [note->number-of-semitones get-interval]]
             [counterpoint.notes :as n :refer [get-acc get-note get-octave
                                               make-note]]))
 
@@ -61,3 +61,12 @@
 
 
 
+(defn melody-score [melody]
+  (let [ints (map #(Math/abs (get-interval %)) (melodic-intervals melody))
+        leaps (count (filter #(> % 3) ints))
+        unisons (count (filter #(= % 1) ints))
+        thirds (count (filter #(= % 3) ints))
+        score (+ (* -5 leaps)
+                 (* -10 unisons)
+                 (* -2 thirds))]
+    score))

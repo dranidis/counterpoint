@@ -1,7 +1,11 @@
 (ns counterpoint.first-species-examples
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [fux-a haydn-a]]
-            [counterpoint.first-species :refer [first-species-rules?]]
+            [counterpoint.intervals :refer [get-interval get-quality m6
+                                            make-interval P1 P8 P8-]]
+            [counterpoint.cantus-firmi-examples :refer [haydn-a]]
+            [counterpoint.first-species :refer [first-species-rules?
+                                                get-harmonic-intervals
+                                                evaluate-species]]
             [counterpoint.first-species-type :refer [make-first-species]]
             [counterpoint.generate-first-species :refer [generate-reverse-random-counterpoint-above]]
             [counterpoint.lilypond :refer [first-species->lily]]
@@ -46,14 +50,61 @@
   (def species (make-first-species
                 haydn-a
                 (generate-reverse-random-counterpoint-above :c haydn-a) :above))
-  (first-species-rules? species)
-  (first-species->lily (make-first-species
-                        haydn-a
-                        (generate-reverse-random-counterpoint-above :c haydn-a) :above))
-    (sh/sh "timidity" "resources/temp.midi") 
 
+  P1
+  (count (filter #(= P1 %) (get-harmonic-intervals species)))
+
+  (first-species-rules? species)
+
+  (def cf haydn-a)
+  (def cp (generate-reverse-random-counterpoint-above :c cf))
+  (def species  (make-first-species cf cp :above))
+
+  (println (first-species-rules? species))
+  (println (evaluate-species species))
+
+
+  (defn generate-species-eval [cf]
+    (let [cp (generate-reverse-random-counterpoint-above :c cf)
+          species (make-first-species cf cp :above)
+          score (evaluate-species species)]
+      [species score]))
+  (range 20)
+
+  (def species100 (map (fn [_] (generate-species-eval haydn-a)) (range 100)))
+
+  (def best-of-100 (first (first (filter #(= (second %) (apply max (map second species100))) species100))))
+  (def worst-of-100 (first (first (filter #(= (second %) (apply min (map second species100))) species100))))
+
+  (first-species->lily best-of-100)
+  (evaluate-species best-of-100)
+
+  (first-species->lily worst-of-100)
+  (evaluate-species worst-of-100)
+  (sh/sh "timidity" "resources/temp.midi")
+
+
+
+  (let [cf haydn-a
+        cp (generate-reverse-random-counterpoint-above :c cf)
+        _ (println (let [ints (map #(Math/abs (get-interval %)) (melodic-intervals cp))
+                         leaps (count (filter #(> % 3) ints))
+                         unisons (count (filter #(= % 1) ints))
+                         thirds (count (filter #(= % 3) ints))
+                         score (+ (* -5 leaps)
+                                  (* -10 unisons)
+                                  (* -2 thirds))]
+                     [score leaps unisons thirds]))
+        species (make-first-species cf cp :above)
+        _ (println "RULES " (first-species-rules? species))
+        _ (println "EVAL  " (evaluate-species species))]
+    (first-species->lily species))
+  (sh/sh "timidity" "resources/temp.midi")
+
+  (get-harmonic-intervals species)
 
   (print (first-species->lily species))
 
+  (filter #(> % 3) [5 2 3 2 1 2 3 3 3 2])
   ;
   )

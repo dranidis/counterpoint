@@ -15,7 +15,7 @@
 (defn melody-reverse-leap
   [melody]
   (let [i (get-interval (interval (nth melody (- (count melody) 2)) (last melody)))]
-    (println "Melody int" melody i)
+    ;; (println "Melody int" melody i)
     (cond
       (= (Math/abs i) 1) :unison
       (> i 3) :low
@@ -25,7 +25,8 @@
 
 ;; TODO avoid dim5 in melody of leaps or at changing direction
 (defn next-reverse-candidates [key melody m36s previous-melody-note previous-cantus-note next-cantus-note]
-  (let [_ (println (melody-reverse-leap melody))
+  (let [
+        ;; _ (println (melody-reverse-leap melody))
         next-melodic-intervals
         (case (melody-reverse-leap melody)
           :unison [m2 M2 m3 M3
@@ -46,10 +47,10 @@
            P4- P5- m6- 
            P8-
            ])
-        _ (println "MEL INT:" next-melodic-intervals)
+        ;; _ (println "MEL INT:" next-melodic-intervals)
         next-melodic-candidates (map #(note-at-melodic-interval previous-melody-note %)
                                      next-melodic-intervals)
-        _ (println "ALL-all" next-melodic-candidates)
+        ;; _ (println "ALL-all" next-melodic-candidates)
         next-harmonic-intervals (filter (fn [i] (or (not= (get m36s :remaining-cantus-size) 1)
                                                     (not= i 6))) ;; don't use a 6th at the beginning
                                         (cond (= 3 (get m36s :thirds)) [1 5 6]
@@ -67,11 +68,11 @@
          (filter #(< (get-interval (interval next-cantus-note %)) 13))))) ;; no 13s and above
 
 (defn- generate-reverse-random-counterpoint-iter [key melody m36s previous-melody previous-cantus cantus-note cantus-notes]
-  (println (reverse melody))
+  ;; (println (reverse melody))
   (let [current (if (nil? previous-melody)
                   (note-at-melodic-interval cantus-note P8)
                   (let [candidates (next-reverse-candidates key melody m36s previous-melody previous-cantus cantus-note)]
-                    (println "CAND" candidates)
+                    ;; (println "CAND" candidates)
                     (rand-nth candidates)))
         m36' (case (get-interval (interval cantus-note current))
                3 (-> m36s (update :thirds inc) (assoc :sixths 0) (assoc :tens 0) (assoc :thirteens 0))

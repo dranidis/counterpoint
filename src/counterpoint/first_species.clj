@@ -3,8 +3,8 @@
             [counterpoint.first-species-type :refer [get-cantus get-counter
                                                      get-position]]
             [counterpoint.intervals :refer [get-interval get-quality m6
-                                            make-interval P1 P8 P8-]]
-            [counterpoint.melody :refer [last-interval melodic-intervals]]
+                                            make-interval P1 P8 P8- P5]]
+            [counterpoint.melody :refer [last-interval melodic-intervals remove-last melody-score]]
             [counterpoint.motion :refer [type-of-motion]]
             [counterpoint.utils :refer [rule-warning]]))
 
@@ -116,8 +116,33 @@
 ;;    avoid consecutive perfect intervals
    ))
 
+(defn- get-harmonic-intervals-iter [ints low1 high1 lows highs]
+  (let [new-int (interval low1 high1)]
+    (into [new-int]
+          (if (empty? lows)
+            []
+            (get-harmonic-intervals-iter (into ints [new-int]) (first lows) (first highs) (rest lows) (rest highs))))))
+
+
+(defn get-harmonic-intervals [species]
+  (let [[low high] (if (= :above (get-position species))
+                     [(get-cantus species) (get-counter species)]
+                     [(get-counter species) (get-cantus species)])]
+    (get-harmonic-intervals-iter [] (first low) (first high) (rest low) (rest high))))
+
+(defn evaluate-species [species]
+  (let [harm-int (rest (remove-last (get-harmonic-intervals species)))
+        [p1-count p8-count p5-count] (map (fn [int]
+                                            (count (filter #(= int %) harm-int)))
+                                          [P1 P8 P5])
+        score (+ (* -10 p1-count)
+                 (* -5 p8-count)
+                 (* -2 p5-count))
+        melody-s (melody-score (get-counter species))]
+    (+ score melody-s)))
 ;; avoid consecutive perfect harmonic intervals
 ;; prefer stepwise movement
+
 
 
 
