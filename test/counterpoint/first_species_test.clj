@@ -95,14 +95,14 @@
           (make-melody n/d3 n/d3 n/a4 n/f3 n/e3 n/d3 n/c3 n/e3 n/d3 n/c#3 n/d3)
           cantus-firmus
           (make-melody n/d4 n/f4 n/e4 n/d4 n/g4 n/f4 n/a5 n/g4 n/f4 n/e4 n/d4)]
-      (is (= true (no-direct-motion-to-perfect? (make-first-species cantus-firmus counterpoint-melody :below)))))
+      (is (no-direct-motion-to-perfect? (make-first-species cantus-firmus counterpoint-melody :below))))
 
     (testing "direct motion to perfect"
       (let [counterpoint-melody
             (make-melody n/d3 n/d3 n/a4 n/g3 n/e3 n/d3 n/c3 n/e3 n/d3 n/c#3 n/d3)
             cantus-firmus
             (make-melody n/d4 n/f4 n/e4 n/d4 n/g4 n/f4 n/a5 n/g4 n/f4 n/e4 n/d4)]
-        (is (= false (no-direct-motion-to-perfect? (make-first-species cantus-firmus counterpoint-melody :below))))))))
+        (is (not (no-direct-motion-to-perfect? (make-first-species cantus-firmus counterpoint-melody :below))))))))
 
 (deftest melody-test
   (testing "correct"

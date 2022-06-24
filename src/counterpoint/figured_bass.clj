@@ -32,7 +32,6 @@
 (defn figured-bass-second [species]
   (let [duration 2
         cantus (double-melody (get-cantus species))
-        _ (println cantus)
         counter (get-counter species)
         position (get-position species)
         [high low] (if (= position :above)

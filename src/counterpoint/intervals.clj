@@ -1,6 +1,6 @@
 (ns counterpoint.intervals
   (:require [counterpoint.key :refer [get-note-acc-at-key]]
-            [counterpoint.notes :refer [a3 c4 get-acc get-nooctave get-note
+            [counterpoint.notes :refer [get-acc get-note
                                         get-note-nooctave get-octave make-note
                                         make-note-nooctave note->num num->note num2->note]]))
 

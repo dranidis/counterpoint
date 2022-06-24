@@ -8,7 +8,7 @@
             [counterpoint.motion :refer [type-of-motion]]
             [counterpoint.utils :refer [rule-warning]]))
 
-(defn- correct-interval [note1 note2]
+(defn correct-interval [note1 note2]
   (let [harmony (simple-interval note1 note2)
         interval (Math/abs (get-interval harmony))]
     (case (get-quality harmony)
@@ -34,7 +34,7 @@
         counter (get-counter species)
         position (get-position species)]
     (if (not= (count cantus) (count counter))
-      false
+      (rule-warning false #(println "Wrong size of counterpoint"))
       (correct-intervals-iter position (first cantus) (first counter) (rest cantus) (rest counter)))))
 
 (defn last-interval? [species]
@@ -61,30 +61,29 @@
                            (= last-counter (make-interval -2 :major))))
                   #(str "Does not approach the ending by contrary motion and leading tone " last-cantus last-counter))))
 
-(defn- no-direct-motion? [n1 n2 next1 next2]
-  (rule-warning (not= :similar (type-of-motion n1 n2 next1 next2))
-                #(str "Direct motion from " n1 n2 " to " next1 next2 " intervals: "
-                      (interval n1 n2) (interval next1 next2))))
+(defn direct-motion-to-perfect? [n1 n2 next1 next2]
+  (and
+   (= :similar (type-of-motion n1 n2 next1 next2))
+   (= (get-quality (interval next1 next2)) :perfect)))
 
-(defn- no-direct-motion-to-perfect-iter [position n1 n2 notes1 notes2]
+(defn- no-direct-motion-to-perfect-iter [n1 n2 notes1 notes2]
   (if (empty? notes1)
     true
     (let [next1 (first notes1)
-          next2 (first notes2)
-          next-interval (interval next1 next2)]
-      (and 
-       (or (not= (get-quality next-interval) :perfect)
-               (if (= position :above)
-                 (no-direct-motion? n1 n2 next1 next2)
-                 (no-direct-motion? n2 n1 next2 next1)))
-           (no-direct-motion-to-perfect-iter position next1 next2 (rest notes1) (rest notes2))))))
-
+          next2 (first notes2)]
+      (and
+       (rule-warning (not (direct-motion-to-perfect? n1 n2 next1 next2))
+                     #(str "Direct motion to perfect interval from " n1 n2 " to " next1 next2 " intervals: "
+                           (interval n1 n2) (interval next1 next2)))
+       (no-direct-motion-to-perfect-iter next1 next2 (rest notes1) (rest notes2))))))
 
 (defn no-direct-motion-to-perfect? [species]
   (let [cantus (get-cantus species)
         counter (get-counter species)
         position (get-position species)]
-    (no-direct-motion-to-perfect-iter position (first cantus) (first counter) (rest cantus) (rest counter))))
+    (if (= position :above)
+      (no-direct-motion-to-perfect-iter (first cantus) (first counter) (rest cantus) (rest counter))
+      (no-direct-motion-to-perfect-iter (first counter) (first cantus) (rest counter) (rest cantus)))))
 
 (defn- allowed-melodic-interval [interval]
   (rule-warning

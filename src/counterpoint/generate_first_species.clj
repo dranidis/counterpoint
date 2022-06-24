@@ -123,7 +123,7 @@
                   (nth rev-cantus 2)
                   (subvec (into [] rev-cantus) 3))))
           [second-last-melody last-melody]))
-       (catch Exception e
+       (catch Exception _
          (println "Trying again...")
          (generate-reverse-random-counterpoint-above key cantus))))
 

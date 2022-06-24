@@ -46,15 +46,18 @@
   (map #(make-note (get-note %) (+ (get-octave %) octaves) (get-acc %)) melody))
 
 (defn- double-melody-iter [melody note notes]
-  (let [mel (-> melody 
+  (let [mel (-> melody
                 (append-to-melody note)
                 (append-to-melody note))]
-    (if (empty? notes) 
+    (if (empty? notes)
       mel
       (double-melody-iter mel (first notes) (rest notes)))))
 
 (defn double-melody [melody]
   (double-melody-iter [] (first melody) (rest melody)))
+
+(defn remove-last [melody]
+  (subvec melody 0 (dec (count melody))))
 
 
 

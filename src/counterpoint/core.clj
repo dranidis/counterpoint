@@ -5,13 +5,16 @@
             ))
 
 
-(defn- note->number [note]
+(defn note->number [note]
   (let [num-note (note->num (get-note note))]
     (if (nil? num-note)
       (throw (Exception. (str "note->number: Unknown note: " note)))
       (+ num-note (* (get-octave note) 7)))))
 
-
+(note->number [:a 4 :natural])
+(note->number [:g 3 :natural])
+(note->number [:f 3 :natural])
+(note->number [:e 3 :natural])
 
 (defn- interval-quality [octave-distance distance-semitones]
   (case octave-distance
