@@ -139,10 +139,9 @@
                  (* -5 p8-count)
                  (* -2 p5-count))
         melody-s (melody-score (get-counter species))]
-    (+ score melody-s)))
+    (float (/ (+ score melody-s) (count (get-cantus species))))))
 ;; avoid consecutive perfect harmonic intervals
 ;; prefer stepwise movement
-
 
 
 

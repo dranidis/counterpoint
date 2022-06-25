@@ -187,6 +187,7 @@
 (def m7- (make-interval -7 :minor))
 (def M7- (make-interval -7 :major))
 (def P8- (make-interval -8 :perfect))
+(def m10- (make-interval -10 :minor))
 
 (def d2- (make-interval -2 :dim))
 (def d3- (make-interval -3 :dim))

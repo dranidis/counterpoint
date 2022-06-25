@@ -1,16 +1,24 @@
 (ns counterpoint.first-species-examples
   (:require [clojure.java.shell :as sh]
-            [counterpoint.intervals :refer [get-interval get-quality m6
-                                            make-interval P1 P8 P8-]]
-            [counterpoint.cantus-firmi-examples :refer [haydn-a]]
-            [counterpoint.first-species :refer [first-species-rules?
-                                                get-harmonic-intervals
-                                                evaluate-species]]
+            [counterpoint.cantus-firmi-examples :refer [fux-d haydn-a]]
+            [counterpoint.first-species :refer [evaluate-species
+                                                first-species-rules? get-harmonic-intervals]]
             [counterpoint.first-species-type :refer [make-first-species]]
-            [counterpoint.generate-first-species :refer [generate-reverse-random-counterpoint-above]]
+            [counterpoint.generate-first-species :refer [generate-reverse-random-counterpoint-above generate-reverse-random-counterpoint-below]]
+            [counterpoint.intervals :refer [P1]]
             [counterpoint.lilypond :refer [first-species->lily]]
             [counterpoint.melody :refer [make-melody melodic-intervals]]
             [counterpoint.notes :as n]))
+
+(def fux-d-cp-above (make-melody n/a4 n/a4 n/g3 n/a4 n/b4 n/c4 n/c4 n/b4 n/d4 n/c#4 n/d4))
+(def fux-d-cp-below (make-melody n/d2 n/d2 n/a3 n/f2 n/e2 n/d2 n/f2 n/c3 n/d3 n/c#3 n/d3))
+
+(def fux-d-above (make-first-species fux-d-cp-above fux-d :above))
+(def fux-d-below (make-first-species fux-d-cp-below fux-d :below))
+
+(evaluate-species fux-d-above)
+(evaluate-species fux-d-below)
+
 
 (comment
   (def species (let [counterpoint-melody
@@ -69,9 +77,8 @@
           species (make-first-species cf cp :above)
           score (evaluate-species species)]
       [species score]))
-  (range 20)
 
-  (def species100 (map (fn [_] (generate-species-eval haydn-a)) (range 100)))
+  (def species100 (map (fn [_] (generate-species-eval fux-d)) (range 100)))
 
   (def best-of-100 (first (first (filter #(= (second %) (apply max (map second species100))) species100))))
   (def worst-of-100 (first (first (filter #(= (second %) (apply min (map second species100))) species100))))
@@ -79,27 +86,25 @@
   (first-species->lily best-of-100)
   (evaluate-species best-of-100)
 
+  (sh/sh "timidity" "resources/temp.midi")
+
+  (first-species->lily fux-d-below "treble_8")
+
+
   (first-species->lily worst-of-100)
   (evaluate-species worst-of-100)
-  (sh/sh "timidity" "resources/temp.midi")
 
 
-
-  (let [cf haydn-a
-        cp (generate-reverse-random-counterpoint-above :c cf)
-        _ (println (let [ints (map #(Math/abs (get-interval %)) (melodic-intervals cp))
-                         leaps (count (filter #(> % 3) ints))
-                         unisons (count (filter #(= % 1) ints))
-                         thirds (count (filter #(= % 3) ints))
-                         score (+ (* -5 leaps)
-                                  (* -10 unisons)
-                                  (* -2 thirds))]
-                     [score leaps unisons thirds]))
-        species (make-first-species cf cp :above)
+  (let [cf fux-d
+        cp (generate-reverse-random-counterpoint-below :c cf)
+        species (make-first-species cf cp :below)
         _ (println "RULES " (first-species-rules? species))
-        _ (println "EVAL  " (evaluate-species species))]
-    (first-species->lily species))
+        _ (println "EVAL  " (evaluate-species species))
+        ]
+    (first-species->lily species  "treble_8"))
   (sh/sh "timidity" "resources/temp.midi")
+
+  
 
   (get-harmonic-intervals species)
 

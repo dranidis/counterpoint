@@ -64,7 +64,9 @@
 (defn fixed-melody->lily [duration [note & notes]]
   (apply str (fixed-to-lily-iter duration note notes)))
 
-(defn first-species->lily [species] 
+(defn first-species->lily 
+  ([species] (first-species->lily species "treble")) 
+  ([species clef] 
   (let [cantus (get-cantus species)
         counter (get-counter species)
         position (get-position species)]
@@ -72,6 +74,7 @@
           (str
            "\\score {
   \\new Staff <<
+            \\clef \"" clef "\"\n
             \\tempo 2 = 120
             \\set Staff.midiInstrument = #\"voice oohs\"\n"
 
@@ -98,7 +101,7 @@
   \\midi { }
 }
 "))
-    (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
+    (sh/sh "lilypond" "-o" "resources" "resources/temp.ly"))))
 
 
 (defn end-to-1 [melody]
