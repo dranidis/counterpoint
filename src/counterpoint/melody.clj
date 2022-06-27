@@ -1,6 +1,6 @@
 (ns counterpoint.melody
   (:require [counterpoint.core :refer [interval]]
-            [counterpoint.intervals :refer [note->number-of-semitones get-interval]]
+            [counterpoint.intervals :refer [note->number-of-semitones get-interval get-quality]]
             [counterpoint.notes :as n :refer [get-acc get-note get-octave
                                               make-note]]))
 
@@ -9,11 +9,6 @@
 
 (defn append-to-melody [melody note]
   (into melody [note]))
-
-(comment
-  (append-to-melody (make-melody n/a4) n/b4)
-    ;
-  )
 
 (defn- lowest-note [melody]
   (second (apply min-key #(note->number-of-semitones (second %)) (map-indexed vector melody))))
@@ -61,12 +56,39 @@
 
 
 
+(defn- melody-skeleton-iter  [intv intvs melody]
+  (if (empty? intvs)
+    [(first melody)]
+    (into
+     (if (neg? (* (get-interval intv) (get-interval (first intvs))))
+       [(first melody)]
+       [])
+     (melody-skeleton-iter (first intvs) (rest intvs) (rest melody)))))
+
+(defn melody-skeleton [melody]
+  (let [ints (melodic-intervals melody)]
+    (into [(first melody)] (melody-skeleton-iter (first ints) (rest ints) (rest melody)))))
+
+
 (defn melody-score [melody]
   (let [ints (map #(Math/abs (get-interval %)) (melodic-intervals melody))
         leaps (count (filter #(> % 3) ints))
         unisons (count (filter #(= % 1) ints))
         thirds (count (filter #(= % 3) ints))
+        skeleton-diminished (count
+                             (filter
+                              #(or (= :aug (get-quality %))
+                                   (= :dim (get-quality %)))
+                              (melodic-intervals (melody-skeleton melody))))
         score (+ (* -5 leaps)
                  (* -10 unisons)
-                 (* -2 thirds))]
+                 (* -2 thirds)
+                 (* -20 skeleton-diminished))]
     score))
+
+(comment
+  (def diminished-melody (make-melody n/d4 n/g4 n/f4 n/g4 n/a5 n/b5 n/a5))
+  (melodic-intervals (melody-skeleton diminished-melody))
+  (melody-score diminished-melody)
+  ;
+  )

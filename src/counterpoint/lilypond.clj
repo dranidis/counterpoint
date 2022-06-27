@@ -75,8 +75,9 @@
            "\\score {
   \\new Staff <<
             \\clef \"" clef "\"\n
-            \\tempo 2 = 120
-            \\set Staff.midiInstrument = #\"voice oohs\"\n"
+            \\tempo 2 = 120\n"
+            
+           "\\set Staff.midiInstrument = #\"voice oohs\"\n"
 
            "  \\new Voice = \"first\"
      { \\voiceOne "

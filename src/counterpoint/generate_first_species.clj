@@ -2,8 +2,10 @@
   (:require [counterpoint.cantus :refer [maximum-range-M10?]]
             [counterpoint.core :refer [interval simple-interval]]
             [counterpoint.intervals :refer [d5 d5- get-interval m10- m2 M2 m2-
-                                            M2- m3 M3 m3- M3- M6 m6-
-                                            note-at-diatonic-interval note-at-melodic-interval P1 P4 P4- P5 P5- P8 P8-]]
+                                            M2- m3 M3 m3- M3- M6 m6- A4 A4-
+                                            note-at-diatonic-interval note-at-melodic-interval
+                                            get-quality
+                                            P1 P4 P4- P5 P5- P8 P8-]]
             [counterpoint.melody :refer [append-to-melody make-melody]]
             [counterpoint.motion :refer [reverse-direct-perfect?]]
             [counterpoint.notes :refer [get-nooctave] :as n]))
@@ -43,20 +45,32 @@
 
         next-melodic-candidates (map #(note-at-melodic-interval previous-melody-note %)
                                      next-melodic-intervals)
-        next-harmonic-intervals (map #(* % (if (= position :above) 1 -1))
-                                 (filter (fn [i] (or (not= (get m36s :remaining-cantus-size) 1)
-                                                    (and (not= i 6) (not= i 3)))) ;; don't use a 6th at the beginning
-                                        (cond (= 3 (get m36s :thirds)) [1 5 6]
-                                              (= 3 (get m36s :sixths)) [1 3 5]
-                                              :else [1 3 5 6])))
-        
+        next-harmonic-intervals
+        (if (and (= position :below) (= (get m36s :remaining-cantus-size) 1))
+          [1]
+          (map #(* % (if (= position :above) 1 -1))
+               (filter (fn [i] (or (not= (get m36s :remaining-cantus-size) 1)
+                                   (and (not= i 6) (not= i 3)))) ;; don't use a 6th at the beginning
+                       (cond (= 3 (get m36s :thirds)) [1 5 6]
+                             (= 3 (get m36s :sixths)) [1 3 5]
+                             :else [1 3 5 6]))))
+
         _ (println "next-harmonic-intervals" next-harmonic-intervals)
         next-harmonic-candidates
         (map #(note-at-diatonic-interval key (get-nooctave next-cantus-note) %) next-harmonic-intervals)
         _ (println "next-harmonic-candidates" next-harmonic-candidates)]
     (->> next-melodic-candidates
-         (filter #(or (not= d5 (simple-interval next-cantus-note %))
-                      (not= d5- (simple-interval next-cantus-note %))))
+        ;;  (filter #(or (not= d5 (simple-interval next-cantus-note %))
+        ;;               (not= d5- (simple-interval next-cantus-note %))
+        ;;               (not= A4 (simple-interval next-cantus-note %))
+        ;;               (not= A4- (simple-interval next-cantus-note %))))
+         (filter (fn [mc]
+                   (let [int-quality (get-quality
+                                      (if (= position :above)
+                                        (interval next-cantus-note mc)
+                                        (interval mc next-cantus-note)))]
+                     (not (or (= :aug int-quality)
+                              (= :dim int-quality))))))
          (filter #((set next-harmonic-candidates) (get-nooctave %)))
         ;;  (filter #(pos? (get-interval (interval next-cantus-note %)))) ;; only above bass
          (filter #(not (reverse-direct-perfect? previous-cantus-note previous-melody-note next-cantus-note %)))
@@ -132,8 +146,9 @@
           [second-last-melody last-melody]))
        (catch Exception e
         ;;  (println e)
-         (println "Trying again..."))))
-        ;;  (generate-reverse-random-counterpoint-below key cantus)
+         (println "Trying again...")
+         (generate-reverse-random-counterpoint-below key cantus))))
+
 
 
 
