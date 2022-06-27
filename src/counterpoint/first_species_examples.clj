@@ -1,13 +1,14 @@
 (ns counterpoint.first-species-examples
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [fux-d fux-a fux-g haydn-a mozart-c1 mozart-c2 salieri]]
+            [counterpoint.cantus-firmi-examples :refer [fux-a fux-d haydn-a
+                                                        salieri]]
             [counterpoint.first-species :refer [evaluate-species
-                                                first-species-rules? get-harmonic-intervals]]
+                                                first-species-rules?]]
             [counterpoint.first-species-type :refer [make-first-species]]
             [counterpoint.generate-first-species :refer [generate-reverse-random-counterpoint]]
-            [counterpoint.intervals :refer [P1]]
             [counterpoint.lilypond :refer [first-species->lily]]
-            [counterpoint.melody :refer [make-melody melodic-intervals]]
+            [counterpoint.melody :refer [make-melody melodic-intervals
+                                         transpose]]
             [counterpoint.notes :as n]))
 
 (def fux-d-cp-above (make-melody n/a4 n/a4 n/g3 n/a4 n/b4 n/c4 n/c4 n/b4 n/d4 n/c#4 n/d4))
@@ -16,13 +17,18 @@
 (def fux-d-above (make-first-species fux-d-cp-above fux-d :above))
 (def fux-d-below (make-first-species fux-d-cp-below fux-d :below))
 
-(def fux-a-cp-below (make-melody n/a4 n/c4 n/b4 n/f2
+(def fux-a-cp-below (make-melody n/a3 n/e2 n/g2 n/f2
                                  n/a3 n/g2 n/f2 n/g2
                                  n/f2 n/e2 n/g#2 n/a3))
 (def fux-a-below (make-first-species fux-a-cp-below fux-a :below))
+(def fux-a-above (make-first-species (transpose fux-a-cp-below 1) fux-a :above))
+(first-species->lily fux-a-above "treble")
 (first-species->lily fux-a-below "treble_8")
+(first-species->lily fux-a-below "treble_8")
+(sh/sh "timidity" "resources/temp.midi")
+
+(evaluate-species fux-a-above)
 (evaluate-species fux-a-below)
-;; (sh/sh "timidity" "resources/temp.midi")
 
 (evaluate-species fux-d-above)
 (evaluate-species fux-d-below)
@@ -65,22 +71,7 @@
 
   (def species (make-first-species
                 haydn-a
-                (generate-reverse-random-counterpoint-above :c haydn-a) :above))
-
-  P1
-  (count (filter #(= P1 %) (get-harmonic-intervals species)))
-
-  (first-species-rules? species)
-
-  (def cf fux-d)
-  (def cp (generate-reverse-random-counterpoint-above :c cf))
-  (def species  (make-first-species cf cp :above))
-
-  (println (first-species-rules? species))
-  (println (evaluate-species species))
-
-
-  
+                (generate-reverse-random-counterpoint :above :c haydn-a) :above))
 
 
   (def position :below)
@@ -90,7 +81,7 @@
           score (evaluate-species species)]
       [species score]))
 
-  (def species100 (map (fn [_] (generate-species-eval mozart-c1)) (range 100)))
+  (def species100 (map (fn [_] (generate-species-eval fux-a)) (range 1000)))
 
   (def unique-sorted-species100 (sort #(> (second %1) (second %2))
                                       (into [] (into #{} species100))))
@@ -104,35 +95,18 @@
 
 
 
-
-
-  (first-species->lily fux-d-below "treble_8")
-
-
-  (first-species->lily worst-of-100)
-  (evaluate-species worst-of-100)
-
-  fux-a
   (let [cf salieri
-        cp (generate-reverse-random-counterpoint :above :c cf)
-        species (make-first-species cf cp :above)
+        position :above
+        cp (generate-reverse-random-counterpoint position :c cf)
+        species (make-first-species cf cp position)
         ;; _ (println cp)
         _ (println "RULES " (first-species-rules? species))
         _ (println "EVAL  " (evaluate-species species))]
     (first-species->lily species
-                        ;;  "treble_8"
-                         ))
+                         (if (= position :above) "treble" "treble_8")))
 
   (sh/sh "timidity" "resources/temp.midi")
   ;; (sh/sh "timidity" "resources/temp.mid")
 
-
-
-
-  (get-harmonic-intervals species)
-
-  (print (first-species->lily species))
-
-  (filter #(> % 3) [5 2 3 2 1 2 3 3 3 2])
   ;
   )
