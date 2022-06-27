@@ -1,6 +1,6 @@
 (ns counterpoint.first-species-examples
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [fux-d fux-a haydn-a mozart-c1 mozart-c2 salieri]]
+            [counterpoint.cantus-firmi-examples :refer [fux-d fux-a fux-g haydn-a mozart-c1 mozart-c2 salieri]]
             [counterpoint.first-species :refer [evaluate-species
                                                 first-species-rules? get-harmonic-intervals]]
             [counterpoint.first-species-type :refer [make-first-species]]
@@ -86,14 +86,14 @@
           score (evaluate-species species)]
       [species score]))
 
-  (def species100 (map (fn [_] (generate-species-eval salieri)) (range 100)))
+  (def species100 (map (fn [_] (generate-species-eval fux-g)) (range 100)))
 
   (def unique-sorted-species100 (sort #(> (second %1) (second %2))
                                       (into [] (into #{} species100))))
 
 
 
-  (def n 20)
+  (def n 2)
   (count unique-sorted-species100)
   (first-species->lily (first (nth unique-sorted-species100 n)) "treble_8")
   (evaluate-species (first (nth unique-sorted-species100 n)))
@@ -106,10 +106,10 @@
   (evaluate-species worst-of-100)
 
   fux-a
-  (let [cf fux-a
+  (let [cf salieri
         cp (generate-reverse-random-counterpoint-below :c cf)
         species (make-first-species cf cp :below)
-        _ (println cp)
+        ;; _ (println cp)
         _ (println "RULES " (first-species-rules? species))
         _ (println "EVAL  " (evaluate-species species))]
     (first-species->lily species  "treble_8"))
