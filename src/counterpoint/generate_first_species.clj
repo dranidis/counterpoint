@@ -109,7 +109,6 @@
          (filter #(<= (Math/abs (get-interval (interval next-cantus-note %))) max-harmonic-interval))
          (debug "harm range"))))
 
-
 (defn- update-m36-size [m36s position cantus-note counter-note]
   (update (case (get-interval (if (= position :above)
                                 (interval cantus-note counter-note)
@@ -139,19 +138,36 @@
              m36size
              current cantus-note (first cantus-notes) (rest cantus-notes))))))
 
-(defn generate-reverse-random-counterpoint-above [key cantus]
+(defn- ending [position cantus rev-cantus]
+  (let [octave? (> (rand-int 10) 4)
+        last-melody (note-at-melodic-interval (first rev-cantus)
+                                              (if (= position :above)
+                                                (if octave? P8 P8)
+                                                (if octave? P8- P1)))
+        second-last-melody (note-at-melodic-interval (second rev-cantus)
+                                                     (if (= position :above)
+                                                       (if octave? M6 M6)
+                                                       (if octave? m10- m3-)))
+        m36s (if (= position :above)
+               {:thirds 0 :sixths 1 :tens 0 :thirteens 0 :remaining-cantus-size (- (count cantus) 2)}
+               (if octave?
+                 {:thirds 0 :sixths 0 :tens 1 :thirteens 0 :remaining-cantus-size (- (count cantus) 2)}
+                 {:thirds 1 :sixths 0 :tens 0 :thirteens 0 :remaining-cantus-size (- (count cantus) 2)}))]
+    [last-melody second-last-melody m36s]))
+
+
+(defn generate-reverse-random-counterpoint [position key cantus]
   (try
     (let [rev-cantus (reverse cantus)
-          last-melody (note-at-melodic-interval (first rev-cantus) P8)
-          second-last-melody (note-at-melodic-interval (second rev-cantus) M6)]
+          [last-melody second-last-melody m36s] (ending position cantus rev-cantus)]
       (into
        (into []
              (reverse
               (generate-reverse-random-counterpoint-iter
-               :above
+               position
                key
                [last-melody second-last-melody]
-               {:thirds 0 :sixths 1 :tens 0 :thirteens 0 :remaining-cantus-size (- (count cantus) 2)} ;; counter of thirds & sixths
+               m36s ;; counter of thirds & sixths
                second-last-melody
                (second rev-cantus)
                (nth rev-cantus 2)
@@ -159,63 +175,8 @@
        [second-last-melody last-melody]))
     (catch Exception _
       (println "Trying again...")
-      (generate-reverse-random-counterpoint-above key cantus))))
-
-(map (fn [n] (rand-int 10)) (range 20))
-
-(defn ending [cantus rev-cantus]
-  (let [octave? (> (rand-int 10) 4)
-        last-melody (note-at-melodic-interval (first rev-cantus)
-                                              (if octave? P8- P1))
-        second-last-melody (note-at-melodic-interval (second rev-cantus)
-                                                     (if octave? m10- m3-))
-        m36s (if octave?
-               {:thirds 0 :sixths 0 :tens 1 :thirteens 0 :remaining-cantus-size (- (count cantus) 2)}
-               {:thirds 1 :sixths 0 :tens 0 :thirteens 0 :remaining-cantus-size (- (count cantus) 2)})]
-    [last-melody second-last-melody m36s]))
-
-(defn generate-reverse-random-counterpoint-below [key cantus]
-  (try (let [rev-cantus (reverse cantus)
-            ;;  last-melody (note-at-melodic-interval (first rev-cantus) P8-)
-;; second-last-melody (note-at-melodic-interval (second rev-cantus) m10-)
-             [last-melody second-last-melody m36s] (ending cantus rev-cantus)]
-         (into
-          (into []
-                (reverse
-                 (generate-reverse-random-counterpoint-iter
-                  :below
-                  key
-                  [last-melody second-last-melody]
-                  m36s ;; counter of thirds & sixths
-                  second-last-melody
-                  (second rev-cantus)
-                  (nth rev-cantus 2)
-                  (subvec (into [] rev-cantus) 3))))
-          [second-last-melody last-melody]))
-       (catch Exception e
-        ;;  (println e)
-         (println "Trying again...")
-         (generate-reverse-random-counterpoint-below key cantus))))
+      (generate-reverse-random-counterpoint position key cantus))))
 
 
-
-
-
-(comment
-
-  (def haydn (make-melody n/d3 n/e3 n/f3 n/d3 n/a4 n/f3 n/e3 n/g3 n/f3 n/e3 n/d3))
-  haydn
-
-  (nth haydn 2)
-  (subvec haydn 3)
-  (reverse haydn)
-
-  (into [1 2 3] [4 5])
-
-
-  (generate-reverse-random-counterpoint-above :c haydn))
-
-
-  ;
 
 

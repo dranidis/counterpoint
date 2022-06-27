@@ -4,7 +4,7 @@
             [counterpoint.first-species :refer [evaluate-species
                                                 first-species-rules? get-harmonic-intervals]]
             [counterpoint.first-species-type :refer [make-first-species]]
-            [counterpoint.generate-first-species :refer [generate-reverse-random-counterpoint-above generate-reverse-random-counterpoint-below]]
+            [counterpoint.generate-first-species :refer [generate-reverse-random-counterpoint]]
             [counterpoint.intervals :refer [P1]]
             [counterpoint.lilypond :refer [first-species->lily]]
             [counterpoint.melody :refer [make-melody melodic-intervals]]
@@ -80,24 +80,31 @@
   (println (evaluate-species species))
 
 
+  
+
+
+  (def position :below)
   (defn generate-species-eval [cf]
-    (let [cp (generate-reverse-random-counterpoint-below :c cf)
-          species (make-first-species cf cp :below)
+    (let [cp (generate-reverse-random-counterpoint :below :c cf)
+          species (make-first-species cf cp position)
           score (evaluate-species species)]
       [species score]))
 
-  (def species100 (map (fn [_] (generate-species-eval fux-g)) (range 100)))
+  (def species100 (map (fn [_] (generate-species-eval mozart-c1)) (range 100)))
 
   (def unique-sorted-species100 (sort #(> (second %1) (second %2))
                                       (into [] (into #{} species100))))
-
-
-
-  (def n 2)
+  (def n 0)
   (count unique-sorted-species100)
-  (first-species->lily (first (nth unique-sorted-species100 n)) "treble_8")
-  (evaluate-species (first (nth unique-sorted-species100 n)))
+  (first-species->lily (first (nth unique-sorted-species100 n))
+                       (if (= position :above) "treble" "treble_8"))
+  (println (evaluate-species (first (nth unique-sorted-species100 n))))
   (sh/sh "timidity" "resources/temp.midi")
+
+
+
+
+
 
   (first-species->lily fux-d-below "treble_8")
 
@@ -107,13 +114,14 @@
 
   fux-a
   (let [cf salieri
-        cp (generate-reverse-random-counterpoint-below :c cf)
-        species (make-first-species cf cp :below)
+        cp (generate-reverse-random-counterpoint :above :c cf)
+        species (make-first-species cf cp :above)
         ;; _ (println cp)
         _ (println "RULES " (first-species-rules? species))
         _ (println "EVAL  " (evaluate-species species))]
-    (first-species->lily species  "treble_8"))
-
+    (first-species->lily species
+                        ;;  "treble_8"
+                         ))
 
   (sh/sh "timidity" "resources/temp.midi")
   ;; (sh/sh "timidity" "resources/temp.mid")
