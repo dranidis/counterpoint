@@ -82,10 +82,12 @@
 (def f#3 (make-note :f 3 :sharp))
 (def f#4 (make-note :f 4 :sharp))
 
+(def g1 (make-note :g 1))
 (def g2 (make-note :g 2))
 (def g3 (make-note :g 3))
 (def g4 (make-note :g 4))
 
+(def g#1 (make-note :g 1 :sharp))
 (def g#2 (make-note :g 2 :sharp))
 (def g#3 (make-note :g 3 :sharp))
 (def g#4 (make-note :g 4 :sharp))
@@ -93,6 +95,7 @@
 
 (def g5 (make-note :g 5))
 
+(def a2 (make-note :a 2))
 (def a3 (make-note :a 3))
 (def a4 (make-note :a 4))
 (def a5 (make-note :a 5))
@@ -101,6 +104,7 @@
 (def bb4 (make-note :b 4 :flat))
 (def bb5 (make-note :b 5 :flat))
 
+(def b2 (make-note :b 2))
 (def b3 (make-note :b 3))
 (def b#3 (make-note :b 3 :sharp))
 

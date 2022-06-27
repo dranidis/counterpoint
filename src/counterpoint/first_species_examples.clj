@@ -1,6 +1,6 @@
 (ns counterpoint.first-species-examples
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [fux-d haydn-a mozart-c1 mozart-c2]]
+            [counterpoint.cantus-firmi-examples :refer [fux-d fux-a haydn-a mozart-c1 mozart-c2 salieri]]
             [counterpoint.first-species :refer [evaluate-species
                                                 first-species-rules? get-harmonic-intervals]]
             [counterpoint.first-species-type :refer [make-first-species]]
@@ -15,6 +15,14 @@
 
 (def fux-d-above (make-first-species fux-d-cp-above fux-d :above))
 (def fux-d-below (make-first-species fux-d-cp-below fux-d :below))
+
+(def fux-a-cp-below (make-melody n/a4 n/c4 n/b4 n/f2
+                                 n/a3 n/g2 n/f2 n/g2
+                                 n/f2 n/e2 n/g#2 n/a3))
+(def fux-a-below (make-first-species fux-a-cp-below fux-a :below))
+(first-species->lily fux-a-below "treble_8")
+(evaluate-species fux-a-below)
+;; (sh/sh "timidity" "resources/temp.midi")
 
 (evaluate-species fux-d-above)
 (evaluate-species fux-d-below)
@@ -64,7 +72,7 @@
 
   (first-species-rules? species)
 
-  (def cf haydn-a)
+  (def cf fux-d)
   (def cp (generate-reverse-random-counterpoint-above :c cf))
   (def species  (make-first-species cf cp :above))
 
@@ -78,27 +86,17 @@
           score (evaluate-species species)]
       [species score]))
 
-  (def species100 (map (fn [_] (generate-species-eval fux-d)) (range 100)))
+  (def species100 (map (fn [_] (generate-species-eval salieri)) (range 100)))
 
-  (def uniquespecies100 (into [] (into #{} species100)))
+  (def unique-sorted-species100 (sort #(> (second %1) (second %2))
+                                      (into [] (into #{} species100))))
 
-  (count uniquespecies100)
 
 
-  (def best-of-100 (first (first (filter #(= (second %) (apply max (map second uniquespecies100))) uniquespecies100))))
-
-  (defn nth-of-best [n]
-    (first (nth (filter #(= (second %) (apply max (map second uniquespecies100))) uniquespecies100) n)))
-
-  (def worst-of-100 (first (first (filter #(= (second %) (apply min (map second species100))) species100))))
-
-  (def n 3)
-  (first-species->lily (nth-of-best n) "treble_8")
-  (evaluate-species (nth-of-best n))
-
-  (first-species->lily (first (nth uniquespecies100 2)) "treble_8")
-  (evaluate-species (first (nth uniquespecies100 2)))
-
+  (def n 20)
+  (count unique-sorted-species100)
+  (first-species->lily (first (nth unique-sorted-species100 n)) "treble_8")
+  (evaluate-species (first (nth unique-sorted-species100 n)))
   (sh/sh "timidity" "resources/temp.midi")
 
   (first-species->lily fux-d-below "treble_8")
@@ -107,10 +105,11 @@
   (first-species->lily worst-of-100)
   (evaluate-species worst-of-100)
 
-
-  (let [cf mozart-c2
+  fux-a
+  (let [cf fux-a
         cp (generate-reverse-random-counterpoint-below :c cf)
         species (make-first-species cf cp :below)
+        _ (println cp)
         _ (println "RULES " (first-species-rules? species))
         _ (println "EVAL  " (evaluate-species species))]
     (first-species->lily species  "treble_8"))
