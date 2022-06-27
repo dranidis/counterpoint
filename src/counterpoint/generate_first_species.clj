@@ -26,6 +26,8 @@
       :else :no-leap-low)))
 
 ;; TODO avoid dim5 in melody of leaps or at changing direction
+(def harmonic-repetition-limit 3)
+
 (defn next-reverse-candidates [position key melody m36s previous-melody-note previous-cantus-note next-cantus-note]
   (let [next-melodic-intervals
         (case (melody-reverse-leap melody)
@@ -51,8 +53,8 @@
           (map #(* % (if (= position :above) 1 -1))
                (filter (fn [i] (or (not= (get m36s :remaining-cantus-size) 1)
                                    (and (not= i 6) (not= i 3)))) ;; don't use a 6th at the beginning
-                       (cond (= 3 (get m36s :thirds)) [1 5 6]
-                             (= 3 (get m36s :sixths)) [1 3 5]
+                       (cond (= harmonic-repetition-limit (get m36s :thirds)) [1 5 6]
+                             (= harmonic-repetition-limit (get m36s :sixths)) [1 3 5]
                              :else [1 3 5 6]))))
 
         _ (println "next-harmonic-intervals" next-harmonic-intervals)
@@ -71,7 +73,21 @@
                                         (interval mc next-cantus-note)))]
                      (not (or (= :aug int-quality)
                               (= :dim int-quality))))))
+         
          (filter #((set next-harmonic-candidates) (get-nooctave %)))
+         (filter (fn [mc]
+                   (let [int-distance (get-interval
+                                       (if (= position :above)
+                                         (interval next-cantus-note mc)
+                                         (interval mc next-cantus-note)))
+                         harmonic-repetitions (case int-distance
+                                                3 (get m36s :thirds)
+                                                6 (get m36s :sixths)
+                                                10 (get m36s :tens)
+                                                13 (get m36s :thirteens)
+                                                0)
+                         _ (println "REP" int-distance harmonic-repetitions)]
+                     (< harmonic-repetitions harmonic-repetition-limit))))
         ;;  (filter #(pos? (get-interval (interval next-cantus-note %)))) ;; only above bass
          (filter #(not (reverse-direct-perfect? previous-cantus-note previous-melody-note next-cantus-note %)))
          (filter #(maximum-range-M10? (append-to-melody melody %)))
@@ -85,7 +101,9 @@
                     position key melody m36s previous-melody previous-cantus cantus-note)
         _ (println candidates)
         current (rand-nth candidates)
-        m36' (case (get-interval (interval cantus-note current))
+        m36' (case (get-interval (if (= position :above)
+                                   (interval cantus-note current)
+                                   (interval current cantus-note)))
                3 (-> m36s (update :thirds inc) (assoc :sixths 0) (assoc :tens 0) (assoc :thirteens 0))
                6 (-> m36s (update :sixths inc) (assoc :thirds 0) (assoc :tens 0) (assoc :thirteens 0))
                10 (-> m36s (update :tens inc) (assoc :thirds 0) (assoc :sixths 0) (assoc :thirteens 0))

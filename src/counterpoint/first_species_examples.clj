@@ -101,7 +101,9 @@
         _ (println "RULES " (first-species-rules? species))
         _ (println "EVAL  " (evaluate-species species))
         ]
-    (first-species->lily species  "treble_8"))
+    (first-species->lily species  "treble_8")) 
+
+
   (sh/sh "timidity" "resources/temp.midi")
   (sh/sh "timidity" "resources/temp.mid")
 
