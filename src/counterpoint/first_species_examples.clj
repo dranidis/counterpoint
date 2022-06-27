@@ -73,18 +73,31 @@
 
 
   (defn generate-species-eval [cf]
-    (let [cp (generate-reverse-random-counterpoint-above :c cf)
-          species (make-first-species cf cp :above)
+    (let [cp (generate-reverse-random-counterpoint-below :c cf)
+          species (make-first-species cf cp :below)
           score (evaluate-species species)]
       [species score]))
 
   (def species100 (map (fn [_] (generate-species-eval fux-d)) (range 100)))
 
-  (def best-of-100 (first (first (filter #(= (second %) (apply max (map second species100))) species100))))
+  (def uniquespecies100 (into [] (into #{} species100)))
+
+  (count uniquespecies100)
+
+
+  (def best-of-100 (first (first (filter #(= (second %) (apply max (map second uniquespecies100))) uniquespecies100))))
+
+  (defn nth-of-best [n]
+    (first (nth (filter #(= (second %) (apply max (map second uniquespecies100))) uniquespecies100) n)))
+
   (def worst-of-100 (first (first (filter #(= (second %) (apply min (map second species100))) species100))))
 
-  (first-species->lily best-of-100)
-  (evaluate-species best-of-100)
+  (def n 3)
+  (first-species->lily (nth-of-best n) "treble_8")
+  (evaluate-species (nth-of-best n))
+
+  (first-species->lily (first (nth uniquespecies100 2)) "treble_8")
+  (evaluate-species (first (nth uniquespecies100 2)))
 
   (sh/sh "timidity" "resources/temp.midi")
 
@@ -99,16 +112,15 @@
         cp (generate-reverse-random-counterpoint-below :c cf)
         species (make-first-species cf cp :below)
         _ (println "RULES " (first-species-rules? species))
-        _ (println "EVAL  " (evaluate-species species))
-        ]
-    (first-species->lily species  "treble_8")) 
+        _ (println "EVAL  " (evaluate-species species))]
+    (first-species->lily species  "treble_8"))
 
 
   (sh/sh "timidity" "resources/temp.midi")
-  (sh/sh "timidity" "resources/temp.mid")
+  ;; (sh/sh "timidity" "resources/temp.mid")
 
 
-  
+
 
   (get-harmonic-intervals species)
 
