@@ -130,14 +130,29 @@
                      [(get-counter species) (get-cantus species)])]
     (get-harmonic-intervals-iter [] (first low) (first high) (rest low) (rest high))))
 
+
+(defn simultaneous-leaps [ca-ints cp-ints]
+  (if (empty? ca-ints)
+    0
+    (+ (if (and (> (Math/abs (get-interval (first ca-ints))) 3)
+                (> (Math/abs (get-interval (first cp-ints))) 3))
+         1
+         0)
+       (simultaneous-leaps (rest ca-ints) (rest cp-ints)))))
+
 (defn evaluate-species [species]
   (let [harm-int (rest (remove-last (get-harmonic-intervals species)))
         [p1-count p8-count p5-count] (map (fn [int]
                                             (count (filter #(= int %) harm-int)))
                                           [P1 P8 P5])
+        cp-ints (melodic-intervals (get-counter species))
+        ca-ints (melodic-intervals (get-cantus species))
+        simult-leaps (simultaneous-leaps ca-ints cp-ints)
+
         score (+ (* -10 p1-count)
                  (* -5 p8-count)
-                 (* -2 p5-count))
+                 (* -2 p5-count)
+                 (* -20 simult-leaps))
         melody-s (melody-score (get-counter species))]
     (float (/ (+ score melody-s) (count (get-cantus species))))))
 ;; avoid consecutive perfect harmonic intervals

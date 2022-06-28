@@ -18,24 +18,23 @@
 
 (defn- note->lily [duration note]
   (str (if (or (= (get-note note) :a)
-          (= (get-note note) :b))
-    (str (single-note->lily note)
-         (case (get-octave note)
-           0 ",,,"
-           1 ",,"
-           2 ","
-           3 ""
-           4 "'"
-           5 "''"))
-    (str (single-note->lily note)
-         (case (get-octave note)
-           0 ",,"
-           1 ","
-           2 ""
-           3 "'"
-           4 "''"
-           5 "'''"))
-    ) duration))
+               (= (get-note note) :b))
+         (str (single-note->lily note)
+              (case (get-octave note)
+                0 ",,,"
+                1 ",,"
+                2 ","
+                3 ""
+                4 "'"
+                5 "''"))
+         (str (single-note->lily note)
+              (case (get-octave note)
+                0 ",,"
+                1 ","
+                2 ""
+                3 "'"
+                4 "''"
+                5 "'''"))) duration))
 
 (defn- note->lily-relative [note previous]
   (let [interval-from-previous (get-interval (interval previous note))]
@@ -64,45 +63,71 @@
 (defn fixed-melody->lily [duration [note & notes]]
   (apply str (fixed-to-lily-iter duration note notes)))
 
-(defn first-species->lily 
-  ([species] (first-species->lily species "treble")) 
-  ([species clef] 
-  (let [cantus (get-cantus species)
-        counter (get-counter species)
-        position (get-position species)]
-    (spit "resources/temp.ly"
-          (str
-           "\\score {
+(def midi-instrument "acoustic grand")
+
+(defn melody->lily
+  ([melody] (melody->lily melody "treble"))
+  ([melody clef]
+
+   (spit "resources/temp.ly"
+         (str
+          "\\score {
   \\new Staff <<
             \\clef \"" clef "\"\n
             \\tempo 2 = 120\n"
-            
-           "\\set Staff.midiInstrument = #\"voice oohs\"\n"
 
-           "  \\new Voice = \"first\"
+          "\\set Staff.midiInstrument = #\"" midi-instrument "\"\n"
+
+          "  \\new Voice = \"first\"
      { \\voiceOne "
-           (if (= position :above)
-             (fixed-melody->lily 1 counter)
-             (fixed-melody->lily 1 cantus))
+          (fixed-melody->lily 1 melody)
+          "}
+   >>
+  \\layout { }
+  \\midi { }
+}
+"))
+   (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
 
-           "}
+(defn first-species->lily
+  ([species] (first-species->lily species "treble"))
+  ([species clef]
+   (let [cantus (get-cantus species)
+         counter (get-counter species)
+         position (get-position species)]
+     (spit "resources/temp.ly"
+           (str
+            "\\score {
+  \\new Staff <<
+            \\clef \"" clef "\"\n
+            \\tempo 2 = 120\n"
+
+            "\\set Staff.midiInstrument = #\"" midi-instrument "\"\n"
+
+            "  \\new Voice = \"first\"
+     { \\voiceOne "
+            (if (= position :above)
+              (fixed-melody->lily 1 counter)
+              (fixed-melody->lily 1 cantus))
+
+            "}
   \\new Voice= \"second\"
      { \\voiceTwo "
-           (if (= position :above)
-             (fixed-melody->lily 1 cantus)
-             (fixed-melody->lily 1 counter))
-           "}
+            (if (= position :above)
+              (fixed-melody->lily 1 cantus)
+              (fixed-melody->lily 1 counter))
+            "}
   \\figures {"
-           (figured-bass species)
+            (figured-bass species)
 
 
-           "}
+            "}
  >>
   \\layout { }
   \\midi { }
 }
 "))
-    (sh/sh "lilypond" "-o" "resources" "resources/temp.ly"))))
+     (sh/sh "lilypond" "-o" "resources" "resources/temp.ly"))))
 
 
 (defn end-to-1 [melody]
@@ -116,8 +141,8 @@
           (str
            "\\score {
   \\new Staff <<
-           \\tempo 2 = 70
-           \\set Staff.midiInstrument = #\"voice oohs\"\n"
+           \\tempo 2 = 90
+           \\set Staff.midiInstrument = #\"" midi-instrument "\"\n"
 
            "  \\new Voice = \"first\"
      { \\voiceOne "

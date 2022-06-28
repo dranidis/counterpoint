@@ -11,9 +11,34 @@
 
 (def haydn (make-melody n/d3 n/e3 n/f3 n/d3 n/a4 n/f3 n/e3 n/g3 n/f3 n/e3 n/d3))
 (def haydn-a (make-melody n/a3 n/c3 n/b3 n/e3 n/c3 n/f3 n/d3 n/e3 n/c3 n/b3 n/a3))
-(def salieri (make-melody n/c3 n/f3 n/e3 n/a4 n/g3 n/f3 n/e3 n/d3 n/c3))
+(def salieri-c (make-melody n/c3 n/f3 n/e3 n/a4 n/g3 n/f3 n/e3 n/d3 n/c3))
+(def salieri-d (make-melody n/d3 n/e3 n/f3 n/d3 n/a4 n/e3 n/f3 n/d3 n/c#3 n/d3))
 
 (def mozart-c1 (make-melody n/c3 n/g3 n/e3 n/a4 n/g3 n/c3 n/f3 n/d3 n/e3 n/c3 n/d3 n/c3))
 (def mozart-c2 (make-melody n/c3 n/f3 n/e3 n/d3 n/g3 n/f3 n/e3 n/a4 n/d3 n/g3 n/c3 n/e3 n/f3 n/e3 n/d3 n/c3))
 
 
+(def fetis-c (make-melody n/c3 n/d3 n/e3 n/c3
+                          n/g3 n/f3 n/e3 n/a4
+                          n/g3 n/c3 n/d3 n/f3
+                          n/e3 n/d3 n/c3))
+
+(def cf-c (make-melody n/c3 n/d3 n/f3
+                       n/e3 n/c3 n/g3
+                       n/f3 n/e3 n/d3 
+                       n/c3))
+
+(def cf-a (make-melody n/a3 n/b3 n/c3
+                       n/a3 n/f3 n/e3
+                       n/d3 n/e3 n/c3
+                       n/b3 n/a3))
+
+(def albrechtsberger-f (make-melody n/f3 n/g3 n/c3
+                                    n/a4 n/f3 n/d3
+                                    n/bb4 n/a4 n/g3 n/f3)) ;; should be in the key of f
+
+(def albrechtsberger-d (make-melody n/d3 n/a4
+                                    n/e3 n/f3
+                                    n/d3 n/bb4
+                                    n/g3 n/a4
+                                    n/f3 n/e3 n/d3)) ;; should be in the key of f
