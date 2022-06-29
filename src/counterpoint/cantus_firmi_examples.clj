@@ -46,3 +46,7 @@
 (def boulanger-g (make-melody n/g3 n/f#3 n/g3
                               n/e3 n/d3 n/b3 n/c3 n/d3
                               n/b3 n/a3 n/g2)) ;; key of g
+
+(def boulanger-e (make-melody n/e3 n/c4 n/g3
+                              n/a4 n/f#3 n/d3 n/e3 
+                              n/g3 n/f#3 n/e3)) ;; key of g

@@ -2,7 +2,7 @@
   (:require [clojure.java.shell :as sh]
             [counterpoint.cantus-firmi-examples :refer [albrechtsberger-d
                                                         albrechtsberger-f
-                                                        boulanger-g cf-a cf-c fetis-c fux-a fux-d haydn-a salieri-c salieri-d]]
+                                                        boulanger-e boulanger-g cf-a cf-c fetis-c fux-a fux-d haydn-a salieri-c salieri-d]]
             [counterpoint.first-species :refer [evaluate-species
                                                 first-species-rules?]]
             [counterpoint.first-species-type :refer [make-first-species]]
@@ -10,8 +10,7 @@
             [counterpoint.lilypond :refer [first-species->lily melody->lily]]
             [counterpoint.melody :refer [make-melody melodic-intervals
                                          transpose]]
-            [counterpoint.notes :as n]
-            [counterpoint.rest :as r]))
+            [counterpoint.notes :as n]))
 
 (def fux-d-cp-above (make-melody n/a4 n/a4 n/g3 n/a4 n/b4 n/c4 n/c4 n/b4 n/d4 n/c#4 n/d4))
 (def fux-d-cp-below (make-melody n/d2 n/d2 n/a3 n/f2 n/e2 n/d2 n/f2 n/c3 n/d3 n/c#3 n/d3))
@@ -78,7 +77,7 @@
 (evaluate-species shubert-first-species-above-salieri-d)
 (evaluate-species shubert-first-species-below-salieri-c)
 
-(def fetis-first-species (make-first-species 
+(def fetis-first-species (make-first-species
                           fetis-c
                           (make-melody n/g3 n/f3 n/g3
                                        n/a4 n/b4 n/d4 n/c4
@@ -86,8 +85,8 @@
                                        n/d4 n/a4 n/c4
                                        n/b4 n/c4)
                           :above))
-(first-species->lily fetis-first-species "treble") 
-(sh/sh "timidity" "resources/temp.midi")
+(first-species->lily fetis-first-species "treble")
+;; (sh/sh "timidity" "resources/temp.midi")
 
 
 (melody->lily fetis-c)
@@ -96,8 +95,9 @@
 (melody->lily albrechtsberger-f)
 (melody->lily albrechtsberger-d)
 (melody->lily boulanger-g)
+(melody->lily boulanger-e)
 
-(def boulanger-g-ex-above 
+(def boulanger-g-ex-above
   (make-first-species boulanger-g
                       (make-melody
                        n/d4 n/e4 n/d4
@@ -106,16 +106,28 @@
                        n/f#3 n/g3)
                       :above))
 (first-species->lily boulanger-g-ex-above "treble")
-(sh/sh "timidity" "resources/temp.midi")
 
-(def exercise-cf-c 
+(def boulanger-e-ex-above
+  (make-first-species boulanger-e
+                      (make-melody
+                       n/e4 n/e4 n/g4
+                       n/c4 n/d4 n/d4
+                       n/c4 n/b4
+                       n/d#4 n/e4)
+                      :above))
+(first-species->lily boulanger-e-ex-above "treble")
+(first-species-rules? boulanger-e-ex-above)
+(evaluate-species boulanger-e-ex-above)
+;; (sh/sh "timidity" "resources/temp.midi")
+
+(def exercise-cf-c
   (make-first-species cf-c
-                      
-                       (make-melody
-                        n/c4 n/b4  n/d4 
-                        n/e4
-                         n/a4 n/b4 n/a4 n/c4
-                                 n/b4 n/c4)
+
+                      (make-melody
+                       n/c4 n/b4  n/d4
+                       n/e4
+                       n/a4 n/b4 n/a4 n/c4
+                       n/b4 n/c4)
                       :above))
 (first-species->lily exercise-cf-c "treble")
 (evaluate-species exercise-cf-c)
@@ -125,13 +137,13 @@
                       (make-melody
                        n/a4 n/g3  n/e3 n/a4
                        n/a4 n/c4 n/f4 n/e4
-                       n/e3 
+                       n/e3
                        n/g#3 n/a4)
                       :above))
 (first-species->lily exercise-cf-a "treble")
 (first-species-rules? exercise-cf-a)
 (evaluate-species exercise-cf-c)
-(sh/sh "timidity" "resources/temp.midi")
+;; (sh/sh "timidity" "resources/temp.midi")
 
 (comment
   (def species (let [counterpoint-melody
@@ -182,12 +194,17 @@
           score (evaluate-species species)]
       [species score]))
 
-  (def species100 (map (fn [_] (generate-species-eval boulanger-g)) (range 100)))
+  (def species100 (map (fn [_] (generate-species-eval boulanger-e)) (range 100)))
 
   (def unique-sorted-species100 (sort #(> (second %1) (second %2))
                                       (into [] (into #{} species100))))
-  
-  
+
+  (def n 5) ;; number of best is 0
+  (count unique-sorted-species100)
+  (first-species->lily (first (nth unique-sorted-species100 n))
+                       (if (= position :above) "treble" "treble_8"))
+  (println (evaluate-species (first (nth unique-sorted-species100 n))))
+  ;; (sh/sh "timidity" "resources/temp.midi")
 
 
 
