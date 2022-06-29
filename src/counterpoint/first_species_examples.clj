@@ -1,21 +1,17 @@
 (ns counterpoint.first-species-examples
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [fetis-c fux-a fux-d
-                                                        haydn-a salieri-c
-                                                        salieri-d
-                                                        cf-c cf-a
+            [counterpoint.cantus-firmi-examples :refer [albrechtsberger-d
                                                         albrechtsberger-f
-                                                        albrechtsberger-d]]
+                                                        boulanger-g cf-a cf-c fetis-c fux-a fux-d haydn-a salieri-c salieri-d]]
             [counterpoint.first-species :refer [evaluate-species
                                                 first-species-rules?]]
-            [counterpoint.first-species-type :refer [get-cantus get-counter
-                                                     make-first-species]]
+            [counterpoint.first-species-type :refer [make-first-species]]
             [counterpoint.generate-first-species :refer [generate-reverse-random-counterpoint]]
-            [counterpoint.intervals :refer [get-interval]]
             [counterpoint.lilypond :refer [first-species->lily melody->lily]]
             [counterpoint.melody :refer [make-melody melodic-intervals
                                          transpose]]
-            [counterpoint.notes :as n]))
+            [counterpoint.notes :as n]
+            [counterpoint.rest :as r]))
 
 (def fux-d-cp-above (make-melody n/a4 n/a4 n/g3 n/a4 n/b4 n/c4 n/c4 n/b4 n/d4 n/c#4 n/d4))
 (def fux-d-cp-below (make-melody n/d2 n/d2 n/a3 n/f2 n/e2 n/d2 n/f2 n/c3 n/d3 n/c#3 n/d3))
@@ -70,12 +66,13 @@
                                   n/c#4
                     ;;    n/c4 n/c4 ;; avoiding the aug 4
                                   n/d4 n/f4 n/e4 n/d4) -1)
-                      :above))
+                      :below))
 
 (first-species->lily shubert-first-species-above-salieri-c "treble")
 (first-species->lily shubert-first-species-below-salieri-c "treble")
 (first-species->lily shubert-first-species-above-salieri-d "treble")
 (first-species->lily shubert-first-species-below-salieri-d "treble")
+
 
 (evaluate-species shubert-first-species-above-salieri-c)
 (evaluate-species shubert-first-species-above-salieri-d)
@@ -98,6 +95,18 @@
 (melody->lily cf-a)
 (melody->lily albrechtsberger-f)
 (melody->lily albrechtsberger-d)
+(melody->lily boulanger-g)
+
+(def boulanger-g-ex-above 
+  (make-first-species boulanger-g
+                      (make-melody
+                       n/d4 n/e4 n/d4
+                       n/g4 n/f#4 n/d4
+                       n/c4 n/a4 n/d3
+                       n/f#3 n/g3)
+                      :above))
+(first-species->lily boulanger-g-ex-above "treble")
+(sh/sh "timidity" "resources/temp.midi")
 
 (def exercise-cf-c 
   (make-first-species cf-c
@@ -168,22 +177,17 @@
   ;;
   (def position :above)
   (defn generate-species-eval [cf]
-    (let [cp (generate-reverse-random-counterpoint position :c cf)
+    (let [cp (generate-reverse-random-counterpoint position :g cf)
           species (make-first-species cf cp position)
           score (evaluate-species species)]
       [species score]))
 
-  (def species100 (map (fn [_] (generate-species-eval cf-a)) (range 100)))
+  (def species100 (map (fn [_] (generate-species-eval boulanger-g)) (range 100)))
 
   (def unique-sorted-species100 (sort #(> (second %1) (second %2))
                                       (into [] (into #{} species100))))
-  (def n 6) ;; number of best is 0
-  (count unique-sorted-species100)
-  (first-species->lily (first (nth unique-sorted-species100 n))
-                       (if (= position :above) "treble" "treble_8"))
-  (println (evaluate-species (first (nth unique-sorted-species100 n))))
-  (sh/sh "timidity" "resources/temp.midi")
-
+  
+  
 
 
 
