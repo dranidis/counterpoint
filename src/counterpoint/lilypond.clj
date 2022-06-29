@@ -6,7 +6,8 @@
             [counterpoint.first-species-type :refer [get-cantus get-counter
                                                      get-position]]
             [counterpoint.intervals :refer [get-interval]]
-            [counterpoint.notes :refer [get-acc get-note get-octave]]))
+            [counterpoint.notes :refer [get-acc get-note get-octave]]
+            [counterpoint.rest :refer [rest?]]))
 
 (defn- single-note->lily [note]
   (str " "
@@ -17,7 +18,9 @@
          "")))
 
 (defn- note->lily [duration note]
-  (str (if (or (= (get-note note) :a)
+  (str (if (rest? note)
+         "r"
+         (if (or (= (get-note note) :a)
                (= (get-note note) :b))
          (str (single-note->lily note)
               (case (get-octave note)
@@ -34,7 +37,7 @@
                 2 ""
                 3 "'"
                 4 "''"
-                5 "'''"))) duration))
+                5 "'''")))) duration))
 
 (defn- note->lily-relative [note previous]
   (let [interval-from-previous (get-interval (interval previous note))]

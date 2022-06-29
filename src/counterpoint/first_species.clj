@@ -6,18 +6,21 @@
                                             make-interval P1 P8 P8- P5]]
             [counterpoint.melody :refer [last-interval melodic-intervals remove-last melody-score]]
             [counterpoint.motion :refer [type-of-motion]]
-            [counterpoint.utils :refer [rule-warning]]))
+            [counterpoint.utils :refer [rule-warning]]
+            [counterpoint.rest :refer [rest?]]))
 
 (defn correct-interval [note1 note2]
-  (let [harmony (simple-interval note1 note2)
-        interval (Math/abs (get-interval harmony))]
-    (case (get-quality harmony)
-      :perfect (not= interval 4)
-      :minor (or (= interval 3)
-                 (= interval 6))
-      :major (or (= interval 3)
-                 (= interval 6))
-      false)))
+  (if (or (rest? note1) (rest? note2))
+    true
+    (let [harmony (simple-interval note1 note2)
+          interval (Math/abs (get-interval harmony))]
+      (case (get-quality harmony)
+        :perfect (not= interval 4)
+        :minor (or (= interval 3)
+                   (= interval 6))
+        :major (or (= interval 3)
+                   (= interval 6))
+        false))))
 
 (defn correct-intervals-iter [position note1 note2 notes1 notes2]
   (and (if (= position :above)
@@ -62,9 +65,11 @@
                   #(str "Does not approach the ending by contrary motion and leading tone " last-cantus last-counter))))
 
 (defn direct-motion-to-perfect? [n1 n2 next1 next2]
-  (and
-   (= :similar (type-of-motion n1 n2 next1 next2))
-   (= (get-quality (interval next1 next2)) :perfect)))
+  (if (or (rest? n1) (rest? n2) (rest? next1) (rest? next2))
+    false
+    (and
+     (= :similar (type-of-motion n1 n2 next1 next2))
+     (= (get-quality (interval next1 next2)) :perfect))))
 
 (defn- no-direct-motion-to-perfect-iter [n1 n2 notes1 notes2]
   (if (empty? notes1)
@@ -86,12 +91,14 @@
       (no-direct-motion-to-perfect-iter (first counter) (first cantus) (rest counter) (rest cantus)))))
 
 (defn- allowed-melodic-interval [interval]
-  (rule-warning
-   (or (<= (Math/abs (get-interval interval)) 5)
-       (= interval m6)
-       (= interval P8)
-       (= interval P8-))
-   #(str "Not allowed interval in melody: " interval)))
+  (if (= interval :rest-interval)
+    true
+    (rule-warning
+     (or (<= (Math/abs (get-interval interval)) 5)
+         (= interval m6)
+         (= interval P8)
+         (= interval P8-))
+     #(str "Not allowed interval in melody: " interval))))
 
 (Math/abs 3)
 

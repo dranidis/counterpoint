@@ -1,8 +1,8 @@
 (ns counterpoint.core
-  (:require [counterpoint.intervals :refer [get-interval get-quality
-                                            make-interval distance-in-semitones]]
+  (:require [counterpoint.intervals :refer [distance-in-semitones get-interval
+                                            get-quality make-interval]]
             [counterpoint.notes :refer [get-note get-octave note->num]]
-            ))
+            [counterpoint.rest :refer [rest?]]))
 
 
 (defn note->number [note]
@@ -31,7 +31,9 @@
     nil))
 
 (defn interval [note1 note2]
-  (let [distance (- (note->number note2) (note->number note1))
+  (if (or (rest? note1) (rest? note2))
+    :rest-interval
+    (let [distance (- (note->number note2) (note->number note1))
         octave-distance (Math/abs (if (> distance 0)
                                     (inc (mod distance 7))
                                     (dec (mod distance -7))))
@@ -42,7 +44,7 @@
     (make-interval (if (>= distance 0)
                      (inc distance)
                      (dec distance))
-                   quality)))
+                   quality))))
 
 (defn simple-interval [note1 note2]
   (let [compound (interval note1 note2)

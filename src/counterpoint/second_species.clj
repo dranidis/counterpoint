@@ -10,7 +10,8 @@
             [counterpoint.melody :refer [double-melody remove-last]]
             [counterpoint.motion :refer [type-of-motion]]
             [counterpoint.notes :as n]
-            [counterpoint.utils :refer [rule-warning]]))
+            [counterpoint.utils :refer [rule-warning]]
+            [counterpoint.rest :refer [rest?]]))
 
 (defn make-second-species [cantus-firmus counterpoint-melody arg3]
   (make-first-species cantus-firmus counterpoint-melody arg3))
@@ -58,13 +59,15 @@
 
 
 (defn passing-tone [[n1 n2 n3]]
-  (let [note1 (note->number n1)
-        note2 (note->number n2)
-        note3 (note->number n3)]
-    (or (and (= (inc note1) note2)
-             (= (inc note2) note3))
-        (and (= note2 (inc note3))
-             (= note1 (inc note2))))))
+  (if (or (rest? n1) (rest? n2) (rest? n3))
+    false
+    (let [note1 (note->number n1)
+          note2 (note->number n2)
+          note3 (note->number n3)]
+      (or (and (= (inc note1) note2)
+               (= (inc note2) note3))
+          (and (= note2 (inc note3))
+               (= note1 (inc note2)))))))
 
 (passing-tone [n/g4 n/f4 n/e4])
 
@@ -88,7 +91,7 @@
                                         (rest-bars rest-cantus)
                                         (rest-bars rest-counter)))))
 
-(defn- correct-upbeat-intervals [species]
+(defn correct-upbeat-intervals [species]
   (let [double-cantus (remove-last (double-melody (get-cantus species)))
         counter (get-counter species)
         position (get-position species)]
@@ -101,9 +104,11 @@
                                      (rest-bars counter)))))
 
 (defn- undisguised-direct-motion-of-downbeats-to-perfect [[ca1 ca2 ca3] [cou1 cou2 cou3]]
-  (and (direct-motion-to-perfect? ca1 cou1 ca3 cou3)
+  (if (or (rest? ca1) (rest? cou1))
+    false
+    (and (direct-motion-to-perfect? ca1 cou1 ca3 cou3)
        (not (and (= :contrary (type-of-motion ca2 cou2 ca3 cou3))
-                 (> (Math/abs (get-interval (interval cou1 cou2))) 3)))))
+                 (> (Math/abs (get-interval (interval cou1 cou2))) 3))))))
 
 (defn- no-undisguised-direct-motion-of-downbeats-to-perfect-iter?
   [cantus-bar counter-bar rest-cantus rest-counter]
@@ -118,7 +123,7 @@
           (rest-bars rest-cantus)
           (rest-bars rest-counter)))))
 
-(defn- no-undisguised-direct-motion-of-downbeats-to-perfect? [species]
+(defn no-undisguised-direct-motion-of-downbeats-to-perfect? [species]
   (let [double-cantus (remove-last (double-melody (get-cantus species)))
         counter (get-counter species)
         position (get-position species)]
