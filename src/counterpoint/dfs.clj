@@ -30,8 +30,12 @@
 ;;   (map #(next-node node %) (candidates node)))
 
 (defn generate-dfs-solutions
-  "Root node representing root state
-   "
+  "Arguments:
+   - root-node node representing root state
+   - candidates is a function receiving a state node and returning a list of 
+   possible actions
+   - next-node is a function receiving a state node and an action and returns the next state node
+   - solution? is a predicate receiving a state node returing true if the state node is a leaf (solution)"
   [root-node candidates next-node solution?]
   (let [children (fn [node]
                    (map #(next-node node %) (candidates node)))
@@ -50,21 +54,24 @@
 (def water-root {:8 0 :5 0 :actions [] :visited #{}})
 
 (defn water-solution? [state]
-  (or (= (get state :8) 2)
-      (= (get state :5) 2)))
+  ;; (println "IS SOLUTION " state)
+  (let [solution? (or (= (get state :8) 1)
+      (= (get state :5) 1))]
+    ;; (println solution?)
+    solution?))
 
 (defn water-candidates [state]
-  (println "STATE" state)
+  ;; (println "AT STATE" state)
   (let [visited (get state :visited)
         jug-state {:8 (get state :8) :5 (get state :5)}
         cand (if (visited jug-state)
                []
                [:fill-1 :empty-1 :fill-2 :empty-2 :pour-1-2 :pour-2-1])]
-    (println "CAND" cand)
+    ;; (println "  CANDIDATES" cand)
     cand))
 
 (defn water-next [state action]
-  (println "FROM" state "ACTION" action)
+  ;; (println "FROM" state "\n  WITH ACTION" action)
   (let [new-state (case action
                     :fill-1 (assoc state :8 8)
                     :empty-1 (assoc state :8 0)
@@ -88,19 +95,19 @@
                                     new-jug2 (- jug2 pour-from-jug2)
                                     new-jug1 (+ jug1 pour-from-jug2)]
                                 (assoc (assoc state :8 new-jug1) :5 new-jug2)))
-        return (update (update new-state :visited #(conj % {:8 (get new-state :8)
-                                                            :5 (get new-state :5)}))
+        return (update (update new-state :visited #(conj % {:8 (get state :8)
+                                                            :5 (get state :5)}))
                        :actions #(conj % action))]
-    (println "NEW STATE" return)
+    ;; (println "  NEW STATE" return)
     return))
 
-;; (-> water-root
-;;     (water-next :fill-1)
-;;     (water-next :pour-1-2)
-;;     (water-next :empty-1)
-;;     (water-next :pour-2-1)
-;;     (water-next :fill-2)
-;;     (water-next :pour-2-1))
+(-> water-root
+    (water-next :fill-1)
+    (water-next :fill-2)
+    (water-next :empty-1)
+    (water-next :pour-2-1)
+    (water-next :fill-2)
+    (water-next :pour-2-1))
 
 (take 1 (generate-dfs-solutions water-root water-candidates water-next water-solution?))
 
