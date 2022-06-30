@@ -1,9 +1,7 @@
 (ns counterpoint.core
   (:require [counterpoint.intervals :refer [distance-in-semitones get-interval
                                             get-quality make-interval]]
-            [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :refer [get-note get-octave note->num]]
-            [counterpoint.notes :as n]
             [counterpoint.rest :refer [rest?]]))
 
 
@@ -22,7 +20,7 @@
   (case octave-distance
     1 (case distance-semitones
         -1 :dim 0 :perfect 1 :aug
-        11 :dim 12 :perfect 13 :augnil)
+        11 :dim 12 :perfect 13 :aug nil)
     2 (case distance-semitones 0 :dim 1 :minor 2 :major 3 :aug nil)
     3 (case distance-semitones 2 :dim 3 :minor 4 :major 5 :aug nil)
     4 (case distance-semitones 4 :dim 5 :perfect 6 :aug nil)

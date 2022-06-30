@@ -4,6 +4,7 @@
             [counterpoint.cantus-firmi-examples :refer [fux-a fux-c fux-d
                                                         fux-e fux-f haydn haydn-a
                                                         mozart-c1 mozart-c2 salieri-c]]
+            [counterpoint.figured-bass :refer [figured-bass-second]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?]]
             [counterpoint.lilypond :refer [second-species->lily]]
             [counterpoint.melody :refer [make-melody melodic-intervals
@@ -12,8 +13,8 @@
             [counterpoint.rest :as rest]
             [counterpoint.second-species :refer [correct-downbeat-intervals
                                                  correct-upbeat-intervals
-                                                 make-second-species no-undisguised-direct-motion-of-downbeats-to-perfect?
-                                                 second-species-rules?]]
+                                                 get-low-high-second make-second-species
+                                                 no-undisguised-direct-motion-of-downbeats-to-perfect? second-species-rules?]]
             [counterpoint.utils :refer [rule-warning]]))
 
 (comment
@@ -202,6 +203,10 @@
                                        n/d4)]
                       (make-second-species fux-d counterpoint-melody :above)))
   
+  (figured-bass-second salzer-fux-d)
+  (partition 2 (first (get-low-high-second salzer-fux-d)))
+(partition 2 (second (get-low-high-second salzer-fux-d)))
+
   (allowed-melodic-intervals? salzer-fux-d)
   (correct-downbeat-intervals salzer-fux-d)
   (correct-upbeat-intervals salzer-fux-d)
@@ -216,5 +221,6 @@
   (sh/sh "timidity" "resources/temp.midi")
 
   (count fux-a)
+  (partition 2 [1 2 3])
 ;
   )

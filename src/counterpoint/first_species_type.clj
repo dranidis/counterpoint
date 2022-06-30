@@ -6,3 +6,10 @@
 (defn get-cantus [[c _ _]] c)
 (defn get-counter [[_ m _]] m)
 (defn get-position [[_ _ p]] p)
+
+(defn get-low-high [species]
+  (let [cantus (get-cantus species)
+        counter (get-counter species)]
+    (if (= (get-position species) :above)
+      [counter cantus]
+      [cantus counter])))

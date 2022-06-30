@@ -16,6 +16,13 @@
 (defn make-second-species [cantus-firmus counterpoint-melody arg3]
   (make-first-species cantus-firmus counterpoint-melody arg3))
 
+(defn get-low-high-second [species]
+  (let [counter (get-counter species)
+        double-cantus (remove-last (double-melody (get-cantus species)))]
+    (if (= (get-position species) :above)
+      [double-cantus counter]
+      [counter double-cantus])))
+
 (defn- downbeats-iter [downbeats-melody rest]
   (cond (empty? rest) downbeats-melody
         (= 1 (count rest)) (into downbeats-melody rest)

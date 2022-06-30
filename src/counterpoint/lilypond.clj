@@ -1,7 +1,7 @@
 (ns counterpoint.lilypond
   (:require [clojure.java.shell :as sh]
             [counterpoint.core :refer [interval]]
-            [counterpoint.figured-bass :refer [figured-bass
+            [counterpoint.figured-bass :refer [figured-bass-first
                                                figured-bass-fourth figured-bass-second]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
                                                      get-position]]
@@ -139,7 +139,7 @@
               (fixed-melody->lily 1 counter))
             "}
   \\figures {"
-            (figured-bass species)
+            (figured-bass-first species)
 
 
             "}
