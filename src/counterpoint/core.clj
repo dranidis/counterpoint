@@ -1,7 +1,9 @@
 (ns counterpoint.core
   (:require [counterpoint.intervals :refer [distance-in-semitones get-interval
                                             get-quality make-interval]]
+            [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :refer [get-note get-octave note->num]]
+            [counterpoint.notes :as n]
             [counterpoint.rest :refer [rest?]]))
 
 
@@ -34,25 +36,27 @@
   (if (or (rest? note1) (rest? note2))
     :rest-interval
     (let [distance (- (note->number note2) (note->number note1))
-        octave-distance (Math/abs (if (> distance 0)
-                                    (inc (mod distance 7))
-                                    (dec (mod distance -7))))
-        distance-semitones (Math/abs (if (> distance 0)
-                                       (mod (distance-in-semitones note1 note2) 12)
-                                       (mod (distance-in-semitones note1 note2) -12)))
-        quality (interval-quality octave-distance distance-semitones)]
-    (make-interval (if (>= distance 0)
-                     (inc distance)
-                     (dec distance))
-                   quality))))
+          octave-distance (Math/abs (if (> distance 0)
+                                      (inc (mod distance 7))
+                                      (dec (mod distance -7))))
+          distance-semitones (Math/abs (if (> distance 0)
+                                         (mod (distance-in-semitones note1 note2) 12)
+                                         (mod (distance-in-semitones note1 note2) -12)))
+          quality (interval-quality octave-distance distance-semitones)]
+      (make-interval (if (>= distance 0)
+                       (inc distance)
+                       (dec distance))
+                     quality))))
 
 (defn simple-interval [note1 note2]
-  (let [compound (interval note1 note2)
-        distance (get-interval compound)]
-    (make-interval (if (> distance 7)
-                     (mod distance 7)
-                     distance)
-                   (get-quality compound))))
+  (if (or (rest? note1) (rest? note2))
+    :rest-interval
+    (let [compound (interval note1 note2)
+          distance (get-interval compound)]
+      (make-interval (if (> distance 7)
+                       (mod distance 7)
+                       distance)
+                     (get-quality compound)))))
 
 
 

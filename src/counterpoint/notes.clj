@@ -108,6 +108,7 @@
 (def b3 (make-note :b 3))
 (def b#3 (make-note :b 3 :sharp))
 
+(def c2 (make-note :c 2))
 (def c3 (make-note :c 3))
 (def c4 (make-note :c 4))
 (def c5 (make-note :c 5))

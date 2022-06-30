@@ -3,8 +3,9 @@
             [counterpoint.first-species-type :refer [get-cantus get-counter
                                                      get-position]]
             [counterpoint.intervals :refer [get-interval]]
-            [counterpoint.melody :refer [double-melody]]
-            [counterpoint.rest :refer [rest?]]))
+            [counterpoint.melody :refer [double-melody insert-to-melody]]
+            [counterpoint.rest :refer [rest?]]
+            [counterpoint.rest :as rest]))
 
 (defn figured-bass-iter [duration low high lows highs]
   (if (or (nil? high)
@@ -41,3 +42,14 @@
                      [counter cantus]
                      [cantus counter])]
     (figured-bass-iter duration (first low) (first high) (rest low) (rest high))))
+
+(defn figured-bass-fourth [species]
+  (let [duration 2
+        cantus (double-melody (get-cantus species))
+        counter (insert-to-melody rest/r (get-counter species))
+        position (get-position species)
+        [high low] (if (= position :above)
+                     [counter cantus]
+                     [cantus counter])]
+    (figured-bass-iter duration (first low) (first high) (rest low) (rest high))))
+

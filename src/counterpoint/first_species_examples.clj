@@ -219,7 +219,7 @@
     (first-species->lily species
                          (if (= position :above) "treble" "treble_8")))
 
-  (sh/sh "timidity" "resources/temp.midi")
+  (sh/sh "timidity" "resources/temp.midi") 
   ;; (sh/sh "timidity" "resources/temp.mid")
 
   ;

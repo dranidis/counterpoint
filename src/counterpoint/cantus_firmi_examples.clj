@@ -50,3 +50,14 @@
 (def boulanger-e (make-melody n/e3 n/c4 n/g3
                               n/a4 n/f#3 n/d3 n/e3 
                               n/g3 n/f#3 n/e3)) ;; key of g
+
+(def bellerman-a (make-melody n/a4 n/g3 n/e3
+                              n/b4 n/d4 n/c4 n/b4
+                              n/c4 n/b4 n/a4))
+
+(def schenker-d (make-melody n/d3 n/e3 n/f3 n/g3 n/a4
+                             n/e3 n/g3 n/f3 n/e3 n/d3))
+
+(def schoenberg-c (make-melody n/c3 n/b3 n/g2 n/a3
+                               n/e2 n/f2 n/a3 n/d2
+                               n/g2 n/f2 n/d2 n/c2))

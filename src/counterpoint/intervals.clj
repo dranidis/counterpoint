@@ -132,6 +132,7 @@
       result)))
 
 
+
 (def P1 (make-interval 1 :perfect))
 (def m2 (make-interval 2 :minor))
 (def M2 (make-interval 2 :major))
@@ -204,4 +205,9 @@
 (def A5- (make-interval -5 :aug))
 (def A6- (make-interval -6 :aug))
 (def A7- (make-interval -7 :aug))
+
+(defn harmonic-consonant? [simple-interval]
+  (not (nil? (#{P1 m3 M3 P5 m6 M6} simple-interval))))
+
+
 
