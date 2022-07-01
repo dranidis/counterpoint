@@ -1,8 +1,10 @@
 (ns counterpoint.first-species
   (:require [counterpoint.core :refer [interval simple-interval]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
-                                                     get-position]]
-            [counterpoint.intervals :refer [get-interval get-quality m6
+                                                     get-position
+                                                     get-low-high]]
+            [counterpoint.intervals :refer [harmonic-consonant?
+                                            get-interval get-quality m6
                                             make-interval P1 P8 P8- P5]]
             [counterpoint.melody :refer [last-interval melodic-intervals remove-last melody-score]]
             [counterpoint.motion :refer [type-of-motion]]
@@ -39,6 +41,11 @@
     (if (not= (count cantus) (count counter))
       (rule-warning false #(println "Wrong size of counterpoint"))
       (correct-intervals-iter position (first cantus) (first counter) (rest cantus) (rest counter)))))
+
+;; (defn correct-intervals [species]
+;;   (let [[low high] (get-low-high species)]
+;;     (every? harmonic-consonant?
+;;             (map simple-interval low high))))
 
 (defn last-interval? [species]
   (let [cantus (get-cantus species)

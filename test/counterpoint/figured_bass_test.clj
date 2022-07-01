@@ -1,11 +1,12 @@
 (ns counterpoint.figured-bass-test
   (:require [clojure.test :refer [deftest is testing]]
-            [counterpoint.cantus-firmi-examples :refer [fux-d salieri-c]]
+            [counterpoint.cantus-firmi-examples :refer [fux-d salieri-c
+                                                        salieri-d]]
             [counterpoint.figured-bass :refer [figured-bass-first
                                                figured-bass-fourth figured-bass-second]]
             [counterpoint.first-species-type :refer [make-first-species]]
             [counterpoint.fourth-species :refer [make-fourth-species]]
-            [counterpoint.melody :refer [make-melody]]
+            [counterpoint.melody :refer [make-melody transpose]]
             [counterpoint.notes :as n]
             [counterpoint.rest :as rest]
             [counterpoint.second-species :refer [make-second-species]]))
@@ -13,13 +14,29 @@
 (deftest figured-bass
 
   (testing "first"
-    (let [shubert-first-species-below-salieri-c
+    (let [shubert-first-species-above-salieri-c
           (make-first-species salieri-c
                               (make-melody
-                               n/c3 n/d3 n/c3 n/c3 n/e3 n/a3 n/a3 n/b3 n/c3)
-                              :below)]
+                               n/e4 n/d4 n/c4 n/c4 n/b4 n/d4 n/g3 n/b4 n/c4)
+                              :above)]
       (is (= "<10>1<6>1<6>1<3>1<3>1<6>1<3>1<6>1<8>1"
-             (figured-bass-first shubert-first-species-below-salieri-c)))))
+             (figured-bass-first shubert-first-species-above-salieri-c)))))
+  
+  (testing "first below"
+    (let [shubert-first-species-below-salieri-d
+          (make-first-species (transpose salieri-d 1)
+                              (transpose (make-melody
+                                          n/d4
+                                          n/c#4
+                    ;;   n/c4 
+                                          n/d4 n/f4
+                                          n/d4 ;;   n/c#4 
+                                          n/c#4
+                    ;;    n/c4 n/c4 ;; avoiding the aug 4
+                                          n/d4 n/f4 n/e4 n/d4) -1)
+                              :below)]
+      (is (= "<8>1<10>1<10>1<6>1<12>1<10>1<10>1<6>1<6>1<8>1"
+             (figured-bass-first shubert-first-species-below-salieri-d)))))
   
   (testing "second"
     (let [salzer-fux-d (let [counterpoint-melody
