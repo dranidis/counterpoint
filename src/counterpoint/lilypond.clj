@@ -62,12 +62,6 @@
           []
           (relative-to-lily-iter duration note (first notes) (rest notes)))))
 
-(defn- fixed-to-lily-iter [duration note notes]
-  (into [(note->lily duration note)]
-        (if (empty? notes)
-          []
-          (fixed-to-lily-iter duration (first notes) (rest notes)))))
-
 (defn- fixed-to-lily-fourth-iter [duration note notes]
   (if (empty? notes)
     [(note->lily (quot duration 2) note)]
@@ -82,15 +76,12 @@
         (into [lily]
               (fixed-to-lily-fourth-iter duration (first notes) (rest notes)))))))
 
-
 (defn relative-melody->lily [duration [note & notes]]
   (apply str (relative-to-lily-iter duration nil note notes)))
 
 (defn fixed-melody->lily [duration notes]
   (apply str
-         (map #(note->lily duration %) notes)
-        ;;  (fixed-to-lily-iter duration note notes)
-         ))
+         (map #(note->lily duration %) notes)))
 
 (defn fixed-melody-fourth->lily [duration [note & notes]]
   (str "r" duration (apply str (fixed-to-lily-fourth-iter duration note notes))))
@@ -143,14 +134,44 @@
               (fixed-melody->lily 1 counter)))
      (figured-bass-first species))))
 
+(defn pattern [p]
+  (let [duration (count p)]
+    (if (#{1 2 4 8 16 32 64 128} duration)
+      (fn [n1 n2] (let [s1 (note->lily duration n1)
+                        s2 (note->lily duration n2)]
+                    (apply str (map #(if (= \a %) s1 s2) p))))
+      (throw (Exception. (str "pattern: " p " has size " duration ". Length must be power of 2"))))))
+
+(defn first-voices-pattern [p species]
+  (let [cantus (get-cantus species)
+        counter (get-counter species)
+        position (get-position species)]
+    (str
+     (voice "first" "voiceOne"
+            (if (= position :above)
+              (apply
+               str
+               (map (pattern p) cantus counter))
+              (apply
+               str
+               (map (pattern p) counter cantus))))
+    ;;  (figured-bass-first species)
+     )))
+
 (defn first-species->lily
-  ([species] (first-species->lily species "treble"))
-  ([species clef]
+  ([species] (first-species->lily species 
+                                  {:clef "treble"
+                                   :pattern ""
+                                   :tempo "2 = 80"}))
+  ([species param]
    (spit "resources/temp.ly"
          (staff
-          clef
-          "2 = 140"
-          (first-voices species)))
+          (get param :clef "treble")
+          (get param :tempo "2 = 80")
+          (let [p (get param :pattern "")]
+            (if (= p "")
+              (first-voices species)
+              (first-voices-pattern p species)))))
    (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
 
 (defn fourth-species->lily

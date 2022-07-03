@@ -1,8 +1,8 @@
 (ns counterpoint.first-species-examples
   (:require [clojure.java.shell :as sh]
             [counterpoint.cantus-firmi-examples :refer [albrechtsberger-d
-                                                        albrechtsberger-f
-                                                        boulanger-e boulanger-g cf-a cf-c fetis-c fux-a fux-d haydn-a salieri-c salieri-d]]
+                                                        boulanger-e boulanger-g
+                                                        cf-a cf-c fetis-c fux-a fux-d haydn-a mozart-c2 salieri-c salieri-d]]
             [counterpoint.figured-bass :refer [figured-bass-first]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?
                                                 evaluate-species
@@ -21,14 +21,19 @@
         _ (println "RULES " (first-species-rules? species))
         _ (println "EVAL  " (evaluate-species species))]
     (first-species->lily species
-                         (if (= position :above) "treble" "treble_8")))
+                         {:clef (if (= position :above) 
+                                  "treble"
+                                  "treble_8")
+                          :pattern "baaabaaa"
+                          :tempo "1 = 80"}))
   ;; (sh/sh "timidity" "resources/temp.midi") 
   (sh/sh "timidity" "resources/temp.mid"))
 
 (comment
-  
-
   (generate-and-play albrechtsberger-d :f :below)
+  (generate-and-play mozart-c2 :c :below)
+
+
 
   (def fux-d-cp-above (make-melody n/a4 n/a4 n/g3 n/a4 n/b4 n/c4 n/c4 n/b4 n/d4 n/c#4 n/d4))
   (def fux-d-cp-below (make-melody n/d2 n/d2 n/a3 n/f2 n/e2 n/d2 n/f2 n/c3 n/d3 n/c#3 n/d3))
@@ -41,9 +46,9 @@
                                    n/f2 n/e2 n/g#2 n/a3))
   (def fux-a-below (make-first-species fux-a-cp-below fux-a :below))
   (def fux-a-above (make-first-species (transpose fux-a-cp-below 1) fux-a :above))
-  (first-species->lily fux-a-above "treble")
-  (first-species->lily fux-a-below "treble_8")
-  (first-species->lily fux-a-below "treble_8")
+  (first-species->lily fux-a-above)
+  (first-species->lily fux-a-below {:clef "treble_8"})
+  (first-species->lily fux-a-below {:clef "treble_8"})
 ;; (sh/sh "timidity" "resources/temp.midi")
   (sh/sh "timidity" "resources/temp.mid")
 
@@ -88,10 +93,10 @@
                                     n/d4 n/f4 n/e4 n/d4) -1)
                         :below))
 
-  (first-species->lily shubert-first-species-above-salieri-c "treble")
-  (first-species->lily shubert-first-species-below-salieri-c "treble")
-  (first-species->lily shubert-first-species-above-salieri-d "treble")
-  (first-species->lily shubert-first-species-below-salieri-d "treble")
+  (first-species->lily shubert-first-species-above-salieri-c {:clef "treble"})
+  (first-species->lily shubert-first-species-below-salieri-c {:clef "treble"})
+  (first-species->lily shubert-first-species-above-salieri-d {:clef "treble"})
+  (first-species->lily shubert-first-species-below-salieri-d {:clef "treble"})
 
 
   (evaluate-species shubert-first-species-above-salieri-c)
@@ -106,7 +111,7 @@
                                          n/d4 n/a4 n/c4
                                          n/b4 n/c4)
                             :above))
-  (first-species->lily fetis-first-species "treble")
+  (first-species->lily fetis-first-species)
 ;; (sh/sh "timidity" "resources/temp.midi")
 
 
@@ -118,7 +123,7 @@
                          n/c4 n/a4 n/d3
                          n/f#3 n/g3)
                         :above))
-  (first-species->lily boulanger-g-ex-above "treble")
+  (first-species->lily boulanger-g-ex-above {:clef "treble"})
 
   (def boulanger-e-ex-above
     (make-first-species boulanger-e
@@ -128,7 +133,7 @@
                          n/c4 n/b4
                          n/d#4 n/e4)
                         :above))
-  (first-species->lily boulanger-e-ex-above "treble")
+  (first-species->lily boulanger-e-ex-above {:clef "treble"})
   (first-species-rules? boulanger-e-ex-above)
   (evaluate-species boulanger-e-ex-above)
 ;; (sh/sh "timidity" "resources/temp.midi")
@@ -142,7 +147,7 @@
                          n/a4 n/b4 n/a4 n/c4
                          n/b4 n/c4)
                         :above))
-  (first-species->lily exercise-cf-c "treble")
+  (first-species->lily exercise-cf-c {:clef "treble"})
   (evaluate-species exercise-cf-c)
 
   (def exercise-cf-a
@@ -153,7 +158,7 @@
                          n/e3
                          n/g#3 n/a4)
                         :above))
-  (first-species->lily exercise-cf-a "treble")
+  (first-species->lily exercise-cf-a {:clef "treble"})
   (first-species-rules? exercise-cf-a)
   (evaluate-species exercise-cf-c)
 ;; (sh/sh "timidity" "resources/temp.midi")
@@ -214,7 +219,9 @@
   (def n 5) ;; number of best is 0
   (count unique-sorted-species100)
   (first-species->lily (first (nth unique-sorted-species100 n))
-                       (if (= position :above) "treble" "treble_8"))
+                       (if (= position :above) 
+                         {:clef "treble"} 
+                         {:clef "treble_8"}))
   (println (evaluate-species (first (nth unique-sorted-species100 n))))
   ;; (sh/sh "timidity" "resources/temp.midi")
 
@@ -229,7 +236,9 @@
         _ (println "RULES " (first-species-rules? species))
         _ (println "EVAL  " (evaluate-species species))]
     (first-species->lily species
-                         (if (= position :above) "treble" "treble_8")))
+                         (if (= position :above) 
+                           {:clef "treble"} 
+                           {:clef "treble_8"})))
 
   ;; (sh/sh "timidity" "resources/temp.midi") 
   (sh/sh "timidity" "resources/temp.mid")
