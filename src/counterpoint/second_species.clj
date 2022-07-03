@@ -4,17 +4,16 @@
                                                 correct-interval
                                                 correct-intervals-iter direct-motion-to-perfect?]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
-                                                     get-position
-                                                     make-first-species]]
+                                                     get-position make-species]]
             [counterpoint.intervals :refer [get-interval]]
             [counterpoint.melody :refer [double-melody remove-last]]
             [counterpoint.motion :refer [type-of-motion]]
             [counterpoint.notes :as n]
-            [counterpoint.utils :refer [rule-warning]]
-            [counterpoint.rest :refer [rest?]]))
+            [counterpoint.rest :refer [rest?]]
+            [counterpoint.utils :refer [rule-warning]]))
 
 (defn make-second-species [cantus-firmus counterpoint-melody arg3]
-  (make-first-species cantus-firmus counterpoint-melody arg3))
+  (make-species cantus-firmus counterpoint-melody arg3 :second))
 
 (defn get-low-high-second [species]
   (let [counter (get-counter species)

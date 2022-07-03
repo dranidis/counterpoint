@@ -4,17 +4,16 @@
             [counterpoint.figured-bass :refer [figured-bass-first
                                                figured-bass-fourth figured-bass-second]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
-                                                     get-position]]
+                                                     get-position get-type]]
             [counterpoint.intervals :refer [get-interval]]
+            [counterpoint.melody :refer [double-melody]]
             [counterpoint.notes :refer [get-acc get-note get-octave]]
-            [counterpoint.notes :as n]
             [counterpoint.rest :refer [rest?]]))
 
 ;;
 ;; GLOBAL parameters
 ;;
 (def midi-instrument "acoustic grand")
-
 
 (defn- single-note->lily [note]
   (str " "
@@ -40,12 +39,6 @@
                 3 "'"
                 4 "''"
                 5 "'''") duration))))
-(comment
-  (note->lily 1 (n/make-note :a 0))
-  (note->lily 1 (n/make-note :b 0))
-  (note->lily 1 (n/make-note :c 0))
-  ;
-  )
 
 (defn- note->lily-relative [note previous]
   (let [interval-from-previous (get-interval (interval previous note))]
@@ -80,13 +73,12 @@
   (apply str (relative-to-lily-iter duration nil note notes)))
 
 (defn fixed-melody->lily [duration notes]
-  (apply str
-         (map #(note->lily duration %) notes)))
+  (apply str (map #(note->lily duration %) notes)))
 
 (defn fixed-melody-fourth->lily [duration [note & notes]]
   (str "r" duration (apply str (fixed-to-lily-fourth-iter duration note notes))))
 
-(defn staff [clef tempo voices]
+(defn staff [clef tempo voices midi-instrument]
   (str
    "\\score {
   \\new Staff <<
@@ -98,19 +90,18 @@
    ">>
   \\layout { }
   \\midi { }
-}
-"))
+}"))
 
 (defn melody->lily
   ([melody] (melody->lily melody "treble"))
   ([melody clef]
-
    (spit "resources/temp.ly"
          (staff clef "2 = 120"
                 (str "  \\new Voice = \"first\"
      { \\voiceOne "
                      (fixed-melody->lily 1 melody)
-                     "}")))
+                     "}")
+                midi-instrument))
    (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
 
 (defn voice [first voiceOne melody]
@@ -134,32 +125,94 @@
               (fixed-melody->lily 1 counter)))
      (figured-bass-first species))))
 
-(defn pattern [p]
-  (let [duration (count p)]
-    (if (#{1 2 4 8 16 32 64 128} duration)
-      (fn [n1 n2] (let [s1 (note->lily duration n1)
-                        s2 (note->lily duration n2)]
-                    (apply str (map #(if (= \a %) s1 s2) p))))
-      (throw (Exception. (str "pattern: " p " has size " duration ". Length must be power of 2"))))))
+(defn end-to-1 [melody]
+  (str (subs melody 0 (dec (count melody))) "1"))
 
-(defn first-voices-pattern [p species]
+(defn voices [species]
+  (let [cantus (get-cantus species)
+        counter (get-counter species)
+        position (get-position species)
+        type (get-type species)
+        _ (println "TYPE " type)
+        counter->lily (case type
+                        :first (partial fixed-melody->lily 1)
+                        :second (fn [counter] 
+                                  (end-to-1 (fixed-melody->lily 2 counter)))
+                        :fourth (partial fixed-melody-fourth->lily 2))
+        fig-bass (case type
+                   :first figured-bass-first
+                   :second figured-bass-second
+                   :fourth figured-bass-fourth)]
+    (str
+     (voice "first" "voiceOne"
+            (if (= position :above)
+              (counter->lily counter)
+              (fixed-melody->lily 1 cantus)))
+     (voice "second" "voiceTwo"
+            (if (= position :above)
+              (fixed-melody->lily 1 cantus)
+              (counter->lily counter)))
+     (fig-bass species))))
+
+(defn fourth-voices [species]
   (let [cantus (get-cantus species)
         counter (get-counter species)
         position (get-position species)]
     (str
      (voice "first" "voiceOne"
             (if (= position :above)
-              (apply
-               str
-               (map (pattern p) cantus counter))
-              (apply
-               str
-               (map (pattern p) counter cantus))))
-    ;;  (figured-bass-first species)
-     )))
+              (fixed-melody-fourth->lily 2 counter)
+              (fixed-melody->lily 1 cantus)))
+     (voice "second" "voiceTwo"
+            (if (= position :above)
+              (fixed-melody->lily 1 cantus)
+              (fixed-melody-fourth->lily 2 counter)))
+     (figured-bass-fourth species))))
 
-(defn first-species->lily
-  ([species] (first-species->lily species 
+(defn pattern 
+  ([p] (pattern p 1))
+  ([p length]
+  (let [duration (* (count p) length)]
+    (if (#{1 2 4 8 16 32 64 128} duration)
+      (fn [n1 n2] (let [s1 (note->lily duration n1)
+                        s2 (note->lily duration n2)]
+                    (apply str (map #(if (= \a %) s1 s2) p))))
+      (throw (Exception. (str "pattern: " p " has size " duration ". Length must be power of 2")))))))
+
+(defn voice-pattern [position p length cantus counter]
+  (voice "first" "voiceOne"
+         (if (= position :above)
+           (apply
+            str
+            (map (pattern p length) cantus counter))
+           (apply
+            str
+            (map (pattern p length) counter cantus)))))
+
+(defn first-voices-pattern [p species]
+  (let [cantus (get-cantus species)
+        counter (get-counter species)
+        position (get-position species)]
+    (str
+     (voice-pattern position p 1 cantus counter)
+     (figured-bass-first species))))
+
+(defn second-voices-pattern [p species]
+  (let [cantus (double-melody (get-cantus species))
+        counter (get-counter species)
+        position (get-position species)]
+    (str
+     (voice-pattern position p 2 cantus counter)
+     (figured-bass-second species))))
+
+(defn voices-pattern [p species]
+  (case (get-type species)
+    :first (first-voices-pattern p species) 
+    :second (second-voices-pattern p species)
+    (voices species)))
+
+(defn species->lily
+  ([species] (species->lily species
                                   {:clef "treble"
                                    :pattern ""
                                    :tempo "2 = 80"}))
@@ -170,72 +223,8 @@
           (get param :tempo "2 = 80")
           (let [p (get param :pattern "")]
             (if (= p "")
-              (first-voices species)
-              (first-voices-pattern p species)))))
+              (voices species)
+              (voices-pattern p species)))
+          (get param :midi midi-instrument)))
    (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
-
-(defn fourth-species->lily
-  ([species] (fourth-species->lily species "treble"))
-  ([species clef]
-   (let [cantus (get-cantus species)
-         counter (get-counter species)
-         position (get-position species)]
-     (spit "resources/temp.ly"
-           (staff
-            clef
-            "2 = 80"
-            (str
-             (voice "first" "voiceOne"
-                    (if (= position :above)
-                      (fixed-melody-fourth->lily 2 counter)
-                      (fixed-melody->lily 1 cantus)))
-             (voice "second" "voiceTwo"
-                    (if (= position :above)
-                      (fixed-melody->lily 1 cantus)
-                      (fixed-melody-fourth->lily 2 counter)))
-             (figured-bass-fourth species))))
-     (sh/sh "lilypond" "-o" "resources" "resources/temp.ly"))))
-
-
-(defn end-to-1 [melody]
-  (str (subs melody 0 (dec (count melody))) "1"))
-
-(defn second-species->lily [species]
-  (let [cantus (get-cantus species)
-        counter (get-counter species)
-        position (get-position species)]
-    (spit "resources/temp.ly"
-          (str
-           "\\score {
-  \\new Staff <<
-           \\tempo 2 = 90
-           \\set Staff.midiInstrument = #\"" midi-instrument "\"\n"
-
-           "  \\new Voice = \"first\"
-     { \\voiceOne "
-           (if (= position :above)
-             (end-to-1 (fixed-melody->lily 2 counter))
-             (fixed-melody->lily 1 cantus))
-
-           "}
-  \\new Voice= \"second\"
-     { \\voiceTwo "
-           (if (= position :above)
-             (fixed-melody->lily 1 cantus)
-             (end-to-1 (fixed-melody->lily 2 counter)))
-           "}
-  \\figures {"
-           (figured-bass-second species)
-
-
-           "}
- >>
-  \\layout { }
-  \\midi { }
-}
-"))
-    (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
-
-
-
 

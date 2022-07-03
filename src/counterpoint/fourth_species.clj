@@ -1,17 +1,15 @@
 (ns counterpoint.fourth-species
-  (:require
-   [counterpoint.core :refer [simple-interval]]
-   [counterpoint.first-species :refer [allowed-melodic-intervals?]]
-   [counterpoint.first-species-type :refer [get-cantus get-counter
-                                            get-position
-                                            make-first-species]]
-   [counterpoint.intervals :refer [get-interval harmonic-consonant?]]
-   [counterpoint.melody :refer [double-melody insert-to-melody]]
-   [counterpoint.rest :as rest]
-   [counterpoint.utils :refer [rule-warning]]))
+  (:require [counterpoint.core :refer [simple-interval]]
+            [counterpoint.first-species :refer [allowed-melodic-intervals?]]
+            [counterpoint.first-species-type :refer [get-cantus get-counter
+                                                     get-position make-species]]
+            [counterpoint.intervals :refer [get-interval harmonic-consonant?]]
+            [counterpoint.melody :refer [double-melody insert-to-melody]]
+            [counterpoint.rest :as rest]
+            [counterpoint.utils :refer [rule-warning]]))
 
 (defn make-fourth-species [cantus-firmus counterpoint-melody arg3]
-  (make-first-species cantus-firmus counterpoint-melody arg3))
+  (make-species cantus-firmus counterpoint-melody arg3 :fourth))
 
 (defn get-low-high-fourth [species]
   (let [counter (insert-to-melody rest/r (get-counter species))

@@ -57,8 +57,6 @@
 (defn remove-last [melody]
   (subvec melody 0 (dec (count melody))))
 
-
-
 (defn- melody-skeleton-iter  [intv intvs melody]
   (if (empty? intvs)
     [(first melody)]

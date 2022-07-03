@@ -3,13 +3,17 @@
             [counterpoint.cantus-firmi-examples :refer [bellerman-a fux-d
                                                         schenker-d schoenberg-c]]
             [counterpoint.figured-bass :refer [figured-bass-fourth]]
+            [counterpoint.first-species-type :refer [get-cantus get-counter]]
             [counterpoint.fourth-species :refer [fourth-species-rules?
                                                  make-fourth-species]]
-            [counterpoint.lilypond :refer [fourth-species->lily]]
+            [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.melody :refer [make-melody transpose]]
             [counterpoint.notes :as n]))
 
-(def fux-d-4-species (make-fourth-species
+(comment
+  
+
+  (def fux-d-4-species (make-fourth-species
                       fux-d
                       (make-melody n/a4 n/a4
                                    n/d4 n/d4 n/c4 n/c4 n/bb4 n/bb4
@@ -19,7 +23,10 @@
                                    n/f4 n/f4 n/e4 n/e4 n/d4 n/d4 n/c#4
                                    n/d4)
                       :above))
-(fourth-species->lily fux-d-4-species "treble")
+  
+ (count (get-counter fux-d-4-species)) 
+  (count (get-cantus fux-d-4-species))
+(species->lily fux-d-4-species {:clef "treble"})
 (fourth-species-rules? fux-d-4-species)
 (figured-bass-fourth fux-d-4-species)
 ;; (sh/sh "timidity" "resources/temp.midi")
@@ -39,7 +46,7 @@
                                          n/g#4
                                          n/a5)
                             :above))
-(fourth-species->lily bellerman-a-4-species "treble")
+(species->lily bellerman-a-4-species {:clef "treble"})
 (fourth-species-rules? bellerman-a-4-species)
 
 
@@ -61,7 +68,7 @@
                                               n/a5 n/g#4
                                               n/a5) -1)
                                   :below))
-(fourth-species->lily bellerman-a-4-species-below "treble")
+(species->lily bellerman-a-4-species-below {:clef "treble"})
 (fourth-species-rules? bellerman-a-4-species-below)
 ;; (sh/sh "timidity" "resources/temp.midi")
 
@@ -80,7 +87,7 @@
                                         n/d4 n/c#4
                                         n/d4)
                            :above))
-(fourth-species->lily schenker-d-4-species "treble")
+(species->lily schenker-d-4-species {:clef "treble"})
 (fourth-species-rules? schenker-d-4-species)
 (sh/sh "timidity" "resources/temp.midi")
 
@@ -99,9 +106,11 @@
                                           n/c3 n/b3
                                           n/c3)
                              :above))
-;; (fourth-species->lily schoenberg-c-4-species "treble_8")
+;; (species->lily schoenberg-c-4-species "treble_8")
 
 (fourth-species-rules? schoenberg-c-4-species)
+
+)
 
 
 ;; (sh/sh "timidity" "resources/temp.midi")
