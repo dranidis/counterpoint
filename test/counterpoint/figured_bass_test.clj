@@ -60,7 +60,7 @@
   (testing "fourth"
     (let [fux-d-4-species (make-fourth-species
                            fux-d
-                           (make-melody n/a4 n/a4
+                           (make-melody rest/r n/a4 n/a4
                                         n/d4 n/d4 n/c4 n/c4 n/bb4 n/bb4
                                         n/g3
                                         n/a4

@@ -38,7 +38,8 @@
                 2 ""
                 3 "'"
                 4 "''"
-                5 "'''") duration))))
+                5 "'''")))
+       duration))
 
 (defn- note->lily-relative [note previous]
   (let [interval-from-previous (get-interval (interval previous note))]
@@ -76,7 +77,7 @@
   (apply str (map #(note->lily duration %) notes)))
 
 (defn fixed-melody-fourth->lily [duration [note & notes]]
-  (str "r" duration (apply str (fixed-to-lily-fourth-iter duration note notes))))
+  (apply str (fixed-to-lily-fourth-iter duration note notes)))
 
 (defn staff [clef tempo voices midi-instrument]
   (str
@@ -110,21 +111,6 @@
        melody
        "}\n"))
 
-(defn first-voices [species]
-  (let [cantus (get-cantus species)
-        counter (get-counter species)
-        position (get-position species)]
-    (str
-     (voice "first" "voiceOne"
-            (if (= position :above)
-              (fixed-melody->lily 1 counter)
-              (fixed-melody->lily 1 cantus)))
-     (voice "second" "voiceTwo"
-            (if (= position :above)
-              (fixed-melody->lily 1 cantus)
-              (fixed-melody->lily 1 counter)))
-     (figured-bass-first species))))
-
 (defn end-to-1 [melody]
   (str (subs melody 0 (dec (count melody))) "1"))
 
@@ -136,7 +122,7 @@
         _ (println "TYPE " type)
         counter->lily (case type
                         :first (partial fixed-melody->lily 1)
-                        :second (fn [counter] 
+                        :second (fn [counter]
                                   (end-to-1 (fixed-melody->lily 2 counter)))
                         :fourth (partial fixed-melody-fourth->lily 2))
         fig-bass (case type
@@ -154,30 +140,15 @@
               (counter->lily counter)))
      (fig-bass species))))
 
-(defn fourth-voices [species]
-  (let [cantus (get-cantus species)
-        counter (get-counter species)
-        position (get-position species)]
-    (str
-     (voice "first" "voiceOne"
-            (if (= position :above)
-              (fixed-melody-fourth->lily 2 counter)
-              (fixed-melody->lily 1 cantus)))
-     (voice "second" "voiceTwo"
-            (if (= position :above)
-              (fixed-melody->lily 1 cantus)
-              (fixed-melody-fourth->lily 2 counter)))
-     (figured-bass-fourth species))))
-
-(defn pattern 
+(defn pattern
   ([p] (pattern p 1))
   ([p length]
-  (let [duration (* (count p) length)]
-    (if (#{1 2 4 8 16 32 64 128} duration)
-      (fn [n1 n2] (let [s1 (note->lily duration n1)
-                        s2 (note->lily duration n2)]
-                    (apply str (map #(if (= \a %) s1 s2) p))))
-      (throw (Exception. (str "pattern: " p " has size " duration ". Length must be power of 2")))))))
+   (let [duration (* (count p) length)]
+     (if (#{1 2 4 8 16 32 64 128} duration)
+       (fn [n1 n2] (let [s1 (note->lily duration n1)
+                         s2 (note->lily duration n2)]
+                     (apply str (map #(if (= \a %) s1 s2) p))))
+       (throw (Exception. (str "pattern: " p " has size " duration ". Length must be power of 2")))))))
 
 (defn voice-pattern [position p length cantus counter]
   (voice "first" "voiceOne"
@@ -205,17 +176,26 @@
      (voice-pattern position p 2 cantus counter)
      (figured-bass-second species))))
 
+(defn fourth-voices-pattern [p species]
+  (let [cantus (double-melody (get-cantus species))
+        counter (get-counter species)
+        position (get-position species)]
+    (str
+     (voice-pattern position p 2 cantus counter)
+     (figured-bass-fourth species))))
+
 (defn voices-pattern [p species]
   (case (get-type species)
-    :first (first-voices-pattern p species) 
+    :first (first-voices-pattern p species)
     :second (second-voices-pattern p species)
+    :fourth (fourth-voices-pattern p species)
     (voices species)))
 
 (defn species->lily
   ([species] (species->lily species
-                                  {:clef "treble"
-                                   :pattern ""
-                                   :tempo "2 = 80"}))
+                            {:clef "treble"
+                             :pattern ""
+                             :tempo "2 = 80"}))
   ([species param]
    (spit "resources/temp.ly"
          (staff

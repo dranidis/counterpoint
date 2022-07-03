@@ -6,7 +6,6 @@
                                                         mozart-c1 mozart-c2 salieri-c]]
             [counterpoint.figured-bass :refer [figured-bass-second]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?]]
-            [counterpoint.first-species-type :refer [get-cantus get-counter]]
             [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.melody :refer [make-melody melodic-intervals
                                          melody-range]]

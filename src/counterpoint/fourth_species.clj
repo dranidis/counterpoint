@@ -4,15 +4,21 @@
             [counterpoint.first-species-type :refer [get-cantus get-counter
                                                      get-position make-species]]
             [counterpoint.intervals :refer [get-interval harmonic-consonant?]]
-            [counterpoint.melody :refer [double-melody insert-to-melody]]
-            [counterpoint.rest :as rest]
+            [counterpoint.melody :refer [double-melody]]
             [counterpoint.utils :refer [rule-warning]]))
 
 (defn make-fourth-species [cantus-firmus counterpoint-melody arg3]
   (make-species cantus-firmus counterpoint-melody arg3 :fourth))
 
+;; (defn get-low-high-fourth [species]
+;;   (let [counter (insert-to-melody rest/r (get-counter species))
+;;         double-cantus (double-melody (get-cantus species))]
+;;     (if (= (get-position species) :above)
+;;       [double-cantus counter]
+;;       [counter double-cantus])))
+
 (defn get-low-high-fourth [species]
-  (let [counter (insert-to-melody rest/r (get-counter species))
+  (let [counter (get-counter species)
         double-cantus (double-melody (get-cantus species))]
     (if (= (get-position species) :above)
       [double-cantus counter]
@@ -50,8 +56,8 @@
 
 (defn fourth-species-rules? [species]
   (and
-   (rule-warning (= (- (* 2 (count (get-cantus species))) 2)
-                    (count (get-counter species)))
+   (rule-warning (=  (inc (* 2 (dec (count (get-cantus species)))))
+                     (count (get-counter species)))
                  #(str "Cantus and counterpoint have different number of notes"))
    (allowed-melodic-intervals? species)
    (rule-warning (consonant-upbeats? species)
