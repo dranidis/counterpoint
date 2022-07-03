@@ -5,8 +5,8 @@
                                                         cf-a cf-c fetis-c fux-a fux-d haydn-a mozart-c1 mozart-c2 salieri-c salieri-d]]
             [counterpoint.figured-bass :refer [figured-bass-first]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?
-                                                evaluate-species
-                                                first-species-rules?]]
+                                                correct-intervals
+                                                evaluate-species first-species-rules?]]
             [counterpoint.first-species-type :refer [make-first-species]]
             [counterpoint.generate-first-species :refer [generate-reverse-random-counterpoint]]
             [counterpoint.lilypond :refer [species->lily]]
@@ -47,6 +47,8 @@
                                    n/f2 n/e2 n/g#2 n/a3))
   (def fux-a-below (make-first-species fux-a-cp-below fux-a :below))
   (def fux-a-above (make-first-species (transpose fux-a-cp-below 1) fux-a :above))
+
+(correct-intervals fux-a-above)  
   (species->lily fux-a-above)
   (species->lily fux-a-below {:clef "treble_8"})
   (species->lily fux-a-below {:clef "treble_8"})
@@ -220,9 +222,9 @@
   (def n 5) ;; number of best is 0
   (count unique-sorted-species100)
   (species->lily (first (nth unique-sorted-species100 n))
-                       (if (= position :above) 
-                         {:clef "treble"} 
-                         {:clef "treble_8"}))
+                 (if (= position :above)
+                   {:clef "treble"}
+                   {:clef "treble_8"}))
   (println (evaluate-species (first (nth unique-sorted-species100 n))))
   ;; (sh/sh "timidity" "resources/temp.midi")
 
@@ -237,9 +239,9 @@
         _ (println "RULES " (first-species-rules? species))
         _ (println "EVAL  " (evaluate-species species))]
     (species->lily species
-                         (if (= position :above) 
-                           {:clef "treble"} 
-                           {:clef "treble_8"})))
+                   (if (= position :above)
+                     {:clef "treble"}
+                     {:clef "treble_8"})))
 
   ;; (sh/sh "timidity" "resources/temp.midi") 
   (sh/sh "timidity" "resources/temp.mid")
