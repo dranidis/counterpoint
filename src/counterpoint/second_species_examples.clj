@@ -219,6 +219,8 @@
   (second-species->lily species)
 
   (sh/sh "timidity" "resources/temp.midi")
+  (sh/sh "timidity" "resources/temp.mid")
+  
 
   (count fux-a)
   (partition 2 [1 2 3])

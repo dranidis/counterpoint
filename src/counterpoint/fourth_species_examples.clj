@@ -23,6 +23,8 @@
 (fourth-species-rules? fux-d-4-species)
 (figured-bass-fourth fux-d-4-species)
 ;; (sh/sh "timidity" "resources/temp.midi")
+(sh/sh "timidity" "resources/temp.mid")
+
 
 (count bellerman-a)
 (def bellerman-a-4-species (make-fourth-species

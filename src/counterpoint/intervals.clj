@@ -10,7 +10,9 @@
 (defn get-interval [[n _]] n)
 (defn get-quality [[_ q]] q)
 
-(defn note->number-of-semitones [note]
+(defn note->number-of-semitones 
+  "Number of semitones starting from a0"
+  [note]
   (let [num-note (case (get-note note)
                    :a 0
                    :b 2
@@ -27,7 +29,9 @@
                    :double-sharp +2)]
     (+ (* (get-octave note) 12) num-note acc->num)))
 
-(defn distance-in-semitones [note1 note2]
+(defn distance-in-semitones 
+  "Distance in semitones between two notes"
+  [note1 note2]
   (- (note->number-of-semitones note2)
      (note->number-of-semitones note1)))
 
@@ -35,7 +39,9 @@
   (<= (Math/abs (get-interval interval1))
       (Math/abs (get-interval interval2))))
 
-(defn note-at-diatonic-interval [key note-nooctave interval]
+(defn note-at-diatonic-interval 
+  "Returns the note in the key starting from note-nooctave at the interval"
+  [key note-nooctave interval]
   (let [note-num (note->num (get-note-nooctave note-nooctave))
         note' (num->note (+ note-num interval (if (pos? interval) -1 1)))
         accidental (get-note-acc-at-key key note')]
@@ -103,7 +109,7 @@
         o (get-octave note)
         a (get-acc note)
         new-acc (case a
-                  :flat :doulbe-flat
+                  :flat :double-flat
                   :natural :flat
                   :sharp :natural
                   :double-sharp :sharp
@@ -168,7 +174,8 @@
 
 (def A1 (make-interval 1 :aug))
 (def A2 (make-interval 2 :aug))
-(def A3 (make-interval 3 :aug))
+(
+ def A3 (make-interval 3 :aug))
 (def A4 (make-interval 4 :aug))
 (def A5 (make-interval 5 :aug))
 (def A6 (make-interval 6 :aug))
