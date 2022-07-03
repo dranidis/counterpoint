@@ -86,8 +86,11 @@
 (defn relative-melody->lily [duration [note & notes]]
   (apply str (relative-to-lily-iter duration nil note notes)))
 
-(defn fixed-melody->lily [duration [note & notes]]
-  (apply str (fixed-to-lily-iter duration note notes)))
+(defn fixed-melody->lily [duration notes]
+  (apply str
+         (map #(note->lily duration %) notes)
+        ;;  (fixed-to-lily-iter duration note notes)
+         ))
 
 (defn fixed-melody-fourth->lily [duration [note & notes]]
   (str "r" duration (apply str (fixed-to-lily-fourth-iter duration note notes))))
@@ -125,27 +128,30 @@
        melody
        "}\n"))
 
+(defn first-voices [species]
+  (let [cantus (get-cantus species)
+        counter (get-counter species)
+        position (get-position species)]
+    (str
+     (voice "first" "voiceOne"
+            (if (= position :above)
+              (fixed-melody->lily 1 counter)
+              (fixed-melody->lily 1 cantus)))
+     (voice "second" "voiceTwo"
+            (if (= position :above)
+              (fixed-melody->lily 1 cantus)
+              (fixed-melody->lily 1 counter)))
+     (figured-bass-first species))))
+
 (defn first-species->lily
   ([species] (first-species->lily species "treble"))
   ([species clef]
-   (let [cantus (get-cantus species)
-         counter (get-counter species)
-         position (get-position species)]
-     (spit "resources/temp.ly"
-           (staff
-            clef
-            "2 = 140"
-            (str
-             (voice "first" "voiceOne"
-                    (if (= position :above)
-                      (fixed-melody->lily 1 counter)
-                      (fixed-melody->lily 1 cantus)))
-             (voice "second" "voiceTwo"
-                    (if (= position :above)
-                      (fixed-melody->lily 1 cantus)
-                      (fixed-melody->lily 1 counter)))
-             (figured-bass-first species))))
-     (sh/sh "lilypond" "-o" "resources" "resources/temp.ly"))))
+   (spit "resources/temp.ly"
+         (staff
+          clef
+          "2 = 140"
+          (first-voices species)))
+   (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
 
 (defn fourth-species->lily
   ([species] (fourth-species->lily species "treble"))
