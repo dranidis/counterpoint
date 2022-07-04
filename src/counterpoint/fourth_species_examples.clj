@@ -22,15 +22,15 @@
                                      n/d4)
                         :above))
 
-  (species->lily fux-d-4-species {:pattern "ab"})
+  (species->lily fux-d-4-species {:pattern "baba" :tempo "4=180"})
   (fourth-species-rules? fux-d-4-species)
   (figured-bass-fourth fux-d-4-species)
-;; (sh/sh "timidity" "resources/temp.midi")
-  (sh/sh "timidity" "resources/temp.mid")
+  (sh/sh "timidity" "resources/temp.midi")
+;;   (sh/sh "timidity" "resources/temp.mid")
 
   (def bellerman-a-4-species (make-fourth-species
                               bellerman-a
-                              (make-melody n/c4 n/c4
+                              (make-melody rest/r n/c4 n/c4
                                            n/b4 n/b4 n/c4 n/d4 n/g4 n/g4
                                            n/f4
                                            n/f4
@@ -39,14 +39,14 @@
                                            n/g#4
                                            n/a5)
                               :above))
-  (species->lily bellerman-a-4-species {:clef "treble"})
+  (species->lily bellerman-a-4-species {:pattern "baba" :tempo "4=180"})
   (fourth-species-rules? bellerman-a-4-species)
 
 
   (def bellerman-a-4-species-below (make-fourth-species
                                     bellerman-a
                                     (transpose (make-melody
-                                                n/a4 n/b4 n/g3
+                                                rest/r n/a4 n/b4 n/g3
                                                 n/a4
                                                 n/c4
                                                 n/c4 n/b4
@@ -61,13 +61,13 @@
                                                 n/a5 n/g#4
                                                 n/a5) -1)
                                     :below))
-  (species->lily bellerman-a-4-species-below {:clef "treble"})
+  (species->lily bellerman-a-4-species-below {:pattern "baba" :clef "treble"})
   (fourth-species-rules? bellerman-a-4-species-below)
-;; (sh/sh "timidity" "resources/temp.midi")
+  (sh/sh "timidity" "resources/temp.midi")
 
   (def schenker-d-4-species (make-fourth-species
                              schenker-d
-                             (make-melody n/d4
+                             (make-melody rest/r n/d4
                                           n/d4 n/c4
                                           n/c4 n/a5
 
@@ -86,7 +86,7 @@
 
   (def schoenberg-c-4-species (make-fourth-species
                                schoenberg-c
-                               (make-melody n/g3
+                               (make-melody rest/r n/g3
                                             n/g3 n/d3
                                             n/e3 n/d3
                                             n/d3 n/c3
@@ -99,9 +99,11 @@
                                             n/c3 n/b3
                                             n/c3)
                                :above))
-;; (species->lily schoenberg-c-4-species "treble_8")
+  (species->lily schoenberg-c-4-species {:pattern "abab" :clef "treble_8" :tempo "4=180"})
 
-  (fourth-species-rules? schoenberg-c-4-species))
+  (fourth-species-rules? schoenberg-c-4-species)
+  ;
+  )
 
 
 ;; (sh/sh "timidity" "resources/temp.midi")

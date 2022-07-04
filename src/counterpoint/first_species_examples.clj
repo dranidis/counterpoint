@@ -25,14 +25,15 @@
                                   "treble"
                                   "treble_8")
                           :pattern "baaabaaa"
-                          :tempo "1 = 50"}))
-  ;; (sh/sh "timidity" "resources/temp.midi") 
-  (sh/sh "timidity" "resources/temp.mid"))
+                          :tempo "4 = 180"}))
+  (sh/sh "timidity" "resources/temp.midi") 
+  ;; (sh/sh "timidity" "resources/temp.mid")
+  )
 
 (comment
   (generate-and-play albrechtsberger-d :f :below)
   (generate-and-play mozart-c1 :c :above)
-  (generate-and-play mozart-c2 :c :below)
+  (generate-and-play mozart-c2 :c :above)
 
 
 

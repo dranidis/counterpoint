@@ -1,8 +1,10 @@
 (ns counterpoint.melody
   (:require [counterpoint.core :refer [interval]]
-            [counterpoint.intervals :refer [note->number-of-semitones get-interval get-quality]]
+            [counterpoint.intervals :refer [get-interval get-quality
+                                            note->number-of-semitones]]
             [counterpoint.notes :as n :refer [get-acc get-note get-octave
-                                              make-note]]))
+                                              make-note]]
+            [counterpoint.rest :refer [rest?]]))
 
 (defn make-melody [note & notes]
   (into [note] notes))
@@ -41,7 +43,9 @@
     []))
 
 (defn transpose [melody octaves]
-  (map #(make-note (get-note %) (+ (get-octave %) octaves) (get-acc %)) melody))
+  (map #(if (rest? %)
+          %
+          (make-note (get-note %) (+ (get-octave %) octaves) (get-acc %))) melody))
 
 (defn- double-melody-iter [melody note notes]
   (let [mel (-> melody

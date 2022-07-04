@@ -45,14 +45,16 @@
 ;;         position (get-position species)]
 ;;     (correct-intervals-iter position (first cantus) (first counter) (rest cantus) (rest counter))))
 
-;; (defn correct-intervals [species]
-;;   (let [[low high] (get-low-high species)]
-;;     (every? harmonic-consonant?
-;;             (map simple-interval low high))))
-
 (defn correct-intervals [species]
   (let [[low high] (get-low-high species)]
-    (every? true? (map correct-interval low high))))
+    (every? (fn [i] 
+              (let [res (harmonic-consonant? i)]
+                (rule-warning res #(str "Not allowed harmonic interval " i))))
+            (map simple-interval low high))))
+
+;; (defn correct-intervals [species]
+;;   (let [[low high] (get-low-high species)]
+;;     (every? true? (map correct-interval low high))))
 
 (defn last-interval? [species]
   (let [cantus (get-cantus species)
