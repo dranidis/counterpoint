@@ -1,13 +1,15 @@
 (ns counterpoint.first-species-examples
   (:require [clojure.java.shell :as sh]
             [counterpoint.cantus-firmi-examples :refer [albrechtsberger-d
-                                                        boulanger-e boulanger-g
-                                                        cf-a cf-c fetis-c fux-a fux-d haydn-a mozart-c1 mozart-c2 salieri-c salieri-d]]
+                                                        albrechtsberger-f
+                                                        boulanger-e boulanger-g cf-a cf-c fetis-c fux-a fux-d fux-g haydn-a mozart-c1 mozart-c2
+                                                        salieri-c salieri-d]]
             [counterpoint.figured-bass :refer [figured-bass-first]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?
                                                 correct-intervals
                                                 evaluate-species first-species-rules?]]
-            [counterpoint.first-species-type :refer [make-first-species]]
+            [counterpoint.first-species-type :refer [get-low-high
+                                                     make-first-species]]
             [counterpoint.generate-first-species :refer [generate-reverse-random-counterpoint]]
             [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.melody :refer [make-melody melodic-intervals
@@ -21,21 +23,22 @@
         _ (println "RULES " (first-species-rules? species))
         _ (println "EVAL  " (evaluate-species species))]
     (species->lily species
-                         {:clef (if (= position :above) 
-                                  "treble"
-                                  "treble_8")
-                          :pattern "baaabaaa"
-                          :tempo "4 = 180"}))
-  (sh/sh "timidity" "resources/temp.midi") 
+                   {:clef (if (= position :above)
+                            "treble"
+                            "treble_8")
+                    :pattern "baaa"
+                    :tempo "4 = 240"}))
+  (sh/sh "timidity" "resources/temp.midi")
   ;; (sh/sh "timidity" "resources/temp.mid")
   )
 
 (comment
   (generate-and-play albrechtsberger-d :f :below)
+  (generate-and-play albrechtsberger-f :f :below)
+
   (generate-and-play mozart-c1 :c :above)
   (generate-and-play mozart-c2 :c :above)
-
-
+  (generate-and-play fux-g :c :above)
 
   (def fux-d-cp-above (make-melody n/a4 n/a4 n/g3 n/a4 n/b4 n/c4 n/c4 n/b4 n/d4 n/c#4 n/d4))
   (def fux-d-cp-below (make-melody n/d2 n/d2 n/a3 n/f2 n/e2 n/d2 n/f2 n/c3 n/d3 n/c#3 n/d3))
@@ -49,7 +52,10 @@
   (def fux-a-below (make-first-species fux-a-cp-below fux-a :below))
   (def fux-a-above (make-first-species (transpose fux-a-cp-below 1) fux-a :above))
 
-(correct-intervals fux-a-above)  
+  (get-low-high fux-d-above)
+
+
+  (correct-intervals fux-a-above)
   (species->lily fux-a-above)
   (species->lily fux-a-below {:clef "treble_8"})
   (species->lily fux-a-below {:clef "treble_8"})
@@ -165,7 +171,7 @@
   (species->lily exercise-cf-a {:clef "treble"})
   (first-species-rules? exercise-cf-a)
   (evaluate-species exercise-cf-c)
-;; (sh/sh "timidity" "resources/temp.midi")
+  (sh/sh "timidity" "resources/temp.midi")
 
   (def species (let [counterpoint-melody
                      (make-melody n/d3 n/d3 n/a4 n/f3 n/e3 n/d3 n/c3 n/e3 n/d3 n/c#3 n/d3)
@@ -173,11 +179,17 @@
                      (make-melody n/d4 n/f4 n/e4 n/d4 n/g4 n/f4 n/a5 n/g4 n/f4 n/e4 n/d4)]
                  (make-first-species cantus-firmus counterpoint-melody :below)))
 
+  (species->lily species {:tempo "4=180" :pattern "baabaaba"})
+  (sh/sh "timidity" "resources/temp.midi")
+
   (def species (let [counterpoint-melody
                      (make-melody n/a4 n/a4 n/g3 n/a4 n/b4 n/c4 n/c4 n/b4 n/d4 n/c#4 n/d4)
                      cantus-firmus
                      (make-melody n/d3 n/f3 n/e3 n/d3 n/g3 n/f3 n/a4 n/g3 n/f3 n/e3 n/d3)]
                  (make-first-species cantus-firmus counterpoint-melody :above)))
+
+  (species->lily species {:tempo "4=180" :pattern "baabaaba"})
+  (sh/sh "timidity" "resources/temp.midi")
 
   (def species
     (let [counterpoint-melody
@@ -187,7 +199,8 @@
           (make-melody n/e3 n/d3 n/e3 n/f3 n/g3 n/a4 n/d3 n/f3 n/e3)]
       (make-first-species cantus-firmus counterpoint-melody :above)))
 
-
+  (species->lily species {:tempo "4=180" :pattern "baabaaba"})
+  (sh/sh "timidity" "resources/temp.midi")
 
   (def species (let [counterpoint-melody
                      (make-melody n/d4 n/c4 n/d4 n/f4 n/e4 n/a5 n/g4 n/e4 n/d4 n/c#4 n/d4)
@@ -195,11 +208,17 @@
                      (make-melody n/d3 n/e3 n/f3 n/d3 n/a4 n/f3 n/e3 n/g3 n/f3 n/e3 n/d3)]
                  (make-first-species cantus-firmus counterpoint-melody :above)))
 
+  (species->lily species {:tempo "4=180" :pattern "baabaaba"})
+  (sh/sh "timidity" "resources/temp.midi")
+
   (def species (let [counterpoint-melody
                      (make-melody n/c4 n/a4 n/b4 n/c4 n/e4 n/d4 n/g3 n/b4 n/c4)
                      cantus-firmus ;; salieri
                      (make-melody n/c3 n/f3 n/e3 n/a4 n/g3 n/f3 n/e3 n/d3 n/c3)]
                  (make-first-species cantus-firmus counterpoint-melody :above)))
+
+  (species->lily species {:tempo "4=180" :pattern "baabaaba"})
+  (sh/sh "timidity" "resources/temp.midi")
 
   (def species (make-first-species
                 haydn-a

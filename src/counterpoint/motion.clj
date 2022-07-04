@@ -1,5 +1,5 @@
 (ns counterpoint.motion
-  (:require [counterpoint.core :refer [interval simple-interval]]
+  (:require [counterpoint.core :refer [interval]]
             [counterpoint.intervals :refer [get-interval get-quality]]
             [counterpoint.notes :as n]))
 

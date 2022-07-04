@@ -11,10 +11,17 @@
 (defn get-position [[_ _ p _]] p)
 (defn get-type [[_ _ _ t]] t)
 
-(defn get-low-high [species]
+(defn get-low-high-first [species]
   (let [cantus (get-cantus species)
         counter (get-counter species)]
     (if (= (get-position species) :above)
       [cantus counter]
       [counter cantus]
       )))
+
+(defmulti get-low-high get-type)
+
+(defmethod get-low-high :first
+ [species]
+  (get-low-high-first species)
+ )

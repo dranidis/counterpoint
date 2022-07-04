@@ -1,15 +1,16 @@
 (ns counterpoint.first-species
   (:require [counterpoint.core :refer [interval simple-interval]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
-                                                     get-position
-                                                     get-low-high]]
-            [counterpoint.intervals :refer [harmonic-consonant?
-                                            get-interval get-quality m6
-                                            make-interval P1 P8 P8- P5]]
-            [counterpoint.melody :refer [last-interval melodic-intervals remove-last melody-score]]
+                                                     get-low-high
+                                                     get-position]]
+            [counterpoint.intervals :refer [get-interval get-quality
+                                            harmonic-consonant? m6 make-interval P1 P5
+                                            P8 P8-]]
+            [counterpoint.melody :refer [last-interval melodic-intervals
+                                         melody-score remove-last]]
             [counterpoint.motion :refer [type-of-motion]]
-            [counterpoint.utils :refer [rule-warning]]
-            [counterpoint.rest :refer [rest?]]))
+            [counterpoint.rest :refer [rest?]]
+            [counterpoint.utils :refer [rule-warning]]))
 
 (defn correct-interval [note1 note2]
   (if (or (rest? note1) (rest? note2))
@@ -39,22 +40,12 @@
          true
          (correct-intervals-iter position (first notes1) (first notes2) (rest notes1) (rest notes2)))))
 
-;; (defn correct-intervals [species]
-;;   (let [cantus (get-cantus species)
-;;         counter (get-counter species)
-;;         position (get-position species)]
-;;     (correct-intervals-iter position (first cantus) (first counter) (rest cantus) (rest counter))))
-
 (defn correct-intervals [species]
   (let [[low high] (get-low-high species)]
-    (every? (fn [i] 
+    (every? (fn [i]
               (let [res (harmonic-consonant? i)]
                 (rule-warning res #(str "Not allowed harmonic interval " i))))
             (map simple-interval low high))))
-
-;; (defn correct-intervals [species]
-;;   (let [[low high] (get-low-high species)]
-;;     (every? true? (map correct-interval low high))))
 
 (defn last-interval? [species]
   (let [cantus (get-cantus species)

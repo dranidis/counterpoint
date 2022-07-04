@@ -2,6 +2,7 @@
   (:require [counterpoint.core :refer [simple-interval]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
+                                                     get-low-high
                                                      get-position make-species]]
             [counterpoint.intervals :refer [get-interval harmonic-consonant?]]
             [counterpoint.melody :refer [double-melody]]
@@ -10,13 +11,6 @@
 (defn make-fourth-species [cantus-firmus counterpoint-melody arg3]
   (make-species cantus-firmus counterpoint-melody arg3 :fourth))
 
-;; (defn get-low-high-fourth [species]
-;;   (let [counter (insert-to-melody rest/r (get-counter species))
-;;         double-cantus (double-melody (get-cantus species))]
-;;     (if (= (get-position species) :above)
-;;       [double-cantus counter]
-;;       [counter double-cantus])))
-
 (defn get-low-high-fourth [species]
   (let [counter (get-counter species)
         double-cantus (double-melody (get-cantus species))]
@@ -24,13 +18,17 @@
       [double-cantus counter]
       [counter double-cantus])))
 
+(defmethod get-low-high :fourth
+  [species]
+  (get-low-high-fourth species))
+
 (defn consonant-upbeats? [species]
-  (let [[low high] (get-low-high-fourth species)]
+  (let [[low high] (get-low-high species)]
     (every? harmonic-consonant?
             (map second (partition 2 (map simple-interval low high))))))
 
 (defn consonant-or-resolving-downbeats? [species]
-  (let [[low high] (get-low-high-fourth species)
+  (let [[low high] (get-low-high species)
         downbeat-intervals (rest (map first (partition 2 (map simple-interval low high))))
         melody-pairs (rest (partition 2 (if (= (get-position species) :above) high low)))
         melody-intervals (map simple-interval

@@ -3,6 +3,7 @@
             [counterpoint.cantus-firmi-examples :refer [bellerman-a fux-d
                                                         schenker-d schoenberg-c]]
             [counterpoint.figured-bass :refer [figured-bass-fourth]]
+            [counterpoint.first-species-type :refer [get-low-high]]
             [counterpoint.fourth-species :refer [fourth-species-rules?
                                                  make-fourth-species]]
             [counterpoint.lilypond :refer [species->lily]]
@@ -23,6 +24,9 @@
                         :above))
 
   (species->lily fux-d-4-species {:pattern "baba" :tempo "4=180"})
+
+  (get-low-high fux-d-4-species)
+
   (fourth-species-rules? fux-d-4-species)
   (figured-bass-fourth fux-d-4-species)
   (sh/sh "timidity" "resources/temp.midi")

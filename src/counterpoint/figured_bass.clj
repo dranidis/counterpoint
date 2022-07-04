@@ -1,9 +1,7 @@
 (ns counterpoint.figured-bass
   (:require [counterpoint.core :refer [interval]]
             [counterpoint.first-species-type :refer [get-low-high]]
-            [counterpoint.fourth-species :refer [get-low-high-fourth]]
-            [counterpoint.intervals :refer [get-interval]]
-            [counterpoint.second-species :refer [get-low-high-second]]))
+            [counterpoint.intervals :refer [get-interval]]))
 
 (defn- figured-bass [duration low high]
   (let [intval (interval low high)
@@ -20,11 +18,11 @@
    "}"))
 
 (defn figured-bass-first [first-species]
-    (figured-bass-str 1 (get-low-high first-species)))
+  (figured-bass-str 1 (get-low-high first-species)))
 
-(defn figured-bass-second [species] 
-    (figured-bass-str 2 (get-low-high-second species)))
+(defn figured-bass-second [species]
+  (figured-bass-str 2 (get-low-high species)))
 
 (defn figured-bass-fourth [species]
-    (figured-bass-str 2 (get-low-high-fourth species)))
+  (figured-bass-str 2 (get-low-high species)))
 

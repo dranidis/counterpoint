@@ -1,12 +1,12 @@
 (ns counterpoint.generate-first-species
   (:require [counterpoint.cantus :refer [maximum-range-M10?]]
-            [counterpoint.core :refer [interval simple-interval]]
-            [counterpoint.intervals :refer [d5 d5- get-interval m10- m2 M2 m2-
-                                            M2- m3 M3 m3- M3- M6 m6- A4 A4-
+            [counterpoint.core :refer [interval]]
+            [counterpoint.intervals :refer [get-interval m10- m2 M2 m2-
+                                            M2- m3 M3 m3- M3- M6 m6- 
                                             note-at-diatonic-interval note-at-melodic-interval
                                             get-quality
                                             P1 P4 P4- P5 P5- P8 P8-]]
-            [counterpoint.melody :refer [append-to-melody make-melody]]
+            [counterpoint.melody :refer [append-to-melody]]
             [counterpoint.motion :refer [reverse-direct-perfect?]]
             [counterpoint.notes :refer [get-nooctave] :as n]))
 
@@ -53,7 +53,9 @@
              (and (= position :above) (= (get m36s :remaining-cantus-size) 1))
              [1 3 5]
              :else
-             [1 3 5 6])))
+            ;;  [1 3 5 6]
+              [3 5 6]
+             )))
 (defn- species-interval [position next-cantus-note mc]
   (if (= position :above)
          (interval next-cantus-note mc)

@@ -4,6 +4,7 @@
                                                 correct-interval
                                                 correct-intervals-iter direct-motion-to-perfect?]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
+                                                     get-low-high
                                                      get-position make-species]]
             [counterpoint.intervals :refer [get-interval]]
             [counterpoint.melody :refer [double-melody remove-last]]
@@ -21,6 +22,10 @@
     (if (= (get-position species) :above)
       [double-cantus counter]
       [counter double-cantus])))
+
+(defmethod get-low-high :second
+  [species]
+  (get-low-high-second species))
 
 (defn- downbeats-iter [downbeats-melody rest]
   (cond (empty? rest) downbeats-melody
