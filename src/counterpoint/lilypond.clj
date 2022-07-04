@@ -1,8 +1,7 @@
 (ns counterpoint.lilypond
   (:require [clojure.java.shell :as sh]
             [counterpoint.core :refer [interval]]
-            [counterpoint.figured-bass :refer [figured-bass-first
-                                               figured-bass-fourth figured-bass-second]]
+            [counterpoint.figured-bass :refer [figured-bass]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
                                                      get-position get-type]]
             [counterpoint.intervals :refer [get-interval]]
@@ -124,11 +123,7 @@
                         :first (partial fixed-melody->lily 1)
                         :second (fn [counter]
                                   (end-to-1 (fixed-melody->lily 2 counter)))
-                        :fourth (partial fixed-melody-fourth->lily 2))
-        fig-bass (case type
-                   :first figured-bass-first
-                   :second figured-bass-second
-                   :fourth figured-bass-fourth)]
+                        :fourth (partial fixed-melody-fourth->lily 2))]
     (str
      (voice "first" "voiceOne"
             (if (= position :above)
@@ -138,7 +133,7 @@
             (if (= position :above)
               (fixed-melody->lily 1 cantus)
               (counter->lily counter)))
-     (fig-bass species))))
+     (figured-bass species))))
 
 (defn pattern
   ([p] (pattern p 1))
@@ -170,7 +165,7 @@
         position (get-position species)]
     (str
      (voice-pattern position p 1 cantus counter)
-     (figured-bass-first species))))
+     (figured-bass species))))
 
 (defn second-voices-pattern [p species]
   (let [cantus (double-melody (get-cantus species))
@@ -178,7 +173,7 @@
         position (get-position species)]
     (str
      (voice-pattern position p 2 cantus counter)
-     (figured-bass-second species))))
+     (figured-bass species))))
 
 (defn fourth-voices-pattern [p species]
   (let [cantus (double-melody (get-cantus species))
@@ -186,7 +181,7 @@
         position (get-position species)]
     (str
      (voice-pattern position p 2 cantus counter)
-     (figured-bass-fourth species))))
+     (figured-bass species))))
 
 (defn voices-pattern [p species]
   (case (get-type species)

@@ -4,9 +4,7 @@
             [counterpoint.cantus-firmi-examples :refer [fux-a fux-c fux-d
                                                         fux-e fux-f haydn haydn-a
                                                         mozart-c1 mozart-c2 salieri-c]]
-            [counterpoint.figured-bass :refer [figured-bass-second]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?]]
-            [counterpoint.first-species-type :refer [get-low-high]]
             [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.melody :refer [make-melody melodic-intervals
                                          melody-range]]
@@ -27,9 +25,7 @@
                                   n/c4)]
                  (make-second-species salieri-c counterpoint-melody :above)))
 
-    (get-low-high species)
-
-  (species->lily species {:pattern "brba"} )
+  (species->lily species {:pattern "brba"})
   (sh/sh "timidity" "resources/temp.midi")
 
   (def species (let [counterpoint-melody
@@ -46,8 +42,8 @@
                                   n/d4)]
                  (make-second-species haydn counterpoint-melody :above)))
 
-  (species->lily species {:pattern "abba"})
-(sh/sh "timidity" "resources/temp.mid")
+  (species->lily species {:pattern "abra"})
+  (sh/sh "timidity" "resources/temp.midi")
 
   (def species (let [counterpoint-melody
                      (make-melody n/a4 n/e3
@@ -187,13 +183,13 @@
                                 n/a5 n/a4
                                 n/b4 n/c#4
                                 n/d4))
-  
+
   (melodic-intervals rest-melody)
 
   (def salzer-fux-d (let [counterpoint-melody
                           (make-melody rest/r
                           ;;  n/a4 ;; first a4 should be a rest when implemented!!
-                                       n/d4 
+                                       n/d4
                                        n/a4 n/b4
                                        n/c4 n/g3
                                        n/f3 n/a4
@@ -205,8 +201,6 @@
                                        n/b4 n/c#4
                                        n/d4)]
                       (make-second-species fux-d counterpoint-melody :above)))
-  
-  (figured-bass-second salzer-fux-d)
 
   (allowed-melodic-intervals? salzer-fux-d)
   (correct-downbeat-intervals salzer-fux-d)
@@ -221,9 +215,6 @@
 
   (sh/sh "timidity" "resources/temp.midi")
   (sh/sh "timidity" "resources/temp.mid")
-  
 
-  (count fux-a)
-  (partition 2 [1 2 3])
 ;
   )

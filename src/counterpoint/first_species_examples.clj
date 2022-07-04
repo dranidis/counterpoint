@@ -4,7 +4,6 @@
                                                         albrechtsberger-f
                                                         boulanger-e boulanger-g cf-a cf-c fetis-c fux-a fux-d fux-g haydn-a mozart-c1 mozart-c2
                                                         salieri-c salieri-d]]
-            [counterpoint.figured-bass :refer [figured-bass-first]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?
                                                 correct-intervals
                                                 evaluate-species first-species-rules?]]
@@ -77,7 +76,6 @@
                                                                   n/c3 n/d3 n/c3 n/c3 n/e3 n/a3 n/a3 n/b3 n/c3)
                                                                  :below))
 
-  (figured-bass-first shubert-first-species-above-salieri-c)
   (def shubert-first-species-above-salieri-d
     (make-first-species salieri-d
                         (make-melody

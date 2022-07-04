@@ -2,7 +2,6 @@
   (:require [clojure.java.shell :as sh]
             [counterpoint.cantus-firmi-examples :refer [bellerman-a fux-d
                                                         schenker-d schoenberg-c]]
-            [counterpoint.figured-bass :refer [figured-bass-fourth]]
             [counterpoint.first-species-type :refer [get-low-high]]
             [counterpoint.fourth-species :refer [fourth-species-rules?
                                                  make-fourth-species]]
@@ -23,12 +22,11 @@
                                      n/d4)
                         :above))
 
-  (species->lily fux-d-4-species {:pattern "baba" :tempo "4=180"})
+  (species->lily fux-d-4-species {:pattern "ababrbrb" :tempo "4=140"})
 
   (get-low-high fux-d-4-species)
 
   (fourth-species-rules? fux-d-4-species)
-  (figured-bass-fourth fux-d-4-species)
   (sh/sh "timidity" "resources/temp.midi")
 ;;   (sh/sh "timidity" "resources/temp.mid")
 
@@ -43,7 +41,7 @@
                                            n/g#4
                                            n/a5)
                               :above))
-  (species->lily bellerman-a-4-species {:pattern "baba" :tempo "4=180"})
+  (species->lily bellerman-a-4-species {:pattern "barrbabr" :tempo "4=120"})
   (fourth-species-rules? bellerman-a-4-species)
 
 
