@@ -92,23 +92,41 @@
   \\midi { }
 }"))
 
-(defn melody->lily
-  ([melody] (melody->lily melody "treble"))
-  ([melody clef]
-   (spit "resources/temp.ly"
-         (staff clef "2 = 120"
-                (str "  \\new Voice = \"first\"
-     { \\voiceOne "
-                     (fixed-melody->lily 1 melody)
-                     "}")
-                midi-instrument))
-   (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
+;; (defn melody->lily
+;;   ([melody] (melody->lily melody "treble"))
+;;   ([melody clef]
+;;    (spit "resources/temp.ly"
+;;          (staff clef "2 = 120"
+;;                 (str "  \\new Voice = \"first\"
+;;      { \\voiceOne "
+;;                      (fixed-melody->lily 1 melody)
+;;                      "}")
+;;                 midi-instrument))
+;;    (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
+
 
 (defn voice [first voiceOne melody]
   (str "  \\new Voice = \"" first "\"
      { \\" voiceOne " "
        melody
        "}\n"))
+
+(defn melody->lily
+  ([melody] (melody->lily melody
+                          {:clef "treble"
+                           :pattern ""
+                           :tempo "2 = 80"}))
+  ([melody param]
+   (spit "resources/temp.ly"
+         (staff
+          (get param :clef "treble")
+          (get param :tempo "2 = 80")
+          (let [p (get param :pattern "")]
+            (if (= p "")
+              (voice "first" "voiceOne" (fixed-melody->lily 1 melody))
+              (voice "first" "voiceOne" (fixed-melody->lily 1 melody))))
+          (get param :midi midi-instrument)))
+   (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
 
 (defn end-to-1 [melody]
   (str (subs melody 0 (dec (count melody))) "1"))

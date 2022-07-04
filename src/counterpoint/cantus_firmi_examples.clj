@@ -1,5 +1,6 @@
 (ns counterpoint.cantus-firmi-examples
-  (:require [counterpoint.melody :refer [make-melody]]
+  (:require [counterpoint.lilypond :refer [melody->lily]]
+            [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as n]))
 
 (def fux-d (make-melody n/d3 n/f3 n/e3 n/d3 n/g3 n/f3 n/a4 n/g3 n/f3 n/e3 n/d3))
@@ -61,3 +62,7 @@
 (def schoenberg-c (make-melody n/c3 n/b3 n/g2 n/a3
                                n/e2 n/f2 n/a3 n/d2
                                n/g2 n/f2 n/d2 n/c2))
+
+(melody->lily schoenberg-c {:clef "treble_8"})
+
+
