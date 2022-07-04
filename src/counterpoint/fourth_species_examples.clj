@@ -99,7 +99,7 @@
                                             n/c3 n/b3
                                             n/c3)
                                :above))
-  (species->lily schoenberg-c-4-species {:pattern "abab" :clef "treble_8" :tempo "4=180"})
+  (species->lily schoenberg-c-4-species {:pattern "baraabra" :clef "treble_8" :tempo "4=120"})
 
   (fourth-species-rules? schoenberg-c-4-species)
   ;

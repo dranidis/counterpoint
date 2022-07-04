@@ -26,8 +26,8 @@
                                   n/c4)]
                  (make-second-species salieri-c counterpoint-melody :above)))
 
-  (species->lily species )
-  (sh/sh "timidity" "resources/temp.mid")
+  (species->lily species {:pattern "brba"} )
+  (sh/sh "timidity" "resources/temp.midi")
 
   (def species (let [counterpoint-melody
                      (make-melody n/d4 n/a4

@@ -147,7 +147,11 @@
      (if (#{1 2 4 8 16 32 64 128} duration)
        (fn [n1 n2] (let [s1 (note->lily duration n1)
                          s2 (note->lily duration n2)]
-                     (apply str (map #(if (= \a %) s1 s2) p))))
+                     (apply str (map #(cond
+                                        (= \a %) s1
+                                        (= \r %) (str "r" duration)
+                                        :else s2)
+                                     p))))
        (throw (Exception. (str "pattern: " p " has size " duration ". Length must be power of 2")))))))
 
 (defn voice-pattern [position p length cantus counter]
