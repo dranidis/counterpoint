@@ -15,5 +15,6 @@
   (let [cantus (get-cantus species)
         counter (get-counter species)]
     (if (= (get-position species) :above)
+      [cantus counter]
       [counter cantus]
-      [cantus counter])))
+      )))

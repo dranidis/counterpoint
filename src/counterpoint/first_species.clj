@@ -15,6 +15,7 @@
   (if (or (rest? note1) (rest? note2))
     true
     (let [harmony (simple-interval note1 note2)
+          pi (interval note1 note2)
           interval (Math/abs (get-interval harmony))
           result (case (get-quality harmony)
                    :perfect (not= interval 4)
@@ -25,8 +26,8 @@
                    false)]
       (rule-warning
        result
-       #(str "Not allowed harmonic interval " 
-             note1 note2 (interval note1 note2))))))
+       #(str "Not allowed harmonic interval "
+             note1 note2 pi)))))
 
 (defn correct-intervals-iter [position note1 note2 notes1 notes2]
   (and (if (= position :above)
@@ -38,20 +39,20 @@
          true
          (correct-intervals-iter position (first notes1) (first notes2) (rest notes1) (rest notes2)))))
 
-(defn correct-intervals [species]
-  (let [cantus (get-cantus species)
-        counter (get-counter species)
-        position (get-position species)]
-    (correct-intervals-iter position (first cantus) (first counter) (rest cantus) (rest counter))))
+;; (defn correct-intervals [species]
+;;   (let [cantus (get-cantus species)
+;;         counter (get-counter species)
+;;         position (get-position species)]
+;;     (correct-intervals-iter position (first cantus) (first counter) (rest cantus) (rest counter))))
 
 ;; (defn correct-intervals [species]
 ;;   (let [[low high] (get-low-high species)]
 ;;     (every? harmonic-consonant?
 ;;             (map simple-interval low high))))
 
-;; (defn correct-intervals [species]
-;;   (let [[low high] (get-low-high species)]
-;;     (every? true? (map correct-interval low high))))
+(defn correct-intervals [species]
+  (let [[low high] (get-low-high species)]
+    (every? true? (map correct-interval low high))))
 
 (defn last-interval? [species]
   (let [cantus (get-cantus species)
