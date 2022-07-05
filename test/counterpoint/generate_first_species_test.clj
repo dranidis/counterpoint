@@ -5,7 +5,7 @@
             [counterpoint.first-species-type :refer [make-first-species]]
             [counterpoint.generate-first-species :refer [generate-reverse-random-counterpoint]]))
 
-(deftest maximum-range-M10
+(deftest generate-first-test
   (testing "above"
     (let [cp (generate-reverse-random-counterpoint :above :c fux-d)
           species (make-first-species fux-d cp :above)]

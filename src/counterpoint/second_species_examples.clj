@@ -5,6 +5,7 @@
                                                         fux-e fux-f haydn haydn-a
                                                         mozart-c1 mozart-c2 salieri-c]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?]]
+            [counterpoint.generate-second-species :refer [generate-reverse-random-counterpoint-second]]
             [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.melody :refer [make-melody melodic-intervals
                                          melody-range]]
@@ -12,11 +13,36 @@
             [counterpoint.rest :as rest]
             [counterpoint.second-species :refer [correct-downbeat-intervals
                                                  correct-upbeat-intervals
-                                                 make-second-species
-                                                 no-undisguised-direct-motion-of-downbeats-to-perfect? second-species-rules?]]
+                                                 make-second-species no-undisguised-direct-motion-of-downbeats-to-perfect?
+                                                 second-species-rules?]]
             [counterpoint.utils :refer [rule-warning]]))
 
+
+(defn generate-and-play [cf key position]
+  (let [cp (generate-reverse-random-counterpoint-second position key cf)
+        species (make-second-species cf cp position)
+        ;; _ (println cp)
+        _ (println "RULES " (second-species-rules? species))
+        ;; _ (println "EVAL  " (evaluate-species species))
+        ]
+    (species->lily species
+                   {:clef (if (= position :above)
+                            "treble"
+                            "treble_8")
+                    ;; :pattern "baaa"
+                    :tempo "4 = 180"}))
+  (sh/sh "timidity" "resources/temp.midi")
+  ;; (sh/sh "timidity" "resources/temp.mid")
+  )
+
+(generate-and-play
+;;  (make-melody n/d3 n/a4 n/g3 n/f3 n/e3 n/d3)
+ fux-d
+ :c :above)
+
 (comment
+  
+
   (def species (let [counterpoint-melody
                      (make-melody n/c4 n/b4 n/a4 n/b4
                                   n/c4 n/g4 n/e4 n/c4
@@ -201,6 +227,7 @@
                                        n/b4 n/c#4
                                        n/d4)]
                       (make-second-species fux-d counterpoint-melody :above)))
+  salzer-fux-d
 
   (allowed-melodic-intervals? salzer-fux-d)
   (correct-downbeat-intervals salzer-fux-d)
