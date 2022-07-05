@@ -4,6 +4,7 @@
   [n acc])
 
 (defn get-note-nooctave [[n _]] n)
+(defn get-acc-nooctave [[_ a]] a)
 
 (defn make-note
   ([n o] (make-note n o :natural))

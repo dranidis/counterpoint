@@ -1,8 +1,9 @@
 (ns counterpoint.intervals
   (:require [counterpoint.key :refer [get-note-acc-at-key]]
-            [counterpoint.notes :refer [get-acc get-note
-                                        get-note-nooctave get-octave make-note
-                                        make-note-nooctave note->num num->note num2->note]]))
+            [counterpoint.notes :refer [get-acc get-acc-nooctave get-nooctave
+                                        get-note get-note-nooctave get-octave
+                                        make-note make-note-nooctave note->num num->note num2->note]]
+            [counterpoint.notes :as n]))
 
 (defn make-interval [n q]
   [n q])
@@ -46,6 +47,26 @@
         note' (num->note (+ note-num interval (if (pos? interval) -1 1)))
         accidental (get-note-acc-at-key key note')]
     (make-note-nooctave note' accidental)))
+
+;; TODO
+(defn next-diatonic [key note]
+  (let [n (note-at-diatonic-interval key (get-nooctave note) 2)
+        o (get-octave note)
+        name (get-note-nooctave n)]
+    (make-note name 
+               (+ o (if (= name :a) 1 0)) 
+               (get-acc-nooctave n))))
+
+;; TODO
+(defn prev-diatonic [key note]
+  (let [n (note-at-diatonic-interval key (get-nooctave note) -2)
+        o (get-octave note)
+        name (get-note-nooctave n)]
+    (make-note name
+               (+ o (if (= name :g) -1 0))
+               (get-acc-nooctave n))))
+
+
 
 (defn- semitones-of-interval [interval]
   (let [i (Math/abs (get-interval interval))

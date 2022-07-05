@@ -114,7 +114,7 @@
                                      (rest-bars double-cantus)
                                      (rest-bars counter)))))
 
-(defn- undisguised-direct-motion-of-downbeats-to-perfect [[ca1 ca2 ca3] [cou1 cou2 cou3]]
+(defn undisguised-direct-motion-of-downbeats-to-perfect [[ca1 ca2 ca3] [cou1 cou2 cou3]]
   (if (or (rest? ca1) (rest? cou1))
     false
     (and (direct-motion-to-perfect? ca1 cou1 ca3 cou3)
