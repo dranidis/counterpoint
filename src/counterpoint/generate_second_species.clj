@@ -1,9 +1,14 @@
 (ns counterpoint.generate-second-species
-  (:require [counterpoint.generate-first-species :refer [crossing-filter
+  (:require [counterpoint.cantus :refer [maximum-range-M10?]]
+            [counterpoint.core :refer [interval]]
+            [counterpoint.generate-first-species :refer [crossing-filter
                                                          dim-or-aug-filter
-                                                         ending-first next-harmonic-intervals next-melodic-intervals-reverse]]
-            [counterpoint.intervals :refer [note-at-diatonic-interval
-                                            note-at-melodic-interval P12- P5 P5-]]
+                                                         ending-first max-harmonic-interval next-harmonic-intervals
+                                                         next-melodic-intervals-reverse]]
+            [counterpoint.intervals :refer [get-interval
+                                            note-at-diatonic-interval note-at-melodic-interval P12-
+                                            P5 P5-]]
+            [counterpoint.melody :refer [append-to-melody]]
             [counterpoint.notes :refer [get-nooctave]]
             [counterpoint.rest :as rest]))
 
@@ -29,7 +34,9 @@
                              (filter #(not= previous-melody %))
                              (filter (dim-or-aug-filter position cantus-note))
                              (filter (crossing-filter position cantus-note))
-                             (filter #((set next-harmonic-candidates) (get-nooctave %))))]
+                             (filter #((set next-harmonic-candidates) (get-nooctave %)))
+                             (filter #(maximum-range-M10? (append-to-melody melody %)))
+                             (filter #(<= (Math/abs (get-interval (interval cantus-note %))) max-harmonic-interval)))]
     next-candidates))
 
 (defn- next-reverse-downbeat-candidates [position key melody m36s
@@ -84,15 +91,15 @@
         ;; _ (println "CHOSEN" current)
         ]
     ;; (into current
-          (if (empty? cantus-notes)
-            (into melody current)
-            (generate-reverse-random-counterpoint-second-iter
-             position
-             key
-             (into melody current)
-             (update-m36-size m36s position cantus-note current)
-             (second current)
-             cantus-note (first cantus-notes) (rest cantus-notes)))))
+    (if (empty? cantus-notes)
+      (into melody current)
+      (generate-reverse-random-counterpoint-second-iter
+       position
+       key
+       (into melody current)
+       (update-m36-size m36s position cantus-note current)
+       (second current)
+       cantus-note (first cantus-notes) (rest cantus-notes)))))
             ;;  )
 
 (defn generate-reverse-random-counterpoint-second [position key cantus]
@@ -102,19 +109,18 @@
           (ending-second position rev-cantus)
           melody [last-melody second-last-melody third-last-melody]
           generated (reverse (generate-reverse-random-counterpoint-second-iter
-                     position
-                     key
-                     melody
-                     m36s ;; counter of thirds & sixths
-                     third-last-melody
-                     (second rev-cantus)
-                     (nth rev-cantus 2)
-                     (subvec (into [] rev-cantus) 3)))
+                              position
+                              key
+                              melody
+                              m36s ;; counter of thirds & sixths
+                              third-last-melody
+                              (second rev-cantus)
+                              (nth rev-cantus 2)
+                              (subvec (into [] rev-cantus) 3)))
           ;; _ (println "GEN" generated)
           ]
       (into [] generated))
     (catch Exception _
       (println "Trying again...")
-      (generate-reverse-random-counterpoint-second position key cantus)
-      )))
+      (generate-reverse-random-counterpoint-second position key cantus))))
 
