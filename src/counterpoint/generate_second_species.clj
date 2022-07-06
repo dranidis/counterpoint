@@ -1,13 +1,14 @@
 (ns counterpoint.generate-second-species
   (:require [counterpoint.cantus :refer [maximum-range-M10?]]
-            [counterpoint.core :refer [interval simple-interval]]
+            [counterpoint.core :refer [interval]]
+            [counterpoint.first-species :refer [direct-motion-to-perfect?]]
             [counterpoint.generate-first-species :refer [crossing-filter
                                                          dim-or-aug-filter
                                                          ending-first max-harmonic-interval next-harmonic-intervals
                                                          next-melodic-intervals-reverse]]
-            [counterpoint.intervals :refer [get-interval harmonic-consonant?
-                                            next-diatonic
-                                            note-at-diatonic-interval note-at-melodic-interval P12- P5 P5- prev-diatonic]]
+            [counterpoint.intervals :refer [get-interval next-diatonic
+                                            note-at-diatonic-interval
+                                            note-at-melodic-interval P12- P5 P5- prev-diatonic]]
             [counterpoint.melody :refer [append-to-melody]]
             [counterpoint.notes :refer [get-nooctave]]
             [counterpoint.rest :as rest]
@@ -37,7 +38,8 @@
                              (filter (crossing-filter position cantus-note))
                              (filter #((set next-harmonic-candidates) (get-nooctave %)))
                              (filter #(maximum-range-M10? (append-to-melody melody %)))
-                             (filter #(<= (Math/abs (get-interval (interval cantus-note %))) max-harmonic-interval)))]
+                             (filter #(<= (Math/abs (get-interval (interval cantus-note %))) max-harmonic-interval))
+                             (filter #(not (direct-motion-to-perfect? cantus-note % previous-cantus previous-melody))))]
     next-candidates))
 
 (defn- next-reverse-downbeat-candidates [position key melody m36s
@@ -84,7 +86,8 @@
                                                                    (into  melody [upc])
                                                                    m36s
                                                                    upc
-                                                                   previous-cantus
+                                                                   ;; same note in cantus (held)
+                                                                   cantus-note
                                                                    cantus-note)
                                  upbeat [upc]]
                              (vector upbeat downbeat)))
@@ -92,36 +95,28 @@
         passing (if (> (get m36s :remaining-cantus-size) 1)
                   (passing-tones key previous-melody cantus-note)
                   nil)
-        result 
-        (remove nil?
-                       (conj (->> candidates
-         ;; add filter for parallel fifths (cannot be disguised)
-                                  (filter (fn [[u d]]
-                                            (let [cantus-bar [cantus-note cantus-note previous-cantus]
-                                                  counter-bar [d u previous-melody]]
-                    ;;  (and 
-                                              (not (undisguised-direct-motion-of-downbeats-to-perfect cantus-bar counter-bar))
-                      ;; (not (direct-motion-to-perfect? cantus-note u previous-cantus previous-melody))
-                      ;; )
-                                              ))))
-                             passing))
-        ;; _ (println "Cand before removing errors" result)
-        ]
-    result))
+        result (remove nil? (into candidates passing))]
+    (->> result
+         (filter (fn [[u d]]
+                   (let [cantus-bar [cantus-note cantus-note previous-cantus]
+                         counter-bar [d u previous-melody]]
+                     (and
+                      (not (undisguised-direct-motion-of-downbeats-to-perfect cantus-bar counter-bar))
+                      (not (direct-motion-to-perfect? cantus-note u previous-cantus previous-melody)))))))))
 
 (defn- update-m36-size [m36s position cantus-note current]
   (update m36s :remaining-cantus-size dec))
 
 (defn- generate-reverse-random-counterpoint-second-iter
   [position key melody m36s previous-melody previous-cantus cantus-note cantus-notes]
-  ;; (println "MELODY" (reverse melody))
+  (println "MELODY" (reverse melody))
   ;; (println "PREV MEL" previous-melody)
   ;; (println "PREV CAN" previous-cantus)
-  ;; (println "cantus note" cantus-note)
+  (println "cantus note" cantus-note)
   ;; (println "CANTUS NOTES" cantus-notes)
   (let [candidates (next-reverse-candidates
                     position key melody m36s previous-melody previous-cantus cantus-note)
-        ;; _ (println "CANDIDATES" candidates)
+        _ (println "CANDIDATES" candidates)
         _ (when (= 1 (count candidates))
             (println "FORCED"))
         current (rand-nth candidates)
