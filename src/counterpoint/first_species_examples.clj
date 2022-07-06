@@ -25,7 +25,7 @@
                    {:clef (if (= position :above)
                             "treble"
                             "treble_8")
-                    :pattern "baaa"
+                    :pattern ""
                     :tempo "4 = 240"}))
   (sh/sh "timidity" "resources/temp.midi")
   ;; (sh/sh "timidity" "resources/temp.mid")

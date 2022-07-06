@@ -23,8 +23,6 @@
                                                       (if octave? P12- P5-)))]
     [last-melody second-last-melody third-last-melody m36s]))
 
-
-
 (defn next-candidate-notes [position key melody m36s previous-melody previous-cantus cantus-note]
   (let [next-melodic-candidates (map
                                  #(note-at-melodic-interval previous-melody %)
@@ -54,11 +52,8 @@
   (let [downbeat-cands (if (= (get m36s :remaining-cantus-size) 1)
                          [rest/r]
                          (next-candidate-notes position key melody m36s
-                                               previous-melody previous-cantus cantus-note))
-        ;; _ (println "downbeat-cands" downbeat-cands)
-        ]
+                                               previous-melody previous-cantus cantus-note))]
     downbeat-cands))
-
 
 (defn passing-tones [position key previous-melody cantus-note]
   (let [p1 (note-at-diatonic-interval key (get-nooctave previous-melody) 3)
@@ -81,7 +76,6 @@
                                 previous-melody previous-cantus cantus-note]
   (let [upbeat-candidates (next-candidate-notes position key melody m36s
                                                 previous-melody previous-cantus cantus-note)
-        ;; _ (println "upbeat-candidates" upbeat-candidates)
         candidates (reduce
                     #(into %1 %2) []
                     (map (fn [upc]
@@ -102,16 +96,16 @@
                        (passing-tones position key previous-melody cantus-note)
                        nil)
                      (filter (fn [[p2 p1]]
-                               ((crossing-filter position cantus-note
-                                                 allowed-unisons?) p1))))
-        result (remove nil? (into candidates passing))]
-    (->> result
-         (filter (fn [[u d]]
+                               (and ((crossing-filter position cantus-note
+                                                      allowed-unisons?) p1)
+                                    ((dim-or-aug-filter position cantus-note) p1)))))]
+    (->> (remove nil? (into candidates passing))
+         (filter (fn [[upbeat downbeat]]
                    (let [cantus-bar [cantus-note cantus-note previous-cantus]
-                         counter-bar [d u previous-melody]]
+                         counter-bar [downbeat upbeat previous-melody]]
                      (and
                       (not (undisguised-direct-motion-of-downbeats-to-perfect cantus-bar counter-bar))
-                      (not (direct-motion-to-perfect? cantus-note u previous-cantus previous-melody)))))))))
+                      (not (direct-motion-to-perfect? cantus-note upbeat previous-cantus previous-melody)))))))))
 
 (defn- update-m36-size [m36s position cantus-note current]
   (update m36s :remaining-cantus-size dec))

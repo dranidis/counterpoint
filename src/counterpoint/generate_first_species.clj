@@ -1,11 +1,9 @@
 (ns counterpoint.generate-first-species
   (:require [counterpoint.cantus :refer [maximum-range-M10?]]
             [counterpoint.core :refer [interval]]
-            [counterpoint.intervals :refer [get-interval m10- m2 M2 m2-
-                                            M2- m3 M3 m3- M3- M6 m6-
-                                            note-at-diatonic-interval note-at-melodic-interval
-                                            get-quality
-                                            P1 P4 P4- P5 P5- P8 P8-]]
+            [counterpoint.intervals :refer [get-interval get-quality m10- m2
+                                            M2 m2- M2- m3 M3 m3- M3- M6 m6 m6-
+                                            note-at-diatonic-interval note-at-melodic-interval P1 P4 P4- P5 P5- P8 P8-]]
             [counterpoint.melody :refer [append-to-melody]]
             [counterpoint.motion :refer [reverse-direct-perfect?]]
             [counterpoint.notes :refer [get-nooctave] :as n]))
@@ -39,7 +37,8 @@
     :no-leap-high [
                   ;;  P1
                    m2 M2 m3 M3
-                   P4 P5 P8
+                   P4 P5 P8 
+                  ;;  m6 ; normally not allowed
                    m2- M2- m3- M3-]
     [
     ;;  P1
@@ -159,7 +158,6 @@
                  {:thirds 1 :sixths 0 :tens 0 :thirteens 0 :remaining-cantus-size rem-cantus}))]
     [last-melody second-last-melody m36s]))
 
-(last [1 2])
 (defn generate-reverse-random-counterpoint [position key cantus]
   (try
     (let [rev-cantus (reverse cantus)

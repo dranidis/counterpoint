@@ -38,7 +38,7 @@
 
 (generate-and-play
 ;;  (make-melody n/d3 n/g3 n/e3 n/d3)
- fux-g
+ fux-a
  :c :below
  "")
 
