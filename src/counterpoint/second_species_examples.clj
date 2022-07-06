@@ -1,9 +1,9 @@
 (ns counterpoint.second-species-examples
   (:require [clojure.java.shell :as sh]
             [counterpoint.cantus :refer [maximum-range-M10?]]
-            [counterpoint.cantus-firmi-examples :refer [bellerman-a fux-a
-                                                        fux-c fux-d fux-e fux-f
-                                                        haydn haydn-a mozart-c1 mozart-c2 salieri-c]]
+            [counterpoint.cantus-firmi-examples :refer [albrechtsberger-d
+                                                        fux-a fux-c fux-d fux-e
+                                                        fux-f haydn haydn-a mozart-c1 mozart-c2 salieri-c]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?]]
             [counterpoint.generate-second-species :refer [generate-reverse-random-counterpoint-second]]
             [counterpoint.lilypond :refer [species->lily]]
@@ -18,7 +18,7 @@
             [counterpoint.utils :refer [rule-warning]]))
 
 
-(defn generate-and-play [cf key position]
+(defn generate-and-play [cf key position pattern]
   (let [cp (generate-reverse-random-counterpoint-second position key cf)
         species (make-second-species cf cp position)
         ;; _ (println cp)
@@ -30,15 +30,17 @@
                             "treble"
                             "treble_8")
                     ;; :pattern "baaa"
-                    :tempo "4 = 180"}))
+                    :pattern pattern
+                    :tempo "4 = 200"}))
   (sh/sh "timidity" "resources/temp.midi")
   ;; (sh/sh "timidity" "resources/temp.mid")
   )
 
 (generate-and-play
 ;;  (make-melody n/d3 n/g3 n/e3 n/d3)
- fux-d
- :c :above)
+ albrechtsberger-d
+ :f :above
+ "")
 
 (comment
   

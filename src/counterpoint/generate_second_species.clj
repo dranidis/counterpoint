@@ -92,9 +92,15 @@
                                  upbeat [upc]]
                              (vector upbeat downbeat)))
                          upbeat-candidates))
-        passing (if (> (get m36s :remaining-cantus-size) 1)
-                  (passing-tones key previous-melody cantus-note)
-                  nil)
+        passing (->> (if (> (get m36s :remaining-cantus-size) 1)
+                       (passing-tones key previous-melody cantus-note)
+                       nil)
+                     (filter (fn [[p2 p1]] ((crossing-filter position cantus-note) p1))))
+        ;; _ (println "PASSING" passing)
+        ;; _ (doall (map #(if (not ((crossing-filter position cantus-note) (second %)))
+        ;;                  (println "CROSS" %)
+        ;;                  (println "OK" %))
+        ;;               passing))
         result (remove nil? (into candidates passing))]
     (->> result
          (filter (fn [[u d]]
@@ -109,16 +115,16 @@
 
 (defn- generate-reverse-random-counterpoint-second-iter
   [position key melody m36s previous-melody previous-cantus cantus-note cantus-notes]
-  (println "MELODY" (reverse melody))
+  ;; (println "MELODY" (reverse melody))
   ;; (println "PREV MEL" previous-melody)
   ;; (println "PREV CAN" previous-cantus)
-  (println "cantus note" cantus-note)
+  ;; (println "cantus note" cantus-note)
   ;; (println "CANTUS NOTES" cantus-notes)
   (let [candidates (next-reverse-candidates
                     position key melody m36s previous-melody previous-cantus cantus-note)
-        _ (println "CANDIDATES" candidates)
+        ;; _ (println "CANDIDATES" candidates)
         _ (when (= 1 (count candidates))
-            (println "FORCED"))
+            (println "FORCED" candidates))
         current (rand-nth candidates)
         ;; _ (println "CHOSEN" current)
         ]
@@ -153,6 +159,6 @@
           ]
       (into [] generated))
     (catch Exception _
-      (println "Trying again...")
+      (println "\nTrying again...")
       (generate-reverse-random-counterpoint-second position key cantus))))
 
