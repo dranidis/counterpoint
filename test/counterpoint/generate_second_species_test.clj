@@ -1,5 +1,6 @@
 (ns counterpoint.generate-second-species-test
   (:require [clojure.test :refer [deftest is testing]]
+            [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.generate-second-species :refer [generate-reverse-random-counterpoint-second]]
             [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as n]
@@ -26,13 +27,13 @@
   )
 
 (deftest generate-second-test
-  ;; (testing "above"
-  ;;   (let [cf (make-melody n/d4 n/f4 n/e4 n/d4)
-  ;;         cp (generate-reverse-random-counterpoint-second :above :c cf)
-  ;;         species (make-second-species cf cp :above)]
-  ;;     (println species)
-  ;;     (is
-  ;;      (second-species-rules? species))))
+  (testing "above"
+    (let [
+          cp (generate-reverse-random-counterpoint-second :above :c fux-d)
+          species (make-second-species fux-d cp :above)]
+      (println species)
+      (is
+       (second-species-rules? species))))
 
   ;; (testing "below"
   ;;   (let [cf (make-melody n/d4 n/f4 n/e4 n/d4)

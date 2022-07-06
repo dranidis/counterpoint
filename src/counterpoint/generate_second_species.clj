@@ -92,10 +92,12 @@
                                  upbeat [upc]]
                              (vector upbeat downbeat)))
                          upbeat-candidates))
+        allowed-unisons? false 
         passing (->> (if (> (get m36s :remaining-cantus-size) 1)
                        (passing-tones key previous-melody cantus-note)
                        nil)
-                     (filter (fn [[p2 p1]] ((crossing-filter position cantus-note) p1))))
+                     (filter (fn [[p2 p1]] ((crossing-filter position cantus-note
+                                                             allowed-unisons?) p1))))
         ;; _ (println "PASSING" passing)
         ;; _ (doall (map #(if (not ((crossing-filter position cantus-note) (second %)))
         ;;                  (println "CROSS" %)

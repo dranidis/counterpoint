@@ -84,8 +84,12 @@
           ]
       (< harmonic-repetitions harmonic-repetition-limit))))
 
-(defn crossing-filter [position next-cantus-note]
-  (fn [mc] (pos? (get-interval (species-interval position next-cantus-note mc)))))
+(defn crossing-filter 
+  ([position next-cantus-note] (crossing-filter position next-cantus-note true))
+  ([position next-cantus-note unison-allowed?]
+  (if unison-allowed?
+    (fn [mc] (pos? (get-interval (species-interval position next-cantus-note mc))))
+    (fn [mc] (> (get-interval (species-interval position next-cantus-note mc)) 1)))))
 
 (defn debug [s c]
   (when debug? (println s c)) c)
