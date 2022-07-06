@@ -80,6 +80,7 @@
 (def f3 (make-note :f 3))
 (def f4 (make-note :f 4))
 
+(def f#2 (make-note :f 2 :sharp))
 (def f#3 (make-note :f 3 :sharp))
 (def f#4 (make-note :f 4 :sharp))
 

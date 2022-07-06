@@ -39,6 +39,9 @@
                              (filter #((set next-harmonic-candidates) (get-nooctave %)))
                              (filter #(maximum-range-M10? (append-to-melody melody %)))
                              (filter #(<= (Math/abs (get-interval (interval cantus-note %))) max-harmonic-interval))
+
+                            ;;  haydn-a is not solvable
+                             ;; is this examined twice??
                              (filter #(not (direct-motion-to-perfect? cantus-note % previous-cantus previous-melody))))]
     next-candidates))
 
@@ -94,17 +97,13 @@
                                  upbeat [upc]]
                              (vector upbeat downbeat)))
                          upbeat-candidates))
-        allowed-unisons? false 
+        allowed-unisons? false
         passing (->> (if (> (get m36s :remaining-cantus-size) 1)
                        (passing-tones position key previous-melody cantus-note)
                        nil)
-                     (filter (fn [[p2 p1]] ((crossing-filter position cantus-note
-                                                             allowed-unisons?) p1))))
-        ;; _ (println "PASSING" passing)
-        ;; _ (doall (map #(if (not ((crossing-filter position cantus-note) (second %)))
-        ;;                  (println "CROSS" %)
-        ;;                  (println "OK" %))
-        ;;               passing))
+                     (filter (fn [[p2 p1]]
+                               ((crossing-filter position cantus-note
+                                                 allowed-unisons?) p1))))
         result (remove nil? (into candidates passing))]
     (->> result
          (filter (fn [[u d]]
@@ -127,8 +126,9 @@
   (let [candidates (next-reverse-candidates
                     position key melody m36s previous-melody previous-cantus cantus-note)
         ;; _ (println "CANDIDATES" candidates)
-        _ (when (= 1 (count candidates))
-            (println "FORCED" candidates))
+        ;; _ (case (count candidates)
+        ;;     1 (println "FORCED" candidates)
+        ;;     0 (println "No candidates"))
         current (rand-nth candidates)
         ;; _ (println "CHOSEN" current)
         ]

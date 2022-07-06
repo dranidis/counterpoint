@@ -1,9 +1,9 @@
 (ns counterpoint.second-species-examples
   (:require [clojure.java.shell :as sh]
             [counterpoint.cantus :refer [maximum-range-M10?]]
-            [counterpoint.cantus-firmi-examples :refer [boulanger-g fux-a
-                                                        fux-c fux-d fux-e fux-f
-                                                        haydn haydn-a mozart-c1 mozart-c2 salieri-c]]
+            [counterpoint.cantus-firmi-examples :refer [fux-a fux-c fux-d
+                                                        fux-e fux-f fux-g haydn
+                                                        haydn-a mozart-c1 mozart-c2 salieri-c]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?]]
             [counterpoint.generate-second-species :refer [generate-reverse-random-counterpoint-second]]
             [counterpoint.lilypond :refer [species->lily]]
@@ -38,12 +38,15 @@
 
 (generate-and-play
 ;;  (make-melody n/d3 n/g3 n/e3 n/d3)
- fux-d
+ fux-g
  :c :below
  "")
 
+;; Unsolvable
+;; below haydn-a, cf-c, cf-a, fux-g
+
 (comment
-  
+
 
   (def species (let [counterpoint-melody
                      (make-melody n/c4 n/b4 n/a4 n/b4
@@ -229,7 +232,24 @@
                                        n/b4 n/c#4
                                        n/d4)]
                       (make-second-species fux-d counterpoint-melody :above)))
-  salzer-fux-d
+
+  (def fux-g-2nd (let [counterpoint-melody
+                       (make-melody rest/r
+                                    n/g2
+                                    n/e2 n/f2
+                                    n/g2 n/f2
+                                    n/e2 n/d2
+                                    n/c2 n/e2
+                                    n/c2 n/c3
+                                    n/b3 n/a3
+                                    n/g2 n/b3
+
+                                    n/c3 n/b3
+                                    n/a3 n/g2
+                                    n/f#2 n/d2
+                                    n/g2 n/b2
+                                    n/d2 n/f#2 n/g2)]
+                   (make-second-species fux-g counterpoint-melody :below)))
 
   (allowed-melodic-intervals? salzer-fux-d)
   (correct-downbeat-intervals salzer-fux-d)
@@ -239,8 +259,10 @@
   (second-species-rules? salzer-fux-d)
   (species->lily salzer-fux-d)
 
-  (second-species-rules? species)
-  (species->lily species)
+  (second-species-rules? fux-g-2nd)
+  (species->lily fux-g-2nd {:clef      "treble_8"
+                            :pattern ""
+                            :tempo "4 = 200"})
 
   (sh/sh "timidity" "resources/temp.midi")
   (sh/sh "timidity" "resources/temp.mid")
