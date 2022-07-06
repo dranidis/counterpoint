@@ -2,7 +2,8 @@
   (:require [clojure.test :refer [deftest is testing]]
             [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as n]
-            [counterpoint.second-species :refer [downbeats-second passing-tone]]))
+            [counterpoint.second-species :refer [downbeats-second passing-tone
+                                                 undisguised-direct-motion-of-downbeats-to-perfect]]))
 
 (deftest downbeats-test
   (testing "one note melody"
@@ -28,4 +29,10 @@
     (is (passing-tone [n/f4 n/g4 n/a5])))
   (testing "f g a'"
     (is (not (passing-tone [n/f4 n/g4 n/a4])))))
+
+(deftest undisguised-direct-motion-of-downbeats-to-perfect-test
+  (testing "g f e"
+    (is (not (undisguised-direct-motion-of-downbeats-to-perfect
+              [[:d 3 :natural] [:d 3 :natural] [:e 3 :natural]]
+              [[:b 2 :natural] [:b 3 :natural] [:a 3 :natural]])))))
 

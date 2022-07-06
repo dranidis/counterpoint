@@ -57,12 +57,14 @@
     downbeat-cands))
 
 
-(defn passing-tones [key previous-melody cantus-note]
+(defn passing-tones [position key previous-melody cantus-note]
   (let [p1 (note-at-diatonic-interval key (get-nooctave previous-melody) 3)
         p2 (note-at-diatonic-interval key (get-nooctave previous-melody) -3)
         next-harmonic-candidates (set (map
                                        #(note-at-diatonic-interval key (get-nooctave cantus-note) %)
-                                       [1 3 5 6]))
+                                       (if (= position :above)
+                                         [1 3 5 6]
+                                         [1 -3 -5 -6])))
         p1? (next-harmonic-candidates p1)
         p2? (next-harmonic-candidates p2)]
     (remove nil?
@@ -94,7 +96,7 @@
                          upbeat-candidates))
         allowed-unisons? false 
         passing (->> (if (> (get m36s :remaining-cantus-size) 1)
-                       (passing-tones key previous-melody cantus-note)
+                       (passing-tones position key previous-melody cantus-note)
                        nil)
                      (filter (fn [[p2 p1]] ((crossing-filter position cantus-note
                                                              allowed-unisons?) p1))))

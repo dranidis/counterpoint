@@ -53,6 +53,8 @@
 
   (get-low-high fux-d-above)
 
+  (def cp (generate-reverse-random-counterpoint :above :c fux-d))
+
 
   (correct-intervals fux-a-above)
   (species->lily fux-a-above)
