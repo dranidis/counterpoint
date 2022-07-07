@@ -1,4 +1,4 @@
-(ns counterpoint.dfs
+(ns counterpoint.dfs.dfs
   (:require [counterpoint.intervals :refer [note-at-melodic-interval P4 P5]]
             [counterpoint.notes :as n]))
 
