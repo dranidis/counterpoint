@@ -4,19 +4,37 @@
             [counterpoint.first-species :refer [direct-motion-to-perfect?]]
             [counterpoint.generate-first-species :refer [crossing-filter
                                                          dim-or-aug-filter
-                                                         ending-first max-harmonic-interval next-harmonic-intervals
-                                                         next-melodic-intervals-reverse]]
-            [counterpoint.intervals :refer [get-interval next-diatonic
-                                            note-at-diatonic-interval
-                                            note-at-melodic-interval P12- P5 P5- prev-diatonic]]
+                                                         max-harmonic-interval next-harmonic-intervals next-melodic-intervals-reverse]]
+            [counterpoint.intervals :refer [get-interval m10- m3- M6
+                                            next-diatonic note-at-diatonic-interval
+                                            note-at-melodic-interval P1 P12- P5 P5- P8 P8- prev-diatonic]]
             [counterpoint.melody :refer [append-to-melody]]
             [counterpoint.notes :refer [get-nooctave]]
             [counterpoint.rest :as rest]
             [counterpoint.second-species :refer [undisguised-direct-motion-of-downbeats-to-perfect]]))
 
+(defn ending-first-revised [octave? position rev-cantus]
+  (let [
+        last-melody (note-at-melodic-interval (first rev-cantus)
+                                              (if (= position :above)
+                                                (if octave? P8 P8)
+                                                (if octave? P8- P1)))
+        second-last-melody (note-at-melodic-interval (second rev-cantus)
+                                                     (if (= position :above)
+                                                       (if octave? M6 M6)
+                                                       (if octave? m10- m3-)))
+        rem-cantus (- (count rev-cantus) 2)
+        m36s (if (= position :above)
+               {:thirds 0 :sixths 1 :tens 0 :thirteens 0 :remaining-cantus-size rem-cantus}
+               (if octave?
+                 {:thirds 0 :sixths 0 :tens 1 :thirteens 0 :remaining-cantus-size rem-cantus}
+                 {:thirds 1 :sixths 0 :tens 0 :thirteens 0 :remaining-cantus-size rem-cantus}))]
+    [last-melody second-last-melody m36s]))
+
+
 (defn- ending-second [position rev-cantus]
   (let [octave? (> (rand-int 10) 4)
-        [last-melody second-last-melody m36s] (ending-first position rev-cantus)
+        [last-melody second-last-melody m36s] (ending-first-revised octave? position rev-cantus)
         third-last-melody (note-at-melodic-interval (second rev-cantus)
                                                     (if (= position :above)
                                                       (if octave? P5 P5)
@@ -159,4 +177,5 @@
     (catch Exception _
       (println "\nTrying again...")
       (generate-reverse-random-counterpoint-second position key cantus))))
+
 
