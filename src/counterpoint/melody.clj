@@ -38,9 +38,10 @@
           (melodic-intervals-iter (first notes) (rest notes)))))
 
 (defn melodic-intervals [melody]
-  (if (> (count melody) 1)
-    (melodic-intervals-iter (first melody) (rest melody))
-    []))
+  (filter #(not= :rest-interval %)
+          (if (> (count melody) 1)
+            (melodic-intervals-iter (first melody) (rest melody))
+            [])))
 
 (defn transpose [melody octaves]
   (map #(if (rest? %)
@@ -85,8 +86,8 @@
                               #(or (= :aug (get-quality %))
                                    (= :dim (get-quality %)))
                               (melodic-intervals (melody-skeleton melody))))
-        _ (when (> skeleton-diminished 0)
-            (println "Diminished interval in melody skeleton"))
+        ;; _ (when (> skeleton-diminished 0)
+        ;;     (println "Diminished interval in melody skeleton"))
         score (+ (* -5 leaps)
                  (* -10 unisons)
                  (* -2 thirds)

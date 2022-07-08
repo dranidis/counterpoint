@@ -1,13 +1,14 @@
 (ns counterpoint.gen-second-dfs
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [fetis-c]]
+            [counterpoint.cantus-firmi-examples :refer [mozart-c1]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.gen-first-dfs :refer [solution?]]
             [counterpoint.generate-second-species :refer [ending-second
                                                           next-reverse-candidates
                                                           update-m36-size]]
             [counterpoint.lilypond :refer [species->lily]]
-            [counterpoint.second-species :refer [make-second-species
+            [counterpoint.second-species :refer [evaluate-second-species
+                                                 make-second-species
                                                  second-species-rules?]]))
 
 
@@ -33,7 +34,7 @@
                  current]
 ;;   (if (empty? cantus-notes)
 ;;       (into melody current)
-  
+
   [position
    key
    (into melody current)
@@ -58,16 +59,26 @@
                    (subvec (into [] rev-cantus) 3)]]
     (generate-dfs-solutions root-node candidates next-node solution?)))
 
-(def position :above)
-(def cf fetis-c)
+(def position :below)
+(def cf mozart-c1)
 (def at-key :c)
 (def cps (generate-reverse-random-counterpoint-2nd-dfs position at-key cf))
-(println (if (= 0 (count cps)) "NO SOLUTIONS" (str (count cps) "solutions")))
-(def cp (reverse (nth (first cps) 2)))
-(def species (make-second-species cf cp position))
+
+(println (if (= 0 (count cps)) "NO SOLUTIONS" (str (count cps) " solutions")))
+;; (def cp (reverse (nth (first cps) 2)))
+;; (def species (make-second-species cf cp position))
+
+
+
+(def species (apply max-key #(let [e (evaluate-second-species  %)]
+                              ;;  (println e)
+                               e)
+                    (map #(make-second-species cf (reverse (nth % 2)) position) cps)))
+
+;; (map #(evaluate-second-species (make-second-species cf (reverse (nth % 2)) position)) cps)
 
 (println "RULES " (second-species-rules? species))
-
+(evaluate-second-species species)
 (species->lily species
                {:clef (if (= position :above)
                         "treble"

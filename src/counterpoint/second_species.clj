@@ -4,10 +4,11 @@
                                                 correct-interval
                                                 correct-intervals-iter direct-motion-to-perfect?]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
-                                                     get-low-high
-                                                     get-position make-species]]
+                                                     get-low-high get-position
+                                                     make-species]]
             [counterpoint.intervals :refer [get-interval]]
-            [counterpoint.melody :refer [double-melody remove-last]]
+            [counterpoint.melody :refer [double-melody melody-score
+                                         remove-last]]
             [counterpoint.motion :refer [type-of-motion]]
             [counterpoint.notes :as n]
             [counterpoint.rest :refer [rest?]]
@@ -166,3 +167,21 @@
 ;;    avoid consecutive perfect intervals
    ))
 
+(defn evaluate-second-species [species]
+  (let [
+        ;; harm-int (rest (remove-last (get-harmonic-intervals species)))
+        ;; [p1-count p8-count p5-count] (map (fn [int]
+        ;;                                     (count (filter #(= int %) harm-int)))
+        ;;                                   [P1 P8 P5])
+        ;; cp-ints (melodic-intervals (get-counter species))
+        ;; ca-ints (melodic-intervals (get-cantus species))
+        ;; simult-leaps (simultaneous-leaps ca-ints cp-ints)
+
+        ;; score (+ (* -10 p1-count)
+        ;;          (* -5 p8-count)
+        ;;          (* -2 p5-count)
+        ;;          (* -20 simult-leaps))
+        score 0
+        melody-s (melody-score (get-counter species))
+        ]
+    (float (/ (+ score melody-s) (count (get-cantus species))))))
