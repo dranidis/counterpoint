@@ -1,15 +1,15 @@
 (ns counterpoint.gen-first-dfs
   (:require [clojure.java.shell :as sh]
             [counterpoint.cantus-firmi-examples :refer [fux-a fux-d]]
+            [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.first-species :refer [evaluate-species
                                                 first-species-rules?]]
             [counterpoint.first-species-type :refer [make-first-species]]
-            [counterpoint.generate-first-species :refer [ending-first
-                                                         next-reverse-candidates
-                                                         update-m36-size]]
+            [counterpoint.generate-first-species :refer [next-reverse-candidates update-m36-size]]
+            [counterpoint.intervals :refer [get-interval m10- m3- M6
+                                            note-at-melodic-interval P1 P8 P8-]]
             [counterpoint.lilypond :refer [species->lily]]))
-
 
 (defn solution? [[position
                   key
@@ -29,9 +29,18 @@
                    previous-cantus
                    cantus-note
                    cantus-notes]]
-  (next-reverse-candidates
-   position key melody m36s previous-melody previous-cantus cantus-note))
-
+  (case (count melody)
+    0 (if (= position :above)
+        [(note-at-melodic-interval cantus-note P8)]
+        [(note-at-melodic-interval cantus-note P8-)
+         (note-at-melodic-interval cantus-note P1)])
+    1 (if (= position :above)
+        [(note-at-melodic-interval cantus-note M6)]
+        [(if (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
+           m10- 
+           m3-)])
+    (next-reverse-candidates
+     position key melody m36s previous-melody previous-cantus cantus-note)))
 
 (defn next-node [[position
                   key
@@ -42,27 +51,30 @@
                   cantus-note
                   cantus-notes]
                  current]
+  (println melody current)
   [position
    key
    (into melody [current])
    (update-m36-size m36s position cantus-note current)
-   current 
+   current
    cantus-note
    (first cantus-notes)
    (rest cantus-notes)])
 
 (defn generate-reverse-random-counterpoint-dfs [position key cantus]
   (let [rev-cantus (reverse cantus)
-        [last-melody second-last-melody m36s] (ending-first position rev-cantus)
-        melody [last-melody second-last-melody]
+        m36s {:thirds 0 :sixths 0 :tens 0 :thirteens 0 :remaining-cantus-size (dec (count rev-cantus))}
+        melody []
+        previous-melody nil
+        previous-cantus nil
         root-node [position
                    key
                    melody
                    m36s ;; counter of thirds & sixths
-                   second-last-melody
-                   (second rev-cantus)
-                   (nth rev-cantus 2)
-                   (subvec (into [] rev-cantus) 3)]]
+                   previous-melody
+                   previous-cantus
+                   (first rev-cantus)
+                   (rest rev-cantus)]]
     (generate-dfs-solutions root-node candidates next-node solution?)))
 
 
@@ -85,7 +97,7 @@
   ;; (sh/sh "timidity" "resources/temp.mid")
   )
 
-;; (play 5 fux-d :above)
+(play 0 fux-d :above)
 
 ;; (apply max (doall (map #(evaluate-species (make-first-species fux-d (reverse (nth % 2)) :above)) cps)))
 
@@ -95,8 +107,8 @@
       position :below
       cps (generate-reverse-random-counterpoint-dfs position key cf)
       _ (println "ALL" (count cps))
-      
-      
+
+
       species (apply max-key #(let [e (evaluate-species  %)]
                                 (println e)
                                 e)
