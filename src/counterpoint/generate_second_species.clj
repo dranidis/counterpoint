@@ -32,7 +32,7 @@
     [last-melody second-last-melody m36s]))
 
 
-(defn- ending-second [position rev-cantus]
+(defn ending-second [position rev-cantus]
   (let [octave? (> (rand-int 10) 4)
         [last-melody second-last-melody m36s] (ending-first-revised octave? position rev-cantus)
         third-last-melody (note-at-melodic-interval (second rev-cantus)
@@ -90,7 +90,7 @@
                 (conj (if p2? [(prev-diatonic key previous-melody)
                                (prev-diatonic key (prev-diatonic key previous-melody))] nil))))))
 
-(defn- next-reverse-candidates [position key melody m36s
+(defn next-reverse-candidates [position key melody m36s
                                 previous-melody previous-cantus cantus-note]
   (let [upbeat-candidates (next-candidate-notes position key melody m36s
                                                 previous-melody previous-cantus cantus-note)
@@ -125,7 +125,7 @@
                       (not (undisguised-direct-motion-of-downbeats-to-perfect cantus-bar counter-bar))
                       (not (direct-motion-to-perfect? cantus-note upbeat previous-cantus previous-melody)))))))))
 
-(defn- update-m36-size [m36s position cantus-note current]
+(defn update-m36-size [m36s position cantus-note current]
   (update m36s :remaining-cantus-size dec))
 
 (defn- generate-reverse-random-counterpoint-second-iter
