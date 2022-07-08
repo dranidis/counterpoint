@@ -35,13 +35,13 @@
     :high [m2 M2 m3 M3]
     :low [m2- M2- m3- M3-]
     :no-leap-high [
-                  ;;  P1
+                   P1
                    m2 M2 m3 M3
                    P4 P5 P8 
                   ;;  m6 ; normally not allowed
                    m2- M2- m3- M3-]
     [
-    ;;  P1
+     P1
      m2 M2 m3 M3
      m2- M2- m3- M3-
      P4- P5- m6-

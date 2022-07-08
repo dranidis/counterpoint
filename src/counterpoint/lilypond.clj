@@ -213,9 +213,11 @@
   ([species] (species->lily species
                             {:clef "treble"
                              :pattern ""
-                             :tempo "2 = 80"}))
+                             :tempo "2 = 80"
+                             :file "temp"}))
   ([species param]
-   (spit "resources/temp.ly"
+   (let [file-name (str "resources/" (get param :file "temp") ".ly")]
+     (spit file-name
          (staff
           (get param :clef "treble")
           (get param :tempo "2 = 80")
@@ -224,5 +226,5 @@
               (voices species)
               (voices-pattern p species)))
           (get param :midi midi-instrument)))
-   (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
+   (sh/sh "lilypond" "-o" "resources" file-name))))
 
