@@ -14,8 +14,7 @@
             [counterpoint.second-species :refer [undisguised-direct-motion-of-downbeats-to-perfect]]))
 
 (defn ending-first-revised [octave? position rev-cantus]
-  (let [
-        last-melody (note-at-melodic-interval (first rev-cantus)
+  (let [last-melody (note-at-melodic-interval (first rev-cantus)
                                               (if (= position :above)
                                                 (if octave? P8 P8)
                                                 (if octave? P8- P1)))
@@ -91,7 +90,7 @@
                                (prev-diatonic key (prev-diatonic key previous-melody))] nil))))))
 
 (defn next-reverse-candidates [position key melody m36s
-                                previous-melody previous-cantus cantus-note]
+                               previous-melody previous-cantus cantus-note]
   (let [upbeat-candidates (next-candidate-notes position key melody m36s
                                                 previous-melody previous-cantus cantus-note)
         candidates (reduce
