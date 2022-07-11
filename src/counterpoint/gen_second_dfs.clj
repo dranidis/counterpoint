@@ -1,7 +1,6 @@
 (ns counterpoint.gen-second-dfs
   (:require [clojure.java.shell :as sh]
-            [clojure.pprint :as pprint]
-            [counterpoint.cantus-firmi-examples :refer [fux-d haydn-a]]
+            [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.gen-first-dfs :refer [dfs-solution->cp
@@ -10,7 +9,7 @@
             [counterpoint.generate-second-species :refer [next-reverse-candidates update-m36-size]]
             [counterpoint.intervals :refer [get-interval
                                             note-at-melodic-interval P12- P5 P5-]]
-            [counterpoint.lilypond :refer [melody->lily species->lily]]
+            [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.second-species :refer [evaluate-second-species
                                                  make-second-species
                                                  second-species-rules?]]))
@@ -74,43 +73,29 @@
     (generate-dfs-solutions root-node candidates next-node solution?)))
 
 
-;; (def cps (generate-reverse-counterpoint-2nd-dfs :below :c fux-d))
-;; (def cp (dfs-solution->cp (first cps)))
-;; (def species (make-second-species fux-d cp :below))
-;; species
-;; (pprint/pp)
-;; (species->lily species)
-;; (second-species-rules? species)
-;; (sh/sh "timidity" "resources/temp.midi")
-
 (comment
   (def position :below)
-  (def cf haydn-a)
+  (def cf fux-d)
   (def at-key :c)
   (def cps (generate-reverse-counterpoint-2nd-dfs position at-key cf))
 
-;; (println (if (= 0 (count cps)) "NO SOLUTIONS" (str (count cps) " solutions")))
-;; (def cp (reverse (nth (first cps) 2)))
+  (def first-sol (make-second-species cf (dfs-solution->cp (first cps)) position))
 
-  (def species (make-second-species cf (dfs-solution->cp (first cps)) position))
-  cps
-  species
-;; (def species (apply max-key #(let [e (evaluate-second-species  %)]
-;;                               ;;  (println e)
-;;                                e)
-;;                     (map #(make-second-species cf (reverse (nth % 2)) position) cps)))
+  (def best-sol (apply max-key #(let [e (evaluate-second-species  %)]
+                              ;;  (println e)
+                                  e)
+                       (map #(make-second-species cf (dfs-solution->cp %) position) cps)))
 
-;; (map #(evaluate-second-species (make-second-species cf (reverse (nth % 2)) position)) cps)
-
-  (println "RULES " (second-species-rules? species))
-  (evaluate-second-species species)
-  (species->lily species
+  (second-species-rules? best-sol)
+  (println "RULES " (second-species-rules? best-sol))
+  (evaluate-second-species best-sol)
+  (species->lily best-sol
                  {:clef (if (= position :above)
                           "treble"
                           "treble_8")
                     ;; :pattern "baaa"
                   :pattern ""
                   :tempo "4 = 200"})
-;; (sh/sh "timidity" "resources/temp.midi")
-
-  (melody->lily haydn-a))
+  (sh/sh "timidity" "resources/temp.midi")
+  ;
+  )

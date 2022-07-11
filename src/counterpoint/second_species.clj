@@ -119,21 +119,15 @@
 
   (if (or (rest? ca1) (rest? cou1))
     false
-    (let [_ nil
-          ;; _ (println "DIR" (direct-motion-to-perfect? ca1 cou1 ca3 cou3))
-          ;; _   (println "INT" (interval ca3 cou3))
-          ;; _ (println "COUNT INT" cou1 cou2 (interval cou1 cou2))
-          ;; _ (print "MOTION" (type-of-motion ca2 cou2 ca3 cou3))
-          ]
-      (and (direct-motion-to-perfect? ca1 cou1 ca3 cou3)
-           (not (and (= :contrary (type-of-motion ca2 cou2 ca3 cou3))
-                     (> (Math/abs (get-interval (interval cou1 cou2))) 3)))))))
+    (and (direct-motion-to-perfect? ca1 cou1 ca3 cou3)
+         (not (and (= :contrary (type-of-motion ca2 cou2 ca3 cou3))
+                   (> (Math/abs (get-interval (interval cou1 cou2))) 3))))))
 
 (defn- no-undisguised-direct-motion-of-downbeats-to-perfect-iter?
   [cantus-bar counter-bar rest-cantus rest-counter]
   (and (rule-warning
         (not (undisguised-direct-motion-of-downbeats-to-perfect cantus-bar counter-bar))
-        #(println "Undisguised direct motion to perfect interval: " 
+        #(println "Undisguised direct motion to perfect interval: "
                   "\ncf" cantus-bar "\ncp" counter-bar))
        (if (< (count rest-cantus) 2)
          true
@@ -150,8 +144,7 @@
      (first-three double-cantus)
      (first-three counter)
      (rest-bars double-cantus)
-     (rest-bars counter))
-    ))
+     (rest-bars counter))))
 
 (defn second-species-rules? [species]
   (and
