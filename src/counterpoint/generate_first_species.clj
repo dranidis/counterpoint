@@ -16,16 +16,17 @@
 (def debug? false)
 
 
-(defn melody-reverse-leap
-  [melody]
-  (let [i (get-interval (interval (nth melody (- (count melody) 2)) (last melody)))]
+(defn melody-reverse-leap [melody]
+  (if (= 1 (count melody))
+    :no-leap-low
+    (let [i (get-interval (interval (nth melody (- (count melody) 2)) (last melody)))]
     ;; (println "Melody int" melody i)
-    (cond
-      (= (Math/abs i) 1) :unison
-      (> i 3) :low
-      (< i -3) :high
-      (neg? i) :no-leap-high
-      :else :no-leap-low)))
+      (cond
+        (= (Math/abs i) 1) :unison
+        (> i 3) :low
+        (< i -3) :high
+        (neg? i) :no-leap-high
+        :else :no-leap-low))))
 
 
 (defn next-melodic-intervals-reverse [melody]
@@ -34,14 +35,12 @@
              m2- M2- m3- M3-]
     :high [m2 M2 m3 M3]
     :low [m2- M2- m3- M3-]
-    :no-leap-high [
-                   P1
+    :no-leap-high [P1
                    m2 M2 m3 M3
-                   P4 P5 P8 
+                   P4 P5 P8
                   ;;  m6 ; normally not allowed
                    m2- M2- m3- M3-]
-    [
-     P1
+    [P1
      m2 M2 m3 M3
      m2- M2- m3- M3-
      P4- P5- m6-
@@ -83,12 +82,12 @@
           ]
       (< harmonic-repetitions harmonic-repetition-limit))))
 
-(defn crossing-filter 
+(defn crossing-filter
   ([position next-cantus-note] (crossing-filter position next-cantus-note true))
   ([position next-cantus-note unison-allowed?]
-  (if unison-allowed?
-    (fn [mc] (pos? (get-interval (species-interval position next-cantus-note mc))))
-    (fn [mc] (> (get-interval (species-interval position next-cantus-note mc)) 1)))))
+   (if unison-allowed?
+     (fn [mc] (pos? (get-interval (species-interval position next-cantus-note mc))))
+     (fn [mc] (> (get-interval (species-interval position next-cantus-note mc)) 1)))))
 
 (defn debug [s c]
   (when debug? (println s c)) c)

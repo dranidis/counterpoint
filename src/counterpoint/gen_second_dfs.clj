@@ -1,6 +1,6 @@
 (ns counterpoint.gen-second-dfs
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [fux-d]]
+            [counterpoint.cantus-firmi-examples :refer [salieri-c salieri-d]]
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.gen-first-dfs :refer [dfs-solution->cp
@@ -72,10 +72,31 @@
                    (rest rev-cantus)]]
     (generate-dfs-solutions root-node candidates next-node solution?)))
 
+(defn play-best-second [cf key position]
+  (let [cps (generate-reverse-counterpoint-2nd-dfs position key cf)
+        _ (println "ALL" (count cps))
+        species (apply max-key #(let [e (evaluate-second-species  %)]
+                                ;; (println e)
+                                  e)
+                       (map #(make-second-species cf (dfs-solution->cp %) position) cps))
+        _ (println "RULES " (second-species-rules? species))
+        _ (println "EVAL  " (evaluate-second-species species))]
+    (species->lily species
+                   {:clef
+                    (if (= position :above)
+                      "treble"
+                      "treble_8")
+                    :pattern ""
+                    :tempo "4 = 240"})
+    (sh/sh "timidity" "resources/temp.midi")
+  ;
+    ))
+
+;; (play-best-second salieri-d :key :above)
 
 (comment
   (def position :below)
-  (def cf fux-d)
+  (def cf salieri-d)
   (def at-key :c)
   (def cps (generate-reverse-counterpoint-2nd-dfs position at-key cf))
 
@@ -86,6 +107,7 @@
                                   e)
                        (map #(make-second-species cf (dfs-solution->cp %) position) cps)))
 
+  
   (second-species-rules? best-sol)
   (println "RULES " (second-species-rules? best-sol))
   (evaluate-second-species best-sol)

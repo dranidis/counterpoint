@@ -63,6 +63,9 @@
                                n/e2 n/f2 n/a3 n/d2
                                n/g2 n/f2 n/d2 n/c2))
 
-(melody->lily schoenberg-c {:clef "treble_8"})
+(def test-cf (make-melody n/d3 n/f3 n/e3 n/d3))
+(def test-cf2 (make-melody n/d3 n/c3 n/bb3 n/c#3 n/d3))
+
+;; (melody->lily schoenberg-c {:clef "treble_8"})
 
 

@@ -1,14 +1,15 @@
 (ns counterpoint.gen-first-dfs
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [fux-a fux-f]]
+            [counterpoint.cantus-firmi-examples :refer [fux-e test-cf2]]
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.first-species :refer [evaluate-species
                                                 first-species-rules?]]
             [counterpoint.first-species-type :refer [make-first-species]]
             [counterpoint.generate-first-species :refer [next-reverse-candidates update-m36-size]]
-            [counterpoint.intervals :refer [get-interval m10- m3- M6
-                                            note-at-melodic-interval P1 P8 P8-]]
+            [counterpoint.intervals :refer [get-interval m10 m10- m2 m3 m3- M6
+                                            M6- note-at-melodic-interval P1
+                                            P8 P8-]]
             [counterpoint.lilypond :refer [species->lily]]))
 
 (defn solution? [[position
@@ -23,16 +24,30 @@
 
 (defn last-note-candidates [position cantus-note]
   (if (= position :above)
-        [(note-at-melodic-interval cantus-note P8)]
-        [(note-at-melodic-interval cantus-note P8-)
-         (note-at-melodic-interval cantus-note P1)]))
+    [(note-at-melodic-interval cantus-note P8)
+     (note-at-melodic-interval cantus-note P1)]
+    [(note-at-melodic-interval cantus-note P8-)
+     (note-at-melodic-interval cantus-note P1)]))
 
 (defn second-to-last-note [position previous-melody previous-cantus cantus-note]
-  (if (= position :above)
-    (note-at-melodic-interval cantus-note M6)
-    (if (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
-           (note-at-melodic-interval cantus-note m10-)
-           (note-at-melodic-interval cantus-note m3-))))
+  (let [intval (if (= position :above)
+                 (if (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
+                   (if (= m2 (interval cantus-note previous-cantus))
+                     m10
+                     M6)
+                   (if (= m2 (interval cantus-note previous-cantus))
+                     m3
+                     m3- ;; crossing 
+                     ))
+                 (if (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
+                   (if (= m2 (interval cantus-note previous-cantus))
+                     M6-
+                     m10-)
+                   (if (= m2 (interval cantus-note previous-cantus))
+                     m3 ;; crossing
+                     m3-)))]
+    (note-at-melodic-interval cantus-note intval)))
+
 
 (defn candidates [[position
                    key
@@ -57,6 +72,7 @@
                   cantus-note
                   cantus-notes]
                  current]
+  ;; (println "NEXT mel" melody current)
   [position
    key
    (into melody [current])
@@ -106,10 +122,8 @@
   ;; (sh/sh "timidity" "resources/temp.mid")
   )
 
-;; (play 6 fux-a :c :below)
-
-;; (apply max (doall (map #(evaluate-species (make-first-species fux-d (reverse (nth % 2)) :above)) cps)))
-
+(count (generate-reverse-counterpoint-dfs :above :c test-cf2))
+;; (play 14 test-cf2 :c :above)
 
 (defn play-best [cf key position]
   (let [cps (generate-reverse-counterpoint-dfs position key cf)
@@ -131,7 +145,10 @@
   ;
     ))
 
-;; (play-best fux-f :c :below)
+;; (play-best salieri-d :c :below)
+;; (play-best salieri-c :c :above)
+;; (play-best test-cf :c :above)
+;; (play-best fux-e :c :below)
 
 ;; (play-best fux-e :c :above)
 
