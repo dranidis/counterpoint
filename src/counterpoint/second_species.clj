@@ -116,17 +116,25 @@
                                      (rest-bars counter)))))
 
 (defn undisguised-direct-motion-of-downbeats-to-perfect [[ca1 ca2 ca3] [cou1 cou2 cou3]]
+
   (if (or (rest? ca1) (rest? cou1))
     false
-    (and (direct-motion-to-perfect? ca1 cou1 ca3 cou3)
-       (not (and (= :contrary (type-of-motion ca2 cou2 ca3 cou3))
-                 (> (Math/abs (get-interval (interval cou1 cou2))) 3))))))
+    (let [_ nil
+          ;; _ (println "DIR" (direct-motion-to-perfect? ca1 cou1 ca3 cou3))
+          ;; _   (println "INT" (interval ca3 cou3))
+          ;; _ (println "COUNT INT" cou1 cou2 (interval cou1 cou2))
+          ;; _ (print "MOTION" (type-of-motion ca2 cou2 ca3 cou3))
+          ]
+      (and (direct-motion-to-perfect? ca1 cou1 ca3 cou3)
+           (not (and (= :contrary (type-of-motion ca2 cou2 ca3 cou3))
+                     (> (Math/abs (get-interval (interval cou1 cou2))) 3)))))))
 
 (defn- no-undisguised-direct-motion-of-downbeats-to-perfect-iter?
   [cantus-bar counter-bar rest-cantus rest-counter]
   (and (rule-warning
         (not (undisguised-direct-motion-of-downbeats-to-perfect cantus-bar counter-bar))
-        #(println "Undisguised direct motion to perfect interval: " cantus-bar counter-bar))
+        #(println "Undisguised direct motion to perfect interval: " 
+                  "\ncf" cantus-bar "\ncp" counter-bar))
        (if (< (count rest-cantus) 2)
          true
          (no-undisguised-direct-motion-of-downbeats-to-perfect-iter?
@@ -137,19 +145,13 @@
 
 (defn no-undisguised-direct-motion-of-downbeats-to-perfect? [species]
   (let [double-cantus (remove-last (double-melody (get-cantus species)))
-        counter (get-counter species)
-        position (get-position species)]
-    (if (= position :above)
-      (no-undisguised-direct-motion-of-downbeats-to-perfect-iter?
-       (first-three double-cantus)
-       (first-three counter)
-       (rest-bars double-cantus)
-       (rest-bars counter))
-      (no-undisguised-direct-motion-of-downbeats-to-perfect-iter?
-       (first-three counter)
-       (first-three double-cantus)
-       (rest-bars counter)
-       (rest-bars double-cantus)))))
+        counter (get-counter species)]
+    (no-undisguised-direct-motion-of-downbeats-to-perfect-iter?
+     (first-three double-cantus)
+     (first-three counter)
+     (rest-bars double-cantus)
+     (rest-bars counter))
+    ))
 
 (defn second-species-rules? [species]
   (and
@@ -168,8 +170,7 @@
    ))
 
 (defn evaluate-second-species [species]
-  (let [
-        ;; harm-int (rest (remove-last (get-harmonic-intervals species)))
+  (let [;; harm-int (rest (remove-last (get-harmonic-intervals species)))
         ;; [p1-count p8-count p5-count] (map (fn [int]
         ;;                                     (count (filter #(= int %) harm-int)))
         ;;                                   [P1 P8 P5])
@@ -182,6 +183,5 @@
         ;;          (* -2 p5-count)
         ;;          (* -20 simult-leaps))
         score 0
-        melody-s (melody-score (get-counter species))
-        ]
+        melody-s (melody-score (get-counter species))]
     (float (/ (+ score melody-s) (count (get-cantus species))))))

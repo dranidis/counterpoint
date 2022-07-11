@@ -116,7 +116,9 @@
          (allowed-melodic-intervals-iter? (rest counter-intervals)))))
 
 (defn allowed-melodic-intervals? [species]
-  (allowed-melodic-intervals-iter? (melodic-intervals (get-counter species))))
+  (rule-warning 
+   (allowed-melodic-intervals-iter? (melodic-intervals (get-counter species)))
+   #(str "Not allowd interval in melody: " (get-counter species))))
 
 (defn first-species-rules? [species]
   (and

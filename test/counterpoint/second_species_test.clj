@@ -2,7 +2,9 @@
   (:require [clojure.test :refer [deftest is testing]]
             [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as n]
-            [counterpoint.second-species :refer [downbeats-second passing-tone
+            [counterpoint.second-species :refer [downbeats-second
+                                                 make-second-species
+                                                 no-undisguised-direct-motion-of-downbeats-to-perfect? passing-tone
                                                  undisguised-direct-motion-of-downbeats-to-perfect]]))
 
 (deftest downbeats-test
@@ -35,4 +37,31 @@
     (is (not (undisguised-direct-motion-of-downbeats-to-perfect
               [[:d 3 :natural] [:d 3 :natural] [:e 3 :natural]]
               [[:b 2 :natural] [:b 3 :natural] [:a 3 :natural]])))))
+
+(deftest no-undisguised-direct-motion-of-downbeats-to-perfect?-test
+  (testing "undisguised"
+    (let [test-sp (let [counterpoint-melody
+                        (make-melody n/d3 n/c3
+                                     n/bb3 n/d3
+                                     n/a3 n/c#3
+                                     n/d3)
+                        cf (make-melody n/d3
+                                        n/f3
+                                        n/e3
+                                        n/d3)]
+                    (make-second-species cf counterpoint-melody :below))]
+      (is (not (no-undisguised-direct-motion-of-downbeats-to-perfect? test-sp)))))
+  
+  (testing "disguised"
+    (let [test-sp (let [counterpoint-melody
+                        (make-melody n/d3 n/c3
+                                     n/bb3 n/f2
+                                     n/a3 n/c#3
+                                     n/d3)
+                        cf (make-melody n/d3
+                                        n/f3
+                                        n/e3
+                                        n/d3)]
+                    (make-second-species cf counterpoint-melody :below))]
+      (is (no-undisguised-direct-motion-of-downbeats-to-perfect? test-sp)))))
 

@@ -36,11 +36,11 @@
   ;; (sh/sh "timidity" "resources/temp.mid")
   )
 
-(generate-and-play
-;;  (make-melody n/d3 n/g3 n/e3 n/d3)
- fux-a
- :c :below
- "")
+;; (generate-and-play
+;; ;;  (make-melody n/d3 n/g3 n/e3 n/d3)
+;;  fux-a
+;;  :c :below
+;;  "")
 
 ;; Unsolvable
 ;; below haydn-a, cf-c, cf-a, fux-g
@@ -267,5 +267,18 @@
   (sh/sh "timidity" "resources/temp.midi")
   (sh/sh "timidity" "resources/temp.mid")
 
+  (def test-sp (let [counterpoint-melody
+                       (make-melody n/d3 n/c3
+                                    n/bb3 n/f2
+                                    n/a3 n/c#3
+                                    n/d3)
+                  cf (make-melody n/d3 
+                                  n/f3 
+                                  n/e3 
+                                  n/d3)]
+                   (make-second-species cf counterpoint-melody :below)))
+  
+  (species->lily test-sp)
+(second-species-rules? test-sp)
 ;
   )
