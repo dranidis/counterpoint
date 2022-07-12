@@ -38,12 +38,14 @@
                                     n/a4 n/f3 n/d3
                                     n/bb4 n/a4 n/g3 n/f3)) ;; should be in the key of f
 
+; no 2nd below
 (def albrechtsberger-d (make-melody n/d3 n/a4
                                     n/e3 n/f3
                                     n/d3 n/bb4
                                     n/g3 n/a4
                                     n/f3 n/e3 n/d3)) ;; should be in the key of f
 
+; no 2nd below
 (def boulanger-g (make-melody n/g3 n/f#3 n/g3
                               n/e3 n/d3 n/b3 n/c3 n/d3
                               n/b3 n/a3 n/g2)) ;; key of g
@@ -59,6 +61,7 @@
 (def schenker-d (make-melody n/d3 n/e3 n/f3 n/g3 n/a4
                              n/e3 n/g3 n/f3 n/e3 n/d3))
 
+; no 2nd above or below
 (def schoenberg-c (make-melody n/c3 n/b3 n/g2 n/a3
                                n/e2 n/f2 n/a3 n/d2
                                n/g2 n/f2 n/d2 n/c2))

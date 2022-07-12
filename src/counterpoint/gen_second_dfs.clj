@@ -1,25 +1,39 @@
 (ns counterpoint.gen-second-dfs
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [salieri-c salieri-d]]
+            [counterpoint.cantus-firmi-examples :refer [salieri-d test-cf]]
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.gen-first-dfs :refer [dfs-solution->cp
                                                 last-note-candidates second-to-last-note
                                                 solution?]]
             [counterpoint.generate-second-species :refer [next-reverse-candidates update-m36-size]]
-            [counterpoint.intervals :refer [get-interval
-                                            note-at-melodic-interval P12- P5 P5-]]
+            [counterpoint.intervals :refer [get-interval m2 m2- M3- m6 m6-
+                                            note-at-melodic-interval P5 P5-]]
             [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.second-species :refer [evaluate-second-species
                                                  make-second-species
                                                  second-species-rules?]]))
 
 (defn- third-to-last-note [position previous-melody previous-cantus cantus-note]
-  (if (= position :above)
-    (note-at-melodic-interval cantus-note P5)
-    (if (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
-      (note-at-melodic-interval cantus-note P12-)
-      (note-at-melodic-interval cantus-note P5-))))
+  (let [intval (if (= position :above)
+                 (if (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
+                   (if (= m2 (interval cantus-note previous-cantus))
+                     m6
+                     P5)
+                   (if (= m2 (interval cantus-note previous-cantus))
+                     m6
+                     P5- ;; crossing 
+                     ))
+                 (if (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
+                   (if (= m2 (interval cantus-note previous-cantus))
+                     M3-
+                     P5-)
+                   (if (= m2 (interval cantus-note previous-cantus))
+                     m6 ;; crossing
+                     (if (= m2- (interval cantus-note previous-cantus))
+                       m6- ;; fa-mi
+                       P5-))))]
+    (note-at-melodic-interval cantus-note intval)))
 
 (defn candidates [[position
                    key
@@ -45,16 +59,18 @@
                   cantus-note
                   cantus-notes]
                  current]
-  [position
-   key
-   (into melody current)
-   (update-m36-size m36s position cantus-note current)
-   (if (= 0 (count melody))
-     (first current)
-     (second current))
-   cantus-note
-   (first cantus-notes)
-   (rest cantus-notes)])
+  (println melody current)
+  (let [prev-melody (if (= 1 (count current))
+                      (first current)
+                      (last current))]
+    [position
+     key
+     (into melody current)
+     (update-m36-size m36s position cantus-note current)
+     prev-melody
+     cantus-note
+     (first cantus-notes)
+     (rest cantus-notes)]))
 
 (defn generate-reverse-counterpoint-2nd-dfs [position key cantus]
   (let [rev-cantus (reverse cantus)
@@ -92,7 +108,7 @@
   ;
     ))
 
-;; (play-best-second salieri-d :key :above)
+(play-best-second test-cf :c :above)
 
 (comment
   (def position :below)
@@ -107,7 +123,7 @@
                                   e)
                        (map #(make-second-species cf (dfs-solution->cp %) position) cps)))
 
-  
+
   (second-species-rules? best-sol)
   (println "RULES " (second-species-rules? best-sol))
   (evaluate-second-species best-sol)
