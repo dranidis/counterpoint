@@ -1,9 +1,9 @@
 (ns counterpoint.gen-second-dfs-test
-  (:require [clojure.pprint :as pprint]
-            [clojure.test :refer [deftest is testing]]
+  (:require [clojure.test :refer [deftest is testing]]
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.gen-first-dfs :refer [dfs-solution->cp]]
             [counterpoint.gen-second-dfs :refer [generate-reverse-counterpoint-2nd-dfs]]
+            [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.second-species :refer [make-second-species
                                                  second-species-rules?]]))
 
@@ -17,7 +17,8 @@
   
   (testing "below"
     (let [cps (generate-reverse-counterpoint-2nd-dfs :below :c fux-d)
-          cp (dfs-solution->cp (first cps))
+          cp (dfs-solution->cp (second cps))
           species (make-second-species fux-d cp :below)]
       ;; (pprint/pprint species)
+      (species->lily species {:clef "treble_8"})
       (is (second-species-rules? species)))))

@@ -1,6 +1,6 @@
 (ns counterpoint.gen-second-dfs
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [salieri-d test-cf]]
+            [counterpoint.cantus-firmi-examples :refer [salieri-d]]
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.gen-first-dfs :refer [dfs-solution->cp
@@ -8,7 +8,7 @@
                                                 solution?]]
             [counterpoint.generate-second-species :refer [next-reverse-candidates update-m36-size]]
             [counterpoint.intervals :refer [get-interval m2 m2- M3- m6 m6-
-                                            note-at-melodic-interval P5 P5-]]
+                                            note-at-melodic-interval P12- P5 P5-]]
             [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.second-species :refer [evaluate-second-species
                                                  make-second-species
@@ -27,7 +27,7 @@
                  (if (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
                    (if (= m2 (interval cantus-note previous-cantus))
                      M3-
-                     P5-)
+                     P12-)
                    (if (= m2 (interval cantus-note previous-cantus))
                      m6 ;; crossing
                      (if (= m2- (interval cantus-note previous-cantus))
@@ -59,7 +59,7 @@
                   cantus-note
                   cantus-notes]
                  current]
-  (println melody current)
+  ;; (println melody current)
   (let [prev-melody (if (= 1 (count current))
                       (first current)
                       (last current))]
@@ -108,7 +108,7 @@
   ;
     ))
 
-(play-best-second test-cf :c :above)
+;; (play-best-second test-cf :c :above)
 
 (comment
   (def position :below)

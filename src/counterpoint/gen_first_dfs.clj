@@ -122,7 +122,7 @@
   ;; (sh/sh "timidity" "resources/temp.mid")
   )
 
-(count (generate-reverse-counterpoint-dfs :above :c test-cf2))
+;; (count (generate-reverse-counterpoint-dfs :above :c test-cf2))
 ;; (play 14 test-cf2 :c :above)
 
 (defn play-best [cf key position]
