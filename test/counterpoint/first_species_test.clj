@@ -4,7 +4,6 @@
                                                 correct-intervals ending?
                                                 first-species-rules? last-interval? no-direct-motion-to-perfect?]]
             [counterpoint.first-species-type :refer [make-first-species]]
-            [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as n]))
 
@@ -119,7 +118,7 @@
             cantus-firmus
             (make-melody n/d4 n/f4 n/e4 n/d4 n/g4 n/f4 n/a5 n/g4 n/f4 n/e4 n/d4)
             species (make-first-species cantus-firmus counterpoint-melody :below)
-            _ (species->lily species)]
+            ]
         (is (= false (allowed-melodic-intervals? species)))))))
 
 (deftest species-test

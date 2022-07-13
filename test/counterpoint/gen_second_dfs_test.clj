@@ -20,5 +20,5 @@
           cp (dfs-solution->cp (second cps))
           species (make-second-species fux-d cp :below)]
       ;; (pprint/pprint species)
-      (species->lily species {:clef "treble_8"})
+      ;; (species->lily species {:clef "treble_8"})
       (is (second-species-rules? species)))))

@@ -18,7 +18,7 @@
 (defn- lowest-note [melody]
   (second (apply min-key #(note->number-of-semitones (second %)) (map-indexed vector melody))))
 
-(defn- highest-note [melody]
+(defn highest-note [melody]
   (second (apply max-key #(note->number-of-semitones (second %)) (map-indexed vector melody))))
 
 (defn melody-range [melody]
@@ -86,12 +86,15 @@
                               #(or (= :aug (get-quality %))
                                    (= :dim (get-quality %)))
                               (melodic-intervals (melody-skeleton melody))))
+        peaks (count (filter #(= % (highest-note melody)) melody))
         ;; _ (when (> skeleton-diminished 0)
         ;;     (println "Diminished interval in melody skeleton"))
-        score (+ (* -5 leaps)
-                 (* -10 unisons)
+        score (+ (* -20 (dec leaps))
+                 (* -50 unisons)
                  (* -2 thirds)
-                 (* -100 skeleton-diminished))]
+                 (* -100 skeleton-diminished)
+                 (* -50 (dec peaks))
+)]
     score))
 
 (comment

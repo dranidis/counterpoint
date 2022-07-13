@@ -35,10 +35,10 @@
       (is
        (second-species-rules? species))))
 
-  ;; (testing "below"
-  ;;   (let [cf (make-melody n/d4 n/f4 n/e4 n/d4)
-  ;;         cp (generate-reverse-random-counterpoint-second :below :c cf)
-  ;;         species (make-second-species cf cp :below)]
-  ;;     (println species)
-  ;;     (is (second-species-rules? species))))
+  (testing "below"
+    (let [cf fux-d
+          cp (generate-reverse-random-counterpoint-second :below :c cf)
+          species (make-second-species cf cp :below)]
+      (println species)
+      (is (second-species-rules? species))))
   )

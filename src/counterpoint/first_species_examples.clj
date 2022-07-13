@@ -264,7 +264,7 @@
                      {:clef "treble_8"})))
 
   ;; (sh/sh "timidity" "resources/temp.midi") 
-  (sh/sh "timidity" "resources/temp.mid")
+  (sh/sh "timidity" "resources/temp.midi")
 
   (allowed-melodic-intervals? fux-a-above)
 

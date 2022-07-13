@@ -1,6 +1,5 @@
 (ns counterpoint.gen-first-dfs
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [fux-e test-cf2]]
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.first-species :refer [evaluate-species
@@ -145,7 +144,9 @@
   ;
     ))
 
-;; (play-best salieri-d :c :below)
+;; (play-best fux-d :c :below)
+
+;; (play-best mozart-c1 :c :above)
 ;; (play-best salieri-c :c :above)
 ;; (play-best test-cf :c :above)
 ;; (play-best fux-e :c :below)
