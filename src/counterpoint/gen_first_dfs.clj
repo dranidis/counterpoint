@@ -1,5 +1,6 @@
 (ns counterpoint.gen-first-dfs
   (:require [clojure.java.shell :as sh]
+            [counterpoint.cantus-firmi-examples :refer [salieri-d]]
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.first-species :refer [evaluate-species
@@ -47,6 +48,28 @@
                      m3-)))]
     (note-at-melodic-interval cantus-note intval)))
 
+(defn- last-note-candidates-new [position cantus-sec-to-last cantus-last]
+  (if (< (get-interval (interval cantus-sec-to-last cantus-last)) 0)
+    (if (= position :above)
+      [(note-at-melodic-interval cantus-last P8)]
+      [(note-at-melodic-interval cantus-last P1) 
+       (note-at-melodic-interval cantus-last P8-)])
+    (if (= position :above)
+      [(note-at-melodic-interval cantus-last P1) 
+       (note-at-melodic-interval cantus-last P8)]
+      [(note-at-melodic-interval cantus-last P8-)]))
+  )
+
+(defn- second-to-last-note-candidates [position cantus-sec-to-last cantus-last]
+  (if (< (get-interval (interval cantus-sec-to-last cantus-last)) 0)
+    (if (= position :above)
+      [(note-at-melodic-interval cantus-sec-to-last M6)]
+      [(note-at-melodic-interval cantus-sec-to-last m3-)
+       (note-at-melodic-interval cantus-sec-to-last m10-)])
+    (if (= position :above)
+      [(note-at-melodic-interval cantus-sec-to-last m3)
+       (note-at-melodic-interval cantus-sec-to-last m10-)]
+      [(note-at-melodic-interval cantus-sec-to-last M6-)])))
 
 (defn candidates [[position
                    key
@@ -57,8 +80,9 @@
                    cantus-note
                    cantus-notes]]
   (case (count melody)
-    0 (last-note-candidates position cantus-note)
-    1 [(second-to-last-note position previous-melody previous-cantus cantus-note)]
+    0 (last-note-candidates-new position (first cantus-notes) cantus-note)
+    1 (second-to-last-note-candidates position cantus-note previous-cantus)
+    ;; [(second-to-last-note position previous-melody previous-cantus cantus-note)]
     (next-reverse-candidates
      position key melody m36s previous-melody previous-cantus cantus-note)))
 
@@ -139,17 +163,18 @@
                       "treble"
                       "treble_8")
                     :pattern ""
-                    :tempo "4 = 240"})
+                    :tempo "2 = 140"})
     (sh/sh "timidity" "resources/temp.midi")
   ;
     ))
 
 ;; (play-best fux-d :c :below)
 
-;; (play-best mozart-c1 :c :above)
+;; (play-best mozart-c1 :c :below)
+;; (play-best salieri-d :c :below)
 ;; (play-best salieri-c :c :above)
-;; (play-best test-cf :c :above)
-;; (play-best fux-e :c :below)
+;; (play-best test-cf3 :c :below)
+;; (play-best fux-e :c :above)
 
 ;; (play-best fux-e :c :above)
 
