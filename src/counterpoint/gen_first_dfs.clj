@@ -49,16 +49,14 @@
     (note-at-melodic-interval cantus-note intval)))
 
 (defn- last-note-candidates-new [position cantus-sec-to-last cantus-last]
-  (if (< (get-interval (interval cantus-sec-to-last cantus-last)) 0)
-    (if (= position :above)
-      [(note-at-melodic-interval cantus-last P8)]
-      [(note-at-melodic-interval cantus-last P1) 
-       (note-at-melodic-interval cantus-last P8-)])
-    (if (= position :above)
-      [(note-at-melodic-interval cantus-last P1) 
-       (note-at-melodic-interval cantus-last P8)]
-      [(note-at-melodic-interval cantus-last P8-)]))
-  )
+  (map #(note-at-melodic-interval cantus-last %)
+       (if (< (get-interval (interval cantus-sec-to-last cantus-last)) 0)
+         (if (= position :above)
+           [P8]
+           [P1 P8-])
+         (if (= position :above)
+           [P1 P8]
+           [P8-]))))
 
 (defn- second-to-last-note-candidates [position cantus-sec-to-last cantus-last]
   (if (< (get-interval (interval cantus-sec-to-last cantus-last)) 0)
