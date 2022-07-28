@@ -176,5 +176,5 @@
         ;;          (* -2 p5-count)
         ;;          (* -20 simult-leaps))
         score 0
-        melody-s (melody-score (get-counter species))]
+        melody-s (melody-score (filter #(not= % :rest) (get-counter species)))]
     (float (/ (+ score melody-s) (count (get-cantus species))))))

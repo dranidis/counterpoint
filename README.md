@@ -1,5 +1,7 @@
 # counterpoint
 
+Generating species counterpoint as in the Fux's book Gradus ad Parnassum.
+
 A Clojure library designed to ... well, that part is up to you.
 
 ## Usage

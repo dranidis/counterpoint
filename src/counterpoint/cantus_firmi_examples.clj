@@ -70,6 +70,6 @@
 (def test-cf2 (make-melody n/d3 n/c3 n/bb3 n/c#3 n/d3))
 (def test-cf3 (make-melody n/d3 n/e3 n/f3 n/e3 n/c#3 n/d3))
 
-(melody->lily test-cf3 {:clef "treble_8"})
+;; (melody->lily test-cf3 {:clef "treble_8"})
 
 

@@ -1,8 +1,9 @@
 (ns counterpoint.gen-second-dfs
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [salieri-d]]
+            [counterpoint.cantus-firmi-examples :refer [fux-d salieri-d]]
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
+            [counterpoint.first-species-type :refer [get-counter]]
             [counterpoint.gen-first-dfs :refer [dfs-solution->cp
                                                 last-note-candidates second-to-last-note
                                                 solution?]]
@@ -10,6 +11,7 @@
             [counterpoint.intervals :refer [get-interval m2 m2- M3- m6 m6-
                                             note-at-melodic-interval P12- P5 P5-]]
             [counterpoint.lilypond :refer [species->lily]]
+            [counterpoint.melody :refer [melody-score]]
             [counterpoint.second-species :refer [evaluate-second-species
                                                  make-second-species
                                                  second-species-rules?]]))
@@ -108,26 +110,26 @@
   ;
     ))
 
-;; (play-best-second test-cf :c :above)
+;; (play-best-second fux-d :c :above)
 
 (comment
-  (def position :below)
-  (def cf salieri-d)
+  (def position :above)
+  (def cf fux-d)
   (def at-key :c)
   (def cps (generate-reverse-counterpoint-2nd-dfs position at-key cf))
 
-  (def first-sol (make-second-species cf (dfs-solution->cp (first cps)) position))
+  (def first-sol (make-second-species cf (dfs-solution->cp (second cps)) position))
 
-  (def best-sol (apply max-key #(let [e (evaluate-second-species  %)]
-                              ;;  (println e)
-                                  e)
-                       (map #(make-second-species cf (dfs-solution->cp %) position) cps)))
+  ;; (def best-sol (apply max-key #(let [e (evaluate-second-species  %)]
+  ;;                             ;;  (println e)
+  ;;                                 e)
+  ;;                      (map #(make-second-species cf (dfs-solution->cp %) position) cps)))
 
 
-  (second-species-rules? best-sol)
-  (println "RULES " (second-species-rules? best-sol))
-  (evaluate-second-species best-sol)
-  (species->lily best-sol
+  ;; (second-species-rules? first-sol)
+  ;; (println "RULES " (second-species-rules? best-sol))
+  (evaluate-second-species first-sol)
+  (species->lily first-sol
                  {:clef (if (= position :above)
                           "treble"
                           "treble_8")
@@ -135,5 +137,11 @@
                   :pattern ""
                   :tempo "4 = 200"})
   (sh/sh "timidity" "resources/temp.midi")
+
+  (def cp (get-counter first-sol))
+  (melody-score cp)
+
+  (map-indexed vector cp)
+  (filter #(not= % :rest) cp)
   ;
   )

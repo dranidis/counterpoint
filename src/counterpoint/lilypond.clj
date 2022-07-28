@@ -12,7 +12,8 @@
 ;;
 ;; GLOBAL parameters
 ;;
-(def midi-instrument "acoustic grand")
+;; (def midi-instrument "acoustic grand")
+(def midi-instrument "flute")
 
 (defn- single-note->lily [note]
   (str " "
