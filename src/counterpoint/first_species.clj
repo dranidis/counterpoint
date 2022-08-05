@@ -144,6 +144,7 @@
   (let [[low high] (if (= :above (get-position species))
                      [(get-cantus species) (get-counter species)]
                      [(get-counter species) (get-cantus species)])]
+    (println low high)
     (get-harmonic-intervals-iter [] (first low) (first high) (rest low) (rest high))))
 
 

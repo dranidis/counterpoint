@@ -1,7 +1,7 @@
 (ns counterpoint.gen-fourth-dfs
   (:require [clojure.java.shell :as sh]
             [counterpoint.cantus :refer [maximum-range-M10?]]
-            [counterpoint.cantus-firmi-examples :refer [fux-d schoenberg-c]]
+            [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.core :refer [interval simple-interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.fourth-species :refer [evaluate-fourth-species
@@ -12,13 +12,12 @@
                                                 solution?]]
             [counterpoint.gen-second-dfs :refer [next-node
                                                  second-to-last-measure-candidates-2nd]]
-            [counterpoint.generate-first-species :refer [crossing-filter
-                                                         max-harmonic-interval
-                                                         next-harmonic-intervals]]
+            [counterpoint.generate-first-species :refer [crossing-filter debug
+                                                         max-harmonic-interval next-harmonic-intervals]]
             [counterpoint.generate-second-species :refer [next-candidate-notes
                                                           next-reverse-downbeat-candidates]]
             [counterpoint.intervals :refer [get-interval harmonic-consonant?
-                                            m2 M2 m9 M9
+                                            m2 M2 m7 M7 m9 M9
                                             note-at-diatonic-interval note-at-melodic-interval P1 P8]]
             [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.melody :refer [append-to-melody]]
@@ -26,7 +25,7 @@
 
 (defn second-to-last-measure-candidates-4th [position previous-melody previous-cantus cantus-note next-cantus]
   ;; (println "Next cantus" next-cantus)
-  (let [can-be-a-suspension? (harmonic-consonant? (simple-interval next-cantus previous-melody))
+  (let [can-be-a-suspension? (harmonic-consonant? (simple-interval next-cantus previous-melody position))
         sec-species-measure (second-to-last-measure-candidates-2nd position previous-melody previous-cantus cantus-note)]
     (if can-be-a-suspension?
       (into [[(second-to-last-note position previous-melody previous-cantus cantus-note)
@@ -43,6 +42,18 @@
              (or (= m9 suspension-interval)
                  (= M9 suspension-interval))))))
 
+(defn- eight-seven-suspension? [next-cantus cantus-note suspension-note]
+  (let [preparation-interval (interval suspension-note next-cantus )
+        suspension-interval (interval suspension-note cantus-note )]
+    (and (= P8 preparation-interval)
+         (or (= m7 suspension-interval)
+             (= M7 suspension-interval)))))
+
+(defn- not-allowed-suspension [position next-cantus cantus-note suspension-note]
+  (if (= position :above)
+    (one-two-suspension? next-cantus cantus-note suspension-note)
+    (eight-seven-suspension? next-cantus cantus-note suspension-note)))
+
 (comment
   (one-two-suspension? n/g3 n/f3 n/g3)
   (one-two-suspension? n/g3 n/f3 n/g4)
@@ -50,6 +61,7 @@
   )
 
 (defn- suspension-notes [position key melody m36s upbeat-note cantus-note next-cantus]
+  ;; (println "SUSPENSION-NOTES melody" melody)
   (if (nil? next-cantus)
     []
     (let [next-melodic-candidates (map
@@ -62,13 +74,13 @@
                                      ;; for the previous measure
                                      (update m36s :remaining-cantus-size dec)))
           suspension-notes (->> next-melodic-candidates
-                                ;; (debug "melodic m2 M2")
+                                (debug "melodic m2 M2")
                                 (filter #((set next-harmonic-candidates) (get-nooctave %)))
-                                ;; (debug "harmonic with previous")
-                                (filter #(not (harmonic-consonant? (simple-interval cantus-note %))))
-                                ;; (debug "dissonant with current")
-                                (filter #(not (one-two-suspension? next-cantus cantus-note %)))
-                                ;; (debug "no 1-2 and 8-9 suspension")
+                                (debug "harmonic with previous")
+                                (filter #(not (harmonic-consonant? (simple-interval cantus-note % position))))
+                                (debug "dissonant with current")
+                                (filter #(not (not-allowed-suspension position next-cantus cantus-note %)))
+                                (debug "no 1-2 and 8-9 suspension (8-7 below)")
                                 (filter (crossing-filter position next-cantus))
 ;; (debug "no crossing")
                                 (filter #(maximum-range-M10? (append-to-melody melody %)))
@@ -77,7 +89,7 @@
 
 (defn next-reverse-candidates-4th [position key melody m36s
                                    previous-melody previous-cantus cantus-note next-cantus]
-  (let [was-a-suspension? (not (harmonic-consonant? (simple-interval previous-cantus previous-melody)))
+  (let [was-a-suspension? (not (harmonic-consonant? (simple-interval previous-cantus previous-melody :below)))
         ;; _ (when was-a-suspension? (println "SUSP"  previous-melody))
         upbeat-candidates
         (if was-a-suspension?
@@ -106,6 +118,7 @@
                       upbeat [upc]]
                   (vector upbeat downbeat)))
               upbeat-candidates))]
+    ;; (println "Candidates" candidates)
     (->> (remove nil?
                 ;;  (into 
                  candidates
@@ -182,7 +195,7 @@
                       "treble"
                       "treble_8")
                     :pattern ""
-                    :tempo "4 = 200"
+                    :tempo "4 = 180"
                     :midi "acoustic grand piano"})
     (sh/sh "timidity" "resources/temp.midi")
   ;
@@ -199,6 +212,6 @@
                         :midi "acoustic grand piano"})
   (sh/sh "timidity" "resources/temp.midi")
 
-  (play-best-fourth fux-d :f :below 500)
+  (play-best-fourth fux-d :f :above 100)
 ;
   )

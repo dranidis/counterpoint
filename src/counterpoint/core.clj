@@ -46,15 +46,19 @@
                        (dec distance))
                      quality))))
 
-(defn simple-interval [note1 note2]
-  (if (or (rest? note1) (rest? note2))
-    :rest-interval
-    (let [compound (interval note1 note2)
-          distance (get-interval compound)]
-      (make-interval (if (> distance 7)
-                       (mod distance 7)
-                       distance)
-                     (get-quality compound)))))
+(defn simple-interval 
+  ([note1 note2]
+  (simple-interval note1 note2 :above))
+  ([n1 n2 position]
+   (let[[note1 note2] (if (= position :above) [n1 n2] [n2 n1])]
+    (if (or (rest? note1) (rest? note2))
+     :rest-interval
+     (let [compound (interval note1 note2)
+           distance (get-interval compound)]
+       (make-interval (if (> distance 7)
+                        (mod distance 7)
+                        distance)
+                      (get-quality compound)))))))
 
 
 

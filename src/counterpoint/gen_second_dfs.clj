@@ -95,8 +95,8 @@
                    (rest rev-cantus)]]
     (generate-dfs-solutions root-node candidates next-node solution?)))
 
-(defn play-best-second [cf key position]
-  (let [cps (generate-reverse-counterpoint-2nd-dfs position key cf)
+(defn play-best-second [cf key position take-n]
+  (let [cps (take take-n (generate-reverse-counterpoint-2nd-dfs position key cf))
         _ (println "ALL" (count cps))
         species (apply max-key #(let [e (evaluate-second-species  %)]
                                 ;; (println e)
@@ -116,7 +116,7 @@
     ))
 
 ;; (melody->lily fux-d)
-;; (play-best-second fux-d :c :above)
+;; (play-best-second fux-d :c :below 100)
 
 (comment
   (def position :above)

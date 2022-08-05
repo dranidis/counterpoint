@@ -72,20 +72,21 @@
     (count (filter #(not (harmonic-consonant? %)) downbeat-intervals))))
 
 (defn evaluate-fourth-species [species]
-  (let [
-        harm-int (rest (remove-last (get-harmonic-intervals species)))
-        [p1-count p8-count p5-count] (map (fn [int]
-                                            (count (filter #(= int %) harm-int)))
-                                          [P1 P8 P5])
+  (let [;; harm-int (rest (remove-last (get-harmonic-intervals species)))
+        ;; _ (println harm-int)
+        ;; [p1-count p8-count p5-count] (map (fn [int]
+        ;;                                     (count (filter #(= int %) harm-int)))
+        ;;                                   [P1 P8 P5])
         ;; cp-ints (melodic-intervals (get-counter species))
         ;; ca-ints (melodic-intervals (get-cantus species))
         ;; simult-leaps (simultaneous-leaps ca-ints cp-ints)
 
-        score-harmony (+ (* -100 p1-count)
-                 (* -50 p8-count)
-                 (* -20 p5-count)
+        score-harmony (+ 0
+                ;;        (* -100 p1-count)
+                ;;  (* -50 p8-count)
+                ;;  (* -20 p5-count)
                 ;;  (* -20 simult-leaps)
-                 )
+                       )
         number-of-suspensions (reduce
                                #(+ %1 (if (= (first %2) (second %2)) 1 0))
                                0

@@ -22,7 +22,7 @@
                        position previous-melody previous-cantus cantus-note next-cantus)]
       (is (= [[n/c#5 n/d5] [n/c#5 n/b5]] sec-to-last))))
 
-  (testing "candidates 2nd-to-last"
+  (testing "candidates 2nd-to-last above"
     (let [position :above
           cantus-key :c
           melody (make-melody n/d5)
@@ -40,6 +40,25 @@
                                         cantus-note
                                         cantus-notes])]
       (is (= [[n/c#5 n/d5] [n/c#5 n/b5]] cand-2nd-to-last))))
+
+  (testing "candidates 2nd-to-last below"
+    (let [position :below
+          cantus-key :c
+          melody (make-melody n/d3)
+          previous-melody n/d3
+          previous-cantus n/d4
+          m36s nil
+          cantus-note n/e4
+          cantus-notes [n/f4]
+          cand-2nd-to-last (candidates [position
+                                        cantus-key
+                                        melody
+                                        m36s ;; counter of thirds & sixths
+                                        previous-melody
+                                        previous-cantus
+                                        cantus-note
+                                        cantus-notes])]
+      (is (= [[n/c#3 n/d3] [n/c#3 n/a3]] cand-2nd-to-last))))
 
   (testing "candidates 3rd-to-last"
     (let [position :above
@@ -143,6 +162,30 @@
       ;; it is not permissible to proceed from the unison g3-g3 to the second f3-g3
       (is (nil? ((set cand-6th-to-last) [n/f3 n/g3]))))))
 
+
+(deftest candidates-below
+  (testing "candidates below"
+    (let [position :below
+          cantus-key :f
+          melody (make-melody n/a3 n/bb3)
+          previous-melody n/bb3
+          previous-cantus n/f3
+          cantus-note n/g3
+          cantus-notes [n/d3 n/d3]
+          m36s {:remaining-cantus-size (inc (count cantus-notes))}
+          cand (candidates [position
+                            cantus-key
+                            melody
+                            m36s
+                            previous-melody
+                            previous-cantus
+                            cantus-note
+                            cantus-notes])]
+      (println cand)
+      (is (not (nil? ((set cand) [n/bb3 n/c3]))))
+      (is (not (nil? ((set cand) [n/bb3 n/g2]))))
+      )))
+
 (deftest generate-fourth-test
   (testing "above"
     (let [cps (generate-reverse-counterpoint-4th-dfs :above :f fux-d)
@@ -156,5 +199,4 @@
           cp (dfs-solution->cp (first cps))
           species (make-fourth-species fux-d cp :below)]
       ;; (println species)
-      (is (fourth-species-rules? species))))
-  )
+      (is (fourth-species-rules? species)))))
