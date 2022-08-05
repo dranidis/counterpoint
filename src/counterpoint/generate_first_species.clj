@@ -30,9 +30,13 @@
 
 
 (defn next-melodic-intervals-reverse [melody]
+  ;; (println "next-melodic-intervals-reverse" (melody-reverse-leap melody))
   (case (melody-reverse-leap melody)
     :unison [m2 M2 m3 M3
-             m2- M2- m3- M3-]
+             m2- M2- m3- M3-
+             P4 P5 P4- P5- m6- P8 P8-]
+    ;; [m2 M2 m3 M3
+    ;;  m2- M2- m3- M3-]
     :high [m2 M2 m3 M3]
     :low [m2- M2- m3- M3-]
     :no-leap-high [P1
@@ -53,8 +57,9 @@
              (and (= position :above) (= (get m36s :remaining-cantus-size) 1))
              [1 3 5]
              :else
-            ;;  [1 3 5 6]
-             [3 5 6])))
+             [1 3 5 6]
+            ;;  [3 5 6]
+             )))
 
 (defn- species-interval [position next-cantus-note mc]
   (if (= position :above)

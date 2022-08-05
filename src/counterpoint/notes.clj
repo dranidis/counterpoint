@@ -124,9 +124,11 @@
 (def d#5 (make-note :d 5 :sharp))
 
 (def c#3 (make-note :c 3 :sharp))
+(def c#5 (make-note :c 5 :sharp))
 (def e3 (make-note :e 3))
 (def e4 (make-note :e 4))
 (def e5 (make-note :e 5))
 (def b4 (make-note :b 4))
 (def b5 (make-note :b 5))
 (def c#4 (make-note :c 4 :sharp))
+

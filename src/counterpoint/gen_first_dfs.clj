@@ -1,6 +1,5 @@
 (ns counterpoint.gen-first-dfs
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [salieri-d]]
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.first-species :refer [evaluate-species
@@ -30,20 +29,22 @@
      (note-at-melodic-interval cantus-note P1)]))
 
 (defn second-to-last-note [position previous-melody previous-cantus cantus-note]
-  (let [intval (if (= position :above)
-                 (if (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
-                   (if (= m2 (interval cantus-note previous-cantus))
+  (let [last-harmony-octave? (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
+        last-melody-m2? (= m2 (interval cantus-note previous-cantus))
+        intval (if (= position :above)
+                 (if last-harmony-octave?
+                   (if last-melody-m2?
                      m10
                      M6)
-                   (if (= m2 (interval cantus-note previous-cantus))
+                   (if last-melody-m2?
                      m3
                      m3- ;; crossing 
                      ))
-                 (if (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
-                   (if (= m2 (interval cantus-note previous-cantus))
+                 (if last-harmony-octave?
+                   (if last-melody-m2?
                      M6-
                      m10-)
-                   (if (= m2 (interval cantus-note previous-cantus))
+                   (if last-melody-m2?
                      m3 ;; crossing
                      m3-)))]
     (note-at-melodic-interval cantus-note intval)))

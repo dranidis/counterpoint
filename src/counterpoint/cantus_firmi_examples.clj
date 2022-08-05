@@ -1,6 +1,5 @@
 (ns counterpoint.cantus-firmi-examples
-  (:require [counterpoint.lilypond :refer [melody->lily]]
-            [counterpoint.melody :refer [make-melody]]
+  (:require [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as n]))
 
 (def fux-d (make-melody n/d3 n/f3 n/e3 n/d3 n/g3 n/f3 n/a4 n/g3 n/f3 n/e3 n/d3))

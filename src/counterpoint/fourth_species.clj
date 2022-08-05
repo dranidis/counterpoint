@@ -1,11 +1,14 @@
 (ns counterpoint.fourth-species
   (:require [counterpoint.core :refer [simple-interval]]
-            [counterpoint.first-species :refer [allowed-melodic-intervals?]]
+            [counterpoint.first-species :refer [allowed-melodic-intervals?
+                                                get-harmonic-intervals]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
-                                                     get-low-high
-                                                     get-position make-species]]
-            [counterpoint.intervals :refer [get-interval harmonic-consonant?]]
-            [counterpoint.melody :refer [double-melody]]
+                                                     get-low-high get-position
+                                                     make-species]]
+            [counterpoint.intervals :refer [get-interval harmonic-consonant?
+                                            P1 P5 P8]]
+            [counterpoint.melody :refer [double-melody melody-score
+                                         remove-last]]
             [counterpoint.utils :refer [rule-warning]]))
 
 (defn make-fourth-species [cantus-firmus counterpoint-melody arg3]
@@ -62,6 +65,35 @@
                  #(println "Upbeats are not consonant!"))
    (rule-warning (consonant-or-resolving-downbeats? species)
                  #(println "Check downbeats! Must be consonant or resolving"))))
+
+(defn- number-of-downbeat-dissonances [species]
+  (let [[low high] (get-low-high species)
+        downbeat-intervals (rest (map first (partition 2 (map simple-interval low high))))]
+    (count (filter #(not (harmonic-consonant? %)) downbeat-intervals))))
+
+(defn evaluate-fourth-species [species]
+  (let [
+        harm-int (rest (remove-last (get-harmonic-intervals species)))
+        [p1-count p8-count p5-count] (map (fn [int]
+                                            (count (filter #(= int %) harm-int)))
+                                          [P1 P8 P5])
+        ;; cp-ints (melodic-intervals (get-counter species))
+        ;; ca-ints (melodic-intervals (get-cantus species))
+        ;; simult-leaps (simultaneous-leaps ca-ints cp-ints)
+
+        score-harmony (+ (* -100 p1-count)
+                 (* -50 p8-count)
+                 (* -20 p5-count)
+                ;;  (* -20 simult-leaps)
+                 )
+        number-of-suspensions (reduce
+                               #(+ %1 (if (= (first %2) (second %2)) 1 0))
+                               0
+                               (partition 2 (rest (get-counter species))))
+        diss (number-of-downbeat-dissonances species)
+        score (+ (* 100 diss) (* 50 number-of-suspensions))
+        melody-s (melody-score (filter #(not= % :rest) (get-counter species)))]
+    (float (/ (+ score score-harmony melody-s) (count (get-cantus species))))))
 
 
 

@@ -2,7 +2,7 @@
   (:require [counterpoint.cantus :refer [maximum-range-M10?]]
             [counterpoint.core :refer [interval]]
             [counterpoint.first-species :refer [direct-motion-to-perfect?]]
-            [counterpoint.generate-first-species :refer [crossing-filter
+            [counterpoint.generate-first-species :refer [crossing-filter debug
                                                          dim-or-aug-filter
                                                          max-harmonic-interval next-harmonic-intervals next-melodic-intervals-reverse]]
             [counterpoint.intervals :refer [get-interval m10- m3- M6
@@ -40,36 +40,52 @@
                                                       (if octave? P12- P5-)))]
     [last-melody second-last-melody third-last-melody m36s]))
 
-(defn next-candidate-notes [position key melody m36s previous-melody previous-cantus cantus-note]
-  (let [next-melodic-candidates (map
-                                 #(note-at-melodic-interval previous-melody %)
-                                 (next-melodic-intervals-reverse melody))
-        next-harmonic-candidates (map
-                                  #(note-at-diatonic-interval key (get-nooctave cantus-note) %)
-                                  (next-harmonic-intervals position m36s))
-        next-candidates (->> next-melodic-candidates
-                             (filter #(not= previous-melody %))
-                             (filter (dim-or-aug-filter position cantus-note))
-                             (filter (crossing-filter position cantus-note))
-                             (filter #((set next-harmonic-candidates) (get-nooctave %)))
-                             (filter #(maximum-range-M10? (append-to-melody melody %)))
-                             (filter #(<= (Math/abs (get-interval (interval cantus-note %))) max-harmonic-interval))
+(defn next-candidate-notes
+  ([position key melody m36s previous-melody previous-cantus cantus-note]
+   (next-candidate-notes
+    position key melody m36s previous-melody previous-cantus cantus-note
+    {:melodic-unison-allowed false
+     :harmonic-unison-allowed true}))
+  ([position key melody m36s previous-melody previous-cantus cantus-note options]
+   (let [next-melodic-candidates (map
+                                  #(note-at-melodic-interval previous-melody %)
+                                  (next-melodic-intervals-reverse melody))
+         next-harmonic-candidates (map
+                                   #(note-at-diatonic-interval key (get-nooctave cantus-note) %)
+                                   (next-harmonic-intervals position m36s))
+        ;;  _ (println "HARM Cand", next-harmonic-candidates)
+         next-candidates (->> next-melodic-candidates
+                              (filter #(or (get options :melodic-unison-allowed)
+                                           (not= previous-melody %)))
+                              (filter #(or (get options :harmonic-unison-allowed)
+                                           (not= cantus-note %)))
+                              (debug "no rep")
+                              (filter (dim-or-aug-filter position cantus-note))
+                              (debug "no dim aug")
+                              (filter (crossing-filter position cantus-note))
+                              (debug "no crossing")
+                              (filter #((set next-harmonic-candidates) (get-nooctave %)))
+                              (debug "consonant")
+                              (filter #(maximum-range-M10? (append-to-melody melody %)))
+                              (filter #(<= (Math/abs (get-interval (interval cantus-note %))) max-harmonic-interval))
 
                             ;;  haydn-a is not solvable
                              ;; is this examined twice??
-                             (filter #(not (direct-motion-to-perfect? cantus-note % previous-cantus previous-melody))))]
-    next-candidates))
+                              (filter #(not (direct-motion-to-perfect? cantus-note % previous-cantus previous-melody))))]
+     next-candidates)))
 
-(defn- next-reverse-downbeat-candidates [position key melody m36s
-                                         previous-melody previous-cantus cantus-note]
+(defn next-reverse-downbeat-candidates [position key melody m36s
+                                        previous-melody previous-cantus cantus-note]
   ;; (println "d MELODY" (reverse melody))
   ;; (println "d PREV MEL" previous-melody)
   ;; (println "d PREV CAN" previous-cantus)
   ;; (println "d cantus note" cantus-note)
   (let [downbeat-cands (if (= (get m36s :remaining-cantus-size) 1)
                          [rest/r]
-                         (next-candidate-notes position key melody m36s
-                                               previous-melody previous-cantus cantus-note))]
+                         (next-candidate-notes
+                          position key melody m36s
+                          previous-melody previous-cantus cantus-note
+                          {:harmonic-unison-allowed false}))]
     downbeat-cands))
 
 (defn passing-tones [position key previous-melody cantus-note]

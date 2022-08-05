@@ -1,7 +1,4 @@
-(ns counterpoint.dfs.dfs
-  (:require [counterpoint.intervals :refer [note-at-melodic-interval P4 P5]]
-            [counterpoint.notes :as n]))
-
+(ns counterpoint.dfs.dfs)
 
 (defn generate-dfs-solutions
   "Arguments:

@@ -119,7 +119,7 @@
                            :pattern ""
                            :tempo "2 = 80"}))
   ([melody param]
-   (spit "resources/temp.ly"
+   (spit (get param :file "resources/temp.ly") 
          (staff
           (get param :clef "treble")
           (get param :tempo "2 = 80")
@@ -128,7 +128,7 @@
               (voice "first" "voiceOne" (fixed-melody->lily 1 melody))
               (voice "first" "voiceOne" (fixed-melody->lily 1 melody))))
           (get param :midi midi-instrument)))
-   (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
+   (sh/sh "lilypond" "-o" "resources" (get param :file "resources/temp.ly"))))
 
 (defn end-to-1 [melody]
   (str (subs melody 0 (dec (count melody))) "1"))

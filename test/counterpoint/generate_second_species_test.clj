@@ -7,38 +7,38 @@
             [counterpoint.second-species :refer [make-second-species
                                                  second-species-rules?]]))
 
-(deftest generate-second-short-test
-  (testing "above"
-    (let [cf (make-melody n/d4 n/e4 n/d4)
-          cp (generate-reverse-random-counterpoint-second :above :c cf)
-          species (make-second-species cf cp :above)
-          ]
-      ;; (println species)
-      (is 
-       (second-species-rules? species)
-          )))
+;; (deftest generate-second-short-test
+;;   (testing "above"
+;;     (let [cf (make-melody n/d4 n/e4 n/d4)
+;;           cp (generate-reverse-random-counterpoint-second :above :c cf)
+;;           species (make-second-species cf cp :above)
+;;           ]
+;;       ;; (println species)
+;;       (is 
+;;        (second-species-rules? species)
+;;           )))
 
-  (testing "below"
-    (let [cf (make-melody n/d4 n/e4 n/d4)
-          cp (generate-reverse-random-counterpoint-second :below :c cf)
-          species (make-second-species cf cp :below)]
-      ;; (println species)
-      (is (second-species-rules? species))))
-  )
+;;   (testing "below"
+;;     (let [cf (make-melody n/d4 n/e4 n/d4)
+;;           cp (generate-reverse-random-counterpoint-second :below :c cf)
+;;           species (make-second-species cf cp :below)]
+;;       ;; (println species)
+;;       (is (second-species-rules? species))))
+;;   )
 
-(deftest generate-second-test
-  (testing "above"
-    (let [
-          cp (generate-reverse-random-counterpoint-second :above :c fux-d)
-          species (make-second-species fux-d cp :above)]
-      (println species)
-      (is
-       (second-species-rules? species))))
+;; (deftest generate-second-test
+;;   (testing "above"
+;;     (let [
+;;           cp (generate-reverse-random-counterpoint-second :above :c fux-d)
+;;           species (make-second-species fux-d cp :above)]
+;;       (println species)
+;;       (is
+;;        (second-species-rules? species))))
 
-  (testing "below"
-    (let [cf fux-d
-          cp (generate-reverse-random-counterpoint-second :below :c cf)
-          species (make-second-species cf cp :below)]
-      (println species)
-      (is (second-species-rules? species))))
-  )
+;;   (testing "below"
+;;     (let [cf fux-d
+;;           cp (generate-reverse-random-counterpoint-second :below :c cf)
+;;           species (make-second-species cf cp :below)]
+;;       (println species)
+;;       (is (second-species-rules? species))))
+;;   )

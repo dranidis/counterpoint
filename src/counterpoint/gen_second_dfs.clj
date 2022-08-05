@@ -1,6 +1,6 @@
 (ns counterpoint.gen-second-dfs
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus-firmi-examples :refer [fux-d salieri-d]]
+            [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.first-species-type :refer [get-counter]]
@@ -17,25 +17,31 @@
                                                  second-species-rules?]]))
 
 (defn- third-to-last-note [position previous-melody previous-cantus cantus-note]
-  (let [intval (if (= position :above)
-                 (if (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
-                   (if (= m2 (interval cantus-note previous-cantus))
+  (let [last-melody-m2? (= m2 (interval cantus-note previous-cantus))
+        last-harmony-octave? (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
+        intval (if (= position :above)
+                 (if last-harmony-octave?
+                   (if last-melody-m2?
                      m6
                      P5)
-                   (if (= m2 (interval cantus-note previous-cantus))
+                   (if last-melody-m2?
                      m6
                      P5- ;; crossing 
                      ))
-                 (if (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
-                   (if (= m2 (interval cantus-note previous-cantus))
+                 (if last-harmony-octave?
+                   (if last-melody-m2?
                      M3-
                      P12-)
-                   (if (= m2 (interval cantus-note previous-cantus))
+                   (if last-melody-m2?
                      m6 ;; crossing
                      (if (= m2- (interval cantus-note previous-cantus))
                        m6- ;; fa-mi
                        P5-))))]
     (note-at-melodic-interval cantus-note intval)))
+
+(defn second-to-last-measure-candidates-2nd [position previous-melody previous-cantus cantus-note]
+  [[(second-to-last-note position previous-melody previous-cantus cantus-note)
+    (third-to-last-note position previous-melody previous-cantus cantus-note)]])
 
 (defn candidates [[position
                    key
@@ -47,8 +53,7 @@
                    cantus-notes]]
   (case (count melody)
     0 (map (fn [n] [n]) (last-note-candidates position cantus-note))
-    1 [[(second-to-last-note position previous-melody previous-cantus cantus-note)
-        (third-to-last-note position previous-melody previous-cantus cantus-note)]]
+    1 (second-to-last-measure-candidates-2nd position previous-melody previous-cantus cantus-note)
     (next-reverse-candidates
      position key melody m36s previous-melody previous-cantus cantus-note)))
 
@@ -110,6 +115,7 @@
   ;
     ))
 
+;; (melody->lily fux-d)
 ;; (play-best-second fux-d :c :above)
 
 (comment
