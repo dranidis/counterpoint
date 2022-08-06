@@ -1,5 +1,6 @@
 (ns counterpoint.lilypond
   (:require [clojure.java.shell :as sh]
+            [counterpoint.cantus :refer [get-melody]]
             [counterpoint.core :refer [interval]]
             [counterpoint.figured-bass :refer [figured-bass]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
@@ -118,8 +119,9 @@
                           {:clef "treble"
                            :pattern ""
                            :tempo "2 = 80"}))
-  ([melody param]
-   (spit (get param :file "resources/temp.ly") 
+  ([cf param]
+   (let [melody (get-melody cf)]
+     (spit (get param :file "resources/temp.ly") 
          (staff
           (get param :clef "treble")
           (get param :tempo "2 = 80")
@@ -127,7 +129,7 @@
             (if (= p "")
               (voice "first" "voiceOne" (fixed-melody->lily 1 melody))
               (voice "first" "voiceOne" (fixed-melody->lily 1 melody))))
-          (get param :midi midi-instrument)))
+          (get param :midi midi-instrument))))
    (sh/sh "lilypond" "-o" "resources" (get param :file "resources/temp.ly"))))
 
 (defn end-to-1 [melody]

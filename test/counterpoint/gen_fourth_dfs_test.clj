@@ -1,5 +1,6 @@
 (ns counterpoint.gen-fourth-dfs-test
   (:require [clojure.test :refer [deftest is testing]]
+            [counterpoint.cantus :refer [get-melody]]
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.fourth-species :refer [evaluate-fourth-species
                                                  fourth-species-rules?
@@ -181,8 +182,7 @@
                           cantus-note
                           cantus-notes])]
     ;; (println "CAND susp" cand)
-      (is (every? #(not= n/g4 (first %)) cand))
-    ))
+    (is (every? #(not= n/g4 (first %)) cand))))
 
 
 (deftest candidates-below
@@ -209,17 +209,19 @@
 
 (deftest generate-fourth-test
   (testing "above"
-    (let [cps (generate-reverse-counterpoint-4th-dfs :above :f fux-d)
+    (let [fux-d-cf (get-melody fux-d)
+          cps (generate-reverse-counterpoint-4th-dfs :above :f fux-d-cf)
           cp (dfs-solution->cp (first cps))
-          species (make-fourth-species fux-d cp :above)]
+          species (make-fourth-species fux-d-cf cp :above)]
       ;; (println species)
       (is (evaluate-fourth-species species))
       (is (fourth-species-rules? species))))
 
   (testing "below"
-    (let [cps (generate-reverse-counterpoint-4th-dfs :below :f fux-d)
+    (let [fux-d-cf (get-melody fux-d)
+          cps (generate-reverse-counterpoint-4th-dfs :below :f fux-d-cf)
           cp (dfs-solution->cp (first cps))
-          species (make-fourth-species fux-d cp :below)]
+          species (make-fourth-species fux-d-cf cp :below)]
       ;; (println species)
       (is (evaluate-fourth-species species))
       (is (fourth-species-rules? species)))))
