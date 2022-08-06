@@ -72,3 +72,25 @@
 ;; (melody->lily test-cf3 {:clef "treble_8"})
 
 
+(def cf-catalog
+  {:fux-d fux-d
+   :fux-g fux-g
+   :fux-a fux-a
+   :fux-c fux-c
+   :fux-e fux-e
+   :fux-f fux-f 
+   :schoenberg-c schoenberg-c
+   :salieri-c salieri-c
+   :salieri-d salieri-d
+   :schenker-d schenker-d
+   :mozart-c1 mozart-c1
+   :mozart-c2 mozart-c2
+   :albrechtsberger-d albrechtsberger-d
+   :albrechtsberger-f albrechtsberger-f
+   :haydn haydn
+   :haydn-a haydn-a
+   :boulanger-e boulanger-e
+   :boulanger-g boulanger-g
+   :bellerman-a bellerman-a
+   :fetis-c fetis-c
+   })

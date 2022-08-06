@@ -126,6 +126,8 @@
 ;; (def cps (generate-reverse-random-counterpoint-dfs :above :c fux-d))
 ;; (take 1 cps)
 
+
+
 (defn play [n cf key position]
   (let [cps (generate-reverse-counterpoint-dfs position key cf)
         cp (dfs-solution->cp (nth cps n))
@@ -144,11 +146,13 @@
   ;; (sh/sh "timidity" "resources/temp.mid")
   )
 
+
 ;; (count (generate-reverse-counterpoint-dfs :above :c test-cf2))
 ;; (play 14 test-cf2 :c :above)
 
-(defn play-best [cf key position]
-  (let [cps (generate-reverse-counterpoint-dfs position key cf)
+
+(defn generate-first [n cf key position]
+  (let [cps (take n (generate-reverse-counterpoint-dfs position key cf))
         _ (println "ALL" (count cps))
         species (apply max-key #(let [e (evaluate-species  %)]
                                 ;; (println e)
@@ -162,10 +166,14 @@
                       "treble"
                       "treble_8")
                     :pattern ""
-                    :tempo "2 = 140"})
-    (sh/sh "timidity" "resources/temp.midi")
-  ;
-    ))
+                    :tempo "4 = 180"})))
+
+(defn play-best [n cf key position]
+  (generate-first n cf key position)
+  (sh/sh "timidity" "resources/temp.midi"))
+
+
+
 
 ;; (play-best fux-d :c :below)
 

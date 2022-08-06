@@ -72,7 +72,7 @@
     (count (filter #(not (harmonic-consonant? %)) downbeat-intervals))))
 
 (defn evaluate-fourth-species
-  ([species] evaluate-fourth-species species {:verbose false})
+  ([species] (evaluate-fourth-species species {:verbose false}))
   ([species options]
    (let [size (count (get-cantus species))
          [low high] (get-low-high species)
@@ -100,8 +100,8 @@
      (when (get options :verbose)
        (println "Melody score" (norm melody-s))
        (println "Harmony score" (norm score-harmony))
-       (println "Species score" (norm species-score))
-       (norm (+ species-score score-harmony melody-s))))))
+       (println "Species score" (norm species-score)))
+     (norm (+ species-score score-harmony melody-s)))))
 
 
 

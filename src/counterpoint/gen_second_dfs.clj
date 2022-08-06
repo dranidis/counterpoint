@@ -115,6 +115,27 @@
   ;
     ))
 
+(defn generate-second [n cf key position]
+  (let [cps (take n (generate-reverse-counterpoint-2nd-dfs position key cf))
+        _ (println "ALL" (count cps))
+        species (apply max-key #(let [e (evaluate-second-species  %)]
+                                ;; (println e)
+                                  e)
+                       (map #(make-second-species cf (dfs-solution->cp %) position) cps))
+        _ (println "RULES " (second-species-rules? species))
+        _ (println "EVAL  " (evaluate-second-species species))]
+    (species->lily species
+                   {:clef
+                    (if (= position :above)
+                      "treble"
+                      "treble_8")
+                    :pattern ""
+                    :tempo "4 = 180"})
+    
+  ;
+    )
+  )
+
 ;; (melody->lily fux-d)
 ;; (play-best-second fux-d :c :below 100)
 
