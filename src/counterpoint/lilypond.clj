@@ -1,6 +1,6 @@
 (ns counterpoint.lilypond
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus :refer [get-melody]]
+            [counterpoint.cantus :refer [get-key get-melody]]
             [counterpoint.core :refer [interval]]
             [counterpoint.figured-bass :refer [figured-bass]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
@@ -81,12 +81,17 @@
 (defn fixed-melody-fourth->lily [duration [note & notes]]
   (apply str (fixed-to-lily-fourth-iter duration note notes)))
 
-(defn staff [clef tempo voices midi-instrument]
+(defn- key-signature->lily [key-signature]
+  (str (name key-signature) "\\major")
+  )
+
+(defn staff [clef tempo key-signature voices midi-instrument]
   (str
    "\\score {
   \\new Staff <<
             \\clef \"" clef "\"\n
-            \\tempo " tempo "\n"
+            \\tempo " tempo "\n
+            \\key " (key-signature->lily key-signature)
    "\\set Staff.midiInstrument = #\"" midi-instrument
    "\"\n"
    voices
@@ -120,11 +125,13 @@
                            :pattern ""
                            :tempo "2 = 80"}))
   ([cf param]
-   (let [melody (get-melody cf)]
+   (let [melody (get-melody cf)
+         key-signature (get-key cf)]
      (spit (get param :file "resources/temp.ly") 
          (staff
           (get param :clef "treble")
           (get param :tempo "2 = 80")
+          key-signature
           (let [p (get param :pattern "")]
             (if (= p "")
               (voice "first" "voiceOne" (fixed-melody->lily 1 melody))
@@ -219,11 +226,13 @@
                              :tempo "2 = 80"
                              :file "temp"}))
   ([species param]
-   (let [file-name (str "resources/" (get param :file "temp") ".ly")]
+   (let [key-signature :c
+         file-name (str "resources/" (get param :file "temp") ".ly")]
      (spit file-name
          (staff
           (get param :clef "treble")
           (get param :tempo "2 = 80")
+          key-signature
           (let [p (get param :pattern "")]
             (if (= p "")
               (voices species)
