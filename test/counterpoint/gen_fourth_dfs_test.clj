@@ -1,7 +1,8 @@
 (ns counterpoint.gen-fourth-dfs-test
   (:require [clojure.test :refer [deftest is testing]]
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
-            [counterpoint.fourth-species :refer [fourth-species-rules?
+            [counterpoint.fourth-species :refer [evaluate-fourth-species
+                                                 fourth-species-rules?
                                                  make-fourth-species]]
             [counterpoint.gen-first-dfs :refer [dfs-solution->cp]]
             [counterpoint.gen-fourth-dfs :refer [candidates
@@ -162,6 +163,27 @@
       ;; it is not permissible to proceed from the unison g3-g3 to the second f3-g3
       (is (nil? ((set cand-6th-to-last) [n/f3 n/g3]))))))
 
+(testing "do not allow unprepared (dissonant upbeat) suspension"
+  (let [position :above
+        cantus-key :c
+        melody (make-melody n/bb4 n/g4)
+        previous-melody n/g4
+        previous-cantus n/g3
+        cantus-note n/d3
+        cantus-notes [n/e3 n/d3]
+        m36s {:remaining-cantus-size (inc (count cantus-notes))}
+        cand (candidates [position
+                          cantus-key
+                          melody
+                          m36s
+                          previous-melody
+                          previous-cantus
+                          cantus-note
+                          cantus-notes])]
+    ;; (println "CAND susp" cand)
+      (is (every? #(not= n/g4 (first %)) cand))
+    ))
+
 
 (deftest candidates-below
   (testing "candidates below"
@@ -183,8 +205,7 @@
                             cantus-notes])]
       (println cand)
       (is (not (nil? ((set cand) [n/bb3 n/c3]))))
-      (is (not (nil? ((set cand) [n/bb3 n/g2]))))
-      )))
+      (is (not (nil? ((set cand) [n/bb3 n/g2])))))))
 
 (deftest generate-fourth-test
   (testing "above"
@@ -192,6 +213,7 @@
           cp (dfs-solution->cp (first cps))
           species (make-fourth-species fux-d cp :above)]
       ;; (println species)
+      (is (evaluate-fourth-species species))
       (is (fourth-species-rules? species))))
 
   (testing "below"
@@ -199,4 +221,5 @@
           cp (dfs-solution->cp (first cps))
           species (make-fourth-species fux-d cp :below)]
       ;; (println species)
+      (is (evaluate-fourth-species species))
       (is (fourth-species-rules? species)))))

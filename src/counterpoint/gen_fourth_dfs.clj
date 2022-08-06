@@ -89,7 +89,7 @@
 
 (defn next-reverse-candidates-4th [position key melody m36s
                                    previous-melody previous-cantus cantus-note next-cantus]
-  (let [was-a-suspension? (not (harmonic-consonant? (simple-interval previous-cantus previous-melody :below)))
+  (let [was-a-suspension? (not (harmonic-consonant? (simple-interval previous-cantus previous-melody position)))
         ;; _ (when was-a-suspension? (println "SUSP"  previous-melody))
         upbeat-candidates
         (if was-a-suspension?
@@ -205,13 +205,18 @@
 
   (def cps (generate-reverse-counterpoint-4th-dfs :below :f fux-d))
   (def a-sol (make-fourth-species fux-d (dfs-solution->cp (nth cps 0)) :below))
-  (evaluate-fourth-species a-sol)
+  (evaluate-fourth-species a-sol {:verbose true})
   (species->lily a-sol {:clef "treble_8"
                         :pattern ""
                         :tempo "4 = 200"
                         :midi "acoustic grand piano"})
   (sh/sh "timidity" "resources/temp.midi")
 
-  (play-best-fourth fux-d :f :above 100)
+  (play-best-fourth fux-d :f :below 100)
+
+ [:rest [:d 2 :natural] [:d 3 :natural] [:b 3 :flat] [:b 3 :flat] [:a 3 :natural] [:a 3 :natural] [:g 2 :natural] [:g 2 :natural] [:b 3 :flat] [:b 3 :flat] [:a 3 :natural] [:a 3 :natural] [:f 2 :natural] [:f 2 :natural] [:e 2 :natural] [:e 2 :natural] [:d 2 :natural] [:d 2 :natural] [:c 2 :sharp] [:d 2 :natural]] 
+  [[:d 3 :natural] [:f 3 :natural] [:e 3 :natural] [:d 3 :natural] [:g 3 :natural] [:f 3 :natural] [:a 4 :natural] [:g 3 :natural] [:f 3 :natural] [:e 3 :natural] [:d 3 :natural]]
+; 
+ 
 ;
   )
