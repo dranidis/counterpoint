@@ -39,7 +39,8 @@
     (when (get-in parsed-args [:options :list])
       (println "Available cantus-firmi")
       (doseq [c (sort (map name (keys cf-catalog)))]
-        (println c)))
+        (print c  " "))
+      (println))
     
     (when (get-in parsed-args [:options :play])
       (when (nil? gen-species)

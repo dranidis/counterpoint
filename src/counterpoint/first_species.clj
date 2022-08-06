@@ -116,7 +116,7 @@
          (allowed-melodic-intervals-iter? (rest counter-intervals)))))
 
 (defn allowed-melodic-intervals? [species]
-  (rule-warning 
+  (rule-warning
    (allowed-melodic-intervals-iter? (melodic-intervals (get-counter species)))
    #(str "Not allowd interval in melody: " (get-counter species))))
 
@@ -132,18 +132,9 @@
 ;;    avoid consecutive perfect intervals
    ))
 
-(defn- get-harmonic-intervals-iter [ints low1 high1 lows highs]
-  (let [new-int (interval low1 high1)]
-    (into [new-int]
-          (if (empty? lows)
-            []
-            (get-harmonic-intervals-iter (into ints [new-int]) (first lows) (first highs) (rest lows) (rest highs))))))
-
-
 (defn get-harmonic-intervals [species]
   (let [[low high] (get-low-high species)]
-    (println low high)
-    (get-harmonic-intervals-iter [] (first low) (first high) (rest low) (rest high))))
+    (mapv simple-interval low high)))
 
 
 (defn simultaneous-leaps [ca-ints cp-ints]
