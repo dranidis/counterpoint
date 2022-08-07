@@ -26,8 +26,8 @@
   (if (= position :above)
     [(note-at-melodic-interval cantus-note P8)
      (note-at-melodic-interval cantus-note P1)]
-    [(note-at-melodic-interval cantus-note P8-)
-     (note-at-melodic-interval cantus-note P1)]))
+    [(note-at-melodic-interval cantus-note P1)
+     (note-at-melodic-interval cantus-note P8-)]))
 
 (defn second-to-last-note [position previous-melody previous-cantus cantus-note]
   (let [last-harmony-octave? (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
@@ -135,6 +135,6 @@
   (sh/sh "timidity" "resources/temp.midi"))
 
 (comment
-  (play-best-first 100 fux-d :below )
+  (play-best-first 100 fux-d :below)
   ;
   )

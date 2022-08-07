@@ -4,7 +4,7 @@
             [counterpoint.intervals :refer [get-interval get-quality m10- m2
                                             M2 m2- M2- m3 M3 m3- M3- M6 m6-
                                             note-at-diatonic-interval note-at-melodic-interval P1 P4 P4- P5 P5- P8 P8-]]
-            [counterpoint.melody :refer [append-to-melody]]
+            [counterpoint.melody :refer [append-to-melody make-melody]]
             [counterpoint.motion :refer [reverse-direct-perfect?]]
             [counterpoint.notes :refer [get-nooctave] :as n]))
 
@@ -28,6 +28,7 @@
         (neg? i) :no-leap-high
         :else :no-leap-low))))
 
+(melody-reverse-leap (make-melody n/c4 n/b4))
 
 (defn next-melodic-intervals-reverse [melody]
   ;; (println "next-melodic-intervals-reverse" (melody-reverse-leap melody))
@@ -39,16 +40,16 @@
     ;;  m2- M2- m3- M3-]
     :high [m2 M2 m3 M3]
     :low [m2- M2- m3- M3-]
-    :no-leap-high [P1
-                   m2 M2 m3 M3
+    :no-leap-high [m2- M2- m3- M3-
                    P4 P5 P8
+                   m2 M2 m3 M3
+                   P1
                   ;;  m6 ; normally not allowed
-                   m2- M2- m3- M3-]
-    [P1
-     m2 M2 m3 M3
+                   ]
+    [m2 M2 m3 M3
+     P4- P5- m6- P8-
      m2- M2- m3- M3-
-     P4- P5- m6-
-     P8-]))
+     P1]))
 
 (defn next-harmonic-intervals [position m36s]
   (map #(* % (if (= position :above) 1 -1))
