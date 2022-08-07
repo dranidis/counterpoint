@@ -23,11 +23,14 @@
   (= (get m36s :remaining-cantus-size) 0))
 
 (defn last-note-candidates [position cantus-note]
-  (if (= position :above)
-    [(note-at-melodic-interval cantus-note P8)
-     (note-at-melodic-interval cantus-note P1)]
-    [(note-at-melodic-interval cantus-note P1)
-     (note-at-melodic-interval cantus-note P8-)]))
+  (mapv #(note-at-melodic-interval cantus-note %)
+        (if (= position :above) 
+          [P8 P1]
+          [P1 P8-])))
+    ;; [(note-at-melodic-interval cantus-note P8)
+    ;;  (note-at-melodic-interval cantus-note P1)]
+    ;; [(note-at-melodic-interval cantus-note P1)
+    ;;  (note-at-melodic-interval cantus-note P8-)])))
 
 (defn second-to-last-note [position previous-melody previous-cantus cantus-note]
   (let [last-harmony-octave? (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)

@@ -11,13 +11,13 @@
                                          remove-last]]
             [counterpoint.motion :refer [type-of-motion]]
             [counterpoint.notes :as n]
-            [counterpoint.rest :refer [rest?]]
+            [counterpoint.rest :refer [rest?] :as r]
             [counterpoint.utils :refer [rule-warning]]))
 
 (defn make-second-species [cantus-firmus counterpoint-melody arg3]
   (make-species cantus-firmus counterpoint-melody arg3 :second))
 
-(defn get-low-high-second [species]
+(defn- get-low-high-second [species]
   (let [counter (get-counter species)
         double-cantus (remove-last (double-melody (get-cantus species)))]
     (if (= (get-position species) :above)
@@ -70,21 +70,23 @@
   (subvec melody 2))
 
 
-(defn passing-tone [[n1 n2 n3]]
-  (if (or (rest? n1) (rest? n2) (rest? n3))
-    false
-    (let [note1 (note->number n1)
-          note2 (note->number n2)
-          note3 (note->number n3)]
-      (or (and (= (inc note1) note2)
-               (= (inc note2) note3))
-          (and (= note2 (inc note3))
-               (= note1 (inc note2)))))))
-
-(passing-tone [n/g4 n/f4 n/e4])
+(defn passing-tone? [[n1 n2 n3]]
+  (and (not (or (rest? n1) (rest? n2) (rest? n3)))
+       (let [note1 (note->number n1)
+             note2 (note->number n2)
+             note3 (note->number n3)]
+         (or (and (= (inc note1) note2)
+                  (= (inc note2) note3))
+             (and (= note2 (inc note3))
+                  (= note1 (inc note2)))))))
+(comment
+(passing-tone? [n/g4 n/f4 n/e4])
+(passing-tone? [n/a5 n/f4 n/e4])
+;
+  )
 
 (defn- correct-upbeat-interval [position cantus-bar counter-bar]
-  (or (passing-tone counter-bar)
+  (or (passing-tone? counter-bar)
       (let [note1 (second cantus-bar)
             note2 (second counter-bar)]
         (if (= position :above)

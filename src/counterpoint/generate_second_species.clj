@@ -9,8 +9,8 @@
                                             next-diatonic note-at-diatonic-interval
                                             note-at-melodic-interval P1 P12- P5 P5- P8 P8- prev-diatonic]]
             [counterpoint.melody :refer [append-to-melody]]
-            [counterpoint.notes :refer [get-nooctave]]
-            [counterpoint.rest :as rest]
+            [counterpoint.notes :refer [get-nooctave get-note]]
+            [counterpoint.rest :as rest :refer [rest?]]
             [counterpoint.second-species :refer [undisguised-direct-motion-of-downbeats-to-perfect]]))
 
 (defn ending-first-revised [octave? position rev-cantus]
@@ -39,6 +39,11 @@
                                                       (if octave? P5 P5)
                                                       (if octave? P12- P5-)))]
     [last-melody second-last-melody third-last-melody m36s]))
+
+(defn- key-octave? [key cantus-note cp-note]
+  (and (not (rest? cp-note)) 
+       (= key (get-note cantus-note))
+       (= key (get-note cp-note))))
 
 (defn next-candidate-notes
   ([position key melody m36s previous-melody previous-cantus cantus-note]
@@ -138,7 +143,10 @@
                          counter-bar [downbeat upbeat previous-melody]]
                      (and
                       (not (undisguised-direct-motion-of-downbeats-to-perfect cantus-bar counter-bar))
-                      (not (direct-motion-to-perfect? cantus-note upbeat previous-cantus previous-melody)))))))))
+                      (not (direct-motion-to-perfect? cantus-note upbeat previous-cantus previous-melody))
+
+                                                    ;; do not allow octave harmony in key (leave this only for the end)
+                      (not (key-octave? key cantus-note downbeat)))))))))
 
 (defn update-m36-size [m36s position cantus-note current]
   (update m36s :remaining-cantus-size dec))

@@ -3,9 +3,10 @@
             [clojure.tools.cli :refer [parse-opts]]
             [counterpoint.cantus :refer [get-key get-melody make-cantus-firmus]]
             [counterpoint.cantus-firmi-examples :refer [cf-catalog]]
+            [counterpoint.first-species-type :refer [get-counter]]
             [counterpoint.gen-first-dfs :refer [generate-first]]
-            [counterpoint.gen-second-dfs :refer [generate-second]]
             [counterpoint.gen-fourth-dfs :refer [generate-fourth]]
+            [counterpoint.gen-second-dfs :refer [generate-second]]
             [counterpoint.lilypond :refer [melody->lily]]
             [counterpoint.melody :refer [transpose]])
   (:gen-class))
@@ -22,9 +23,10 @@
     :default ""]
    ["-m" "--midi INSTRUMENT" "MIDI Instrument"
     :default "acoustic grand piano"]
-   ["-g" "--generate"]
+   ["-g" "--generate" "Generate species"]
    ["-s" "--species TYPE" "Species type"
     :default "first"]
+   ["-S" "--solo" "Solo the counterpoint"]
    ["-N" "--takeN NUMBER" "How many samples to generate for the dfs search"
     :default 100
     :parse-fn #(Integer/parseInt %)
@@ -47,10 +49,11 @@
 (defn -main [& args]
   (let [parsed-args (parse-opts args cli-options)
         _ (when (get-in parsed-args [:options :help])
-          (println (get-in parsed-args [:summary])))
+            (println (get-in parsed-args [:summary])))
         c-option (get-in parsed-args [:options :cantus])
         transpose-by (get-in parsed-args [:options :transpose])
         cantus (get cf-catalog (keyword c-option))
+        key-sig (get-key cantus)
         transposed-cantus (make-cantus-firmus (get-key cantus)
                                               (transpose (get-melody cantus)
                                                          transpose-by))
@@ -66,7 +69,7 @@
                                 {:pattern (get-in parsed-args [:options :pattern])
                                  :midi (get-in parsed-args [:options :midi])}))]
 
-    
+
 
     (when (get-in parsed-args [:options :list])
       (println "Available cantus-firmi")
@@ -77,4 +80,9 @@
     (when (get-in parsed-args [:options :play])
       (when (nil? gen-species)
         (melody->lily transposed-cantus))
+      (when (get-in parsed-args [:options :solo])
+        (let [cp (make-cantus-firmus
+                  key-sig
+                  (get-counter gen-species))]
+          (melody->lily cp)))
       (sh/sh "timidity" "resources/temp.midi"))))

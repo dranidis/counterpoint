@@ -28,5 +28,6 @@
                       :pattern (get options :pattern "")
                       :tempo "4 = 180"
                       :key key
-                      :midi (get options :midi)}))))
+                      :midi (get options :midi)})
+      species)))
 

@@ -4,7 +4,7 @@
             [counterpoint.notes :as n]
             [counterpoint.second-species :refer [downbeats-second
                                                  make-second-species
-                                                 no-undisguised-direct-motion-of-downbeats-to-perfect? passing-tone
+                                                 no-undisguised-direct-motion-of-downbeats-to-perfect? passing-tone?
                                                  undisguised-direct-motion-of-downbeats-to-perfect]]))
 
 (deftest downbeats-test
@@ -26,11 +26,11 @@
 
 (deftest passing-tone-test
   (testing "g f e"
-    (is (passing-tone [n/g4 n/f4 n/e4])))
+    (is (passing-tone? [n/g4 n/f4 n/e4])))
   (testing "f g a"
-    (is (passing-tone [n/f4 n/g4 n/a5])))
+    (is (passing-tone? [n/f4 n/g4 n/a5])))
   (testing "f g a'"
-    (is (not (passing-tone [n/f4 n/g4 n/a4])))))
+    (is (not (passing-tone? [n/f4 n/g4 n/a4])))))
 
 (deftest undisguised-direct-motion-of-downbeats-to-perfect-test
   (testing "g f e"
