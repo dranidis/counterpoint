@@ -61,7 +61,36 @@
                                         cantus-note
                                         cantus-notes])]
       (is (= [[n/c#3 n/d3] [n/c#3 n/a3]] cand-2nd-to-last))))
+  
+  (testing "2nd-to-last-below unison"
+    (let [position :below
+          previous-melody n/g4
+          previous-cantus n/g4
+          cantus-note n/a5
+          next-cantus n/b5
+          sec-to-last (second-to-last-measure-candidates-4th
+                       position previous-melody previous-cantus cantus-note next-cantus)]
+      (is (= [[n/f#4 n/g4] [n/f#4 n/d4]] sec-to-last))))
 
+  (testing "candidates last below"
+    (let [position :below
+          cantus-key :g
+          melody []
+          previous-melody nil
+          previous-cantus nil
+          m36s nil
+          cantus-note n/g4
+          cantus-notes [n/a5 n/b5]
+          cand-2nd-to-last (candidates [position
+                                        cantus-key
+                                        melody
+                                        m36s ;; counter of thirds & sixths
+                                        previous-melody
+                                        previous-cantus
+                                        cantus-note
+                                        cantus-notes])]
+      (is (= (set [[n/g4] [n/g3]]) (set cand-2nd-to-last)))))
+  
   (testing "candidates 3rd-to-last"
     (let [position :above
           cantus-key :c

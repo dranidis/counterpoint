@@ -226,7 +226,8 @@
                              :tempo "2 = 80"
                              :file "temp"}))
   ([species param]
-   (let [key-signature :c
+   (let [key-signature (get param :key :c)
+        ;;  (get-key (get-cantus species))
          file-name (str "resources/" (get param :file "temp") ".ly")]
      (spit file-name
          (staff

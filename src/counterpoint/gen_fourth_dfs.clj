@@ -23,10 +23,13 @@
             [counterpoint.melody :refer [append-to-melody]]
             [counterpoint.notes :refer [get-nooctave] :as n]))
 
-(defn second-to-last-measure-candidates-4th [position previous-melody previous-cantus cantus-note next-cantus]
+(defn second-to-last-measure-candidates-4th 
+  [position previous-melody previous-cantus cantus-note next-cantus]
   ;; (println "Next cantus" next-cantus)
-  (let [can-be-a-suspension? (harmonic-consonant? (simple-interval next-cantus previous-melody position))
-        sec-species-measure (second-to-last-measure-candidates-2nd position previous-melody previous-cantus cantus-note)]
+  (let [can-be-a-suspension? (harmonic-consonant? 
+                              (simple-interval next-cantus previous-melody position))
+        sec-species-measure (second-to-last-measure-candidates-2nd 
+                             position previous-melody previous-cantus cantus-note)]
     (if can-be-a-suspension?
       (into [[(second-to-last-note position previous-melody previous-cantus cantus-note)
               previous-melody]] sec-species-measure)
@@ -218,6 +221,7 @@
                       "treble_8")
                     :pattern ""
                     :tempo "4 = 180"
+                    :key key
                     ;; :midi "acoustic grand piano"
                     })))
 

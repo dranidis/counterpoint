@@ -1,9 +1,11 @@
 (ns counterpoint.main
   (:require [clojure.java.shell :as sh]
             [clojure.tools.cli :refer [parse-opts]]
+            [counterpoint.cantus :refer [get-key get-melody make-cantus-firmus]]
             [counterpoint.cantus-firmi-examples :refer [cf-catalog]]
             [counterpoint.generate :refer [generate]]
-            [counterpoint.lilypond :refer [melody->lily]])
+            [counterpoint.lilypond :refer [melody->lily]]
+            [counterpoint.melody :refer [transpose]])
   (:gen-class))
 
 (def cli-options
@@ -21,6 +23,10 @@
     :default 100
     :parse-fn #(Integer/parseInt %)
     :validate [#(< 0 %)]]
+   ["-t" "--transpose OCTAVES" "Transpose the melody by octaves"
+    :default 0
+    :parse-fn #(Integer/parseInt %)
+    :validate [#(<= -2 % 2)]]
    ["-h" "--help"]
 ;;    
    ])
@@ -29,13 +35,17 @@
   (let [parsed-args (parse-opts args cli-options)
         ;; _ (println parsed-args)
         c-option (get-in parsed-args [:options :cantus])
+        transpose-by (get-in parsed-args [:options :transpose])
         cantus (get cf-catalog (keyword c-option))
+        transposed-cantus (make-cantus-firmus (get-key cantus)
+                                              (transpose (get-melody cantus)
+                                                         transpose-by))
         species-type (keyword (get-in parsed-args [:options :species]))
         position (keyword (get-in parsed-args [:options :position]))
         take-n (get-in parsed-args [:options :takeN])
         gen-species (when (get-in parsed-args [:options :generate])
                       (println "Generating" species-type)
-                      (generate species-type take-n cantus position))]
+                      (generate species-type take-n transposed-cantus position))]
     (when (get-in parsed-args [:options :list])
       (println "Available cantus-firmi")
       (doseq [c (sort (map name (keys cf-catalog)))]
@@ -44,7 +54,7 @@
     
     (when (get-in parsed-args [:options :play])
       (when (nil? gen-species)
-        (melody->lily cantus))
+        (melody->lily transposed-cantus))
       (sh/sh "timidity" "resources/temp.midi")
       )
     ))

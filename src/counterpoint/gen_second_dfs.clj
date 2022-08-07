@@ -130,7 +130,8 @@
                       "treble"
                       "treble_8")
                     :pattern ""
-                    :tempo "4 = 180"})
+                    :tempo "4 = 180"
+                    :key key})
     
   ;
     )
