@@ -1,15 +1,16 @@
 (ns counterpoint.gen-first-dfs
   (:require [clojure.java.shell :as sh]
+            [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.first-species :refer [evaluate-species
                                                 first-species-rules?]]
             [counterpoint.first-species-type :refer [make-first-species]]
+            [counterpoint.generate :refer [generate-template]]
             [counterpoint.generate-first-species :refer [next-reverse-candidates update-m36-size]]
             [counterpoint.intervals :refer [get-interval m10 m10- m2 m3 m3- M6
                                             M6- note-at-melodic-interval P1
-                                            P8 P8-]]
-            [counterpoint.lilypond :refer [species->lily]]))
+                                            P8 P8-]]))
 
 (defn solution? [[position
                   key
@@ -120,87 +121,20 @@
                    (rest rev-cantus)]]
     (generate-dfs-solutions root-node candidates next-node solution?)))
 
-(defn dfs-solution->cp [solution]
-  (into [] (reverse (nth solution 2))))
+(def generate-first
+  (generate-template
+   generate-reverse-counterpoint-dfs
+   evaluate-species
+   make-first-species
+   first-species-rules?))
 
-;; (def cps (generate-reverse-random-counterpoint-dfs :above :c fux-d))
-;; (take 1 cps)
-
-
-
-(defn play [n cf key position]
-  (let [cps (generate-reverse-counterpoint-dfs position key cf)
-        cp (dfs-solution->cp (nth cps n))
-        species (make-first-species cf cp position)
-        ;; _ (println cp)
-        ;; _ (println "RULES " (first-species-rules? species))
-        ;; _ (println "EVAL  " (evaluate-species species))
-        ]
-    (species->lily species
-                   {:clef (if (= position :above)
-                            "treble"
-                            "treble_8")
-                    :pattern ""
-                    :tempo "4 = 240"}))
-  (sh/sh "timidity" "resources/temp.midi")
-  ;; (sh/sh "timidity" "resources/temp.mid")
-  )
-
-
-;; (count (generate-reverse-counterpoint-dfs :above :c test-cf2))
-;; (play 14 test-cf2 :c :above)
-
-
-(defn generate-first [n cf key position]
-  (let [cps (take n (generate-reverse-counterpoint-dfs position key cf))
-        _ (println "ALL" (count cps))
-        species (apply max-key #(let [e (evaluate-species  %)]
-                                ;; (println e)
-                                  e)
-                       (map #(make-first-species cf (dfs-solution->cp %) position) cps))
-        _ (println "RULES " (first-species-rules? species))
-        _ (println "EVAL  " (evaluate-species species))]
-    (species->lily species
-                   {:clef
-                    (if (= position :above)
-                      "treble"
-                      "treble_8")
-                    :pattern ""
-                    :tempo "4 = 180"
-                    :key key})))
-
-(defn play-best [n cf key position]
-  (generate-first n cf key position)
+(defn play-best-first [n cf position]
+  (generate-first n cf position
+                  {:pattern ""
+                   :midi "flute"})
   (sh/sh "timidity" "resources/temp.midi"))
 
-
-
-
-;; (play-best fux-d :c :below)
-
-;; (play-best mozart-c1 :c :below)
-;; (play-best salieri-d :c :below)
-;; (play-best salieri-c :c :above)
-;; (play-best test-cf3 :c :below)
-;; (play-best fux-e :c :above)
-
-;; (play-best fux-e :c :above)
-
-;; (def position :below)
-;; (def key :c)
-;; (def cf fux-d)
-;; (def cps (generate-reverse-random-counterpoint-dfs position key cf))
-;; (def map-cps (map-indexed #(vector %1 %2) cps))
-
-;; (map (fn [[n s]]
-;;        (species->lily (make-first-species cf (reverse (nth s 2)) position) 
-;;                      {:clef
-;;                       (if (= position :above)
-;;                         "treble"
-;;                         "treble_8")
-;;                       :pattern ""
-;;                       :tempo "4 = 240"
-;;                       :file (str "temp_" n)}))
-;;      map-cps)
-
-;; (map-indexed #(vector %1 %2) cps)
+(comment
+  (play-best-first 100 fux-d :below )
+  ;
+  )

@@ -4,8 +4,8 @@
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.first-species :refer [first-species-rules?]]
             [counterpoint.first-species-type :refer [make-first-species]]
-            [counterpoint.gen-first-dfs :refer [dfs-solution->cp
-                                                generate-reverse-counterpoint-dfs]]))
+            [counterpoint.gen-first-dfs :refer [generate-reverse-counterpoint-dfs]]
+            [counterpoint.utils :refer [dfs-solution->cp]]))
 
 (deftest generate-first-test
   (testing "above"

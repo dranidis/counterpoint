@@ -1,17 +1,17 @@
 (ns counterpoint.gen-fourth-dfs
   (:require [clojure.java.shell :as sh]
             [counterpoint.cantus :refer [maximum-range-M10?]]
-            [counterpoint.cantus-firmi-examples :refer [fux-d mozart-c1]]
+            [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.core :refer [interval simple-interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.fourth-species :refer [evaluate-fourth-species
                                                  fourth-species-rules?
                                                  make-fourth-species]]
-            [counterpoint.gen-first-dfs :refer [dfs-solution->cp
-                                                last-note-candidates second-to-last-note
-                                                solution?]]
+            [counterpoint.gen-first-dfs :refer [last-note-candidates
+                                                second-to-last-note solution?]]
             [counterpoint.gen-second-dfs :refer [next-node
                                                  second-to-last-measure-candidates-2nd]]
+            [counterpoint.generate :refer [generate-template]]
             [counterpoint.generate-first-species :refer [crossing-filter debug
                                                          max-harmonic-interval next-harmonic-intervals]]
             [counterpoint.generate-second-species :refer [next-candidate-notes
@@ -21,14 +21,15 @@
                                             note-at-diatonic-interval note-at-melodic-interval P1 P8]]
             [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.melody :refer [append-to-melody]]
-            [counterpoint.notes :refer [get-nooctave] :as n]))
+            [counterpoint.notes :refer [get-nooctave] :as n]
+            [counterpoint.utils :refer [dfs-solution->cp]]))
 
-(defn second-to-last-measure-candidates-4th 
+(defn second-to-last-measure-candidates-4th
   [position previous-melody previous-cantus cantus-note next-cantus]
   ;; (println "Next cantus" next-cantus)
-  (let [can-be-a-suspension? (harmonic-consonant? 
+  (let [can-be-a-suspension? (harmonic-consonant?
                               (simple-interval next-cantus previous-melody position))
-        sec-species-measure (second-to-last-measure-candidates-2nd 
+        sec-species-measure (second-to-last-measure-candidates-2nd
                              position previous-melody previous-cantus cantus-note)]
     (if can-be-a-suspension?
       (into [[(second-to-last-note position previous-melody previous-cantus cantus-note)
@@ -182,51 +183,21 @@
                    (rest rev-cantus)]]
     (generate-dfs-solutions root-node candidates next-node solution?)))
 
-(defn play-best-fourth [cf key position take-n]
-  (let [cps-all (generate-reverse-counterpoint-4th-dfs position key cf)
-        cps (take take-n cps-all)
-        _ (println "ALL" (count cps))
-        species (apply max-key #(let [e (evaluate-fourth-species  %)]
-                                ;; (println e)
-                                  e)
-                       (map #(make-fourth-species cf (dfs-solution->cp %) position) cps))
-        _ (println "RULES " (fourth-species-rules? species))
-        _ (println "EVAL  " (evaluate-fourth-species species))]
-    (species->lily species
-                   {:clef
-                    (if (= position :above)
-                      "treble"
-                      "treble_8")
-                    :pattern ""
-                    :tempo "4 = 180"
-                    :midi "acoustic grand piano"})
-    (sh/sh "timidity" "resources/temp.midi")
-  ;
-    ))
+(def generate-fourth
+  (generate-template
+   generate-reverse-counterpoint-4th-dfs
+   evaluate-fourth-species
+   make-fourth-species
+   fourth-species-rules?))
 
-(defn generate-fourth [n cf key position]
-  (let [cps-all (generate-reverse-counterpoint-4th-dfs position key cf)
-        cps (take n cps-all)
-        _ (println "ALL" (count cps))
-        species (apply max-key #(let [e (evaluate-fourth-species  %)]
-                                ;; (println e)
-                                  e)
-                       (map #(make-fourth-species cf (dfs-solution->cp %) position) cps))
-        _ (println "RULES " (fourth-species-rules? species))
-        _ (println "EVAL  " (evaluate-fourth-species species))]
-    (species->lily species
-                   {:clef
-                    (if (= position :above)
-                      "treble"
-                      "treble_8")
-                    :pattern ""
-                    :tempo "4 = 180"
-                    :key key
-                    ;; :midi "acoustic grand piano"
-                    })))
+(defn play-best-fourth [n cf position]
+  (generate-fourth n cf position 
+                   {:pattern ""
+                    :midi "acoustic grand piano"})
+  (sh/sh "timidity" "resources/temp.midi"))
 
 (comment
-  (generate-fourth 100 mozart-c1 :c :above)
+  (play-best-fourth 100 fux-d :above)
 
   (def cps (generate-reverse-counterpoint-4th-dfs :below :f fux-d))
   (def a-sol (make-fourth-species fux-d (dfs-solution->cp (nth cps 0)) :below))
@@ -236,8 +207,6 @@
                         :tempo "4 = 200"
                         :midi "acoustic grand piano"})
   (sh/sh "timidity" "resources/temp.midi")
-
-  (play-best-fourth fux-d :f :above 100)
 
   [:rest [:d 2 :natural] [:d 3 :natural] [:b 3 :flat] [:b 3 :flat] [:a 3 :natural] [:a 3 :natural] [:g 2 :natural] [:g 2 :natural] [:b 3 :flat] [:b 3 :flat] [:a 3 :natural] [:a 3 :natural] [:f 2 :natural] [:f 2 :natural] [:e 2 :natural] [:e 2 :natural] [:d 2 :natural] [:d 2 :natural] [:c 2 :sharp] [:d 2 :natural]]
   [[:d 3 :natural] [:f 3 :natural] [:e 3 :natural] [:d 3 :natural] [:g 3 :natural] [:f 3 :natural] [:a 4 :natural] [:g 3 :natural] [:f 3 :natural] [:e 3 :natural] [:d 3 :natural]]

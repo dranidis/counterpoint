@@ -4,9 +4,9 @@
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.first-species-type :refer [get-counter]]
-            [counterpoint.gen-first-dfs :refer [dfs-solution->cp
-                                                last-note-candidates second-to-last-note
-                                                solution?]]
+            [counterpoint.gen-first-dfs :refer [last-note-candidates
+                                                second-to-last-note solution?]]
+            [counterpoint.generate :refer [generate-template]]
             [counterpoint.generate-second-species :refer [next-reverse-candidates update-m36-size]]
             [counterpoint.intervals :refer [get-interval m2 m2- M3- m6 m6-
                                             note-at-melodic-interval P12- P5 P5-]]
@@ -14,7 +14,8 @@
             [counterpoint.melody :refer [melody-score]]
             [counterpoint.second-species :refer [evaluate-second-species
                                                  make-second-species
-                                                 second-species-rules?]]))
+                                                 second-species-rules?]]
+            [counterpoint.utils :refer [dfs-solution->cp]]))
 
 (defn- third-to-last-note [position previous-melody previous-cantus cantus-note]
   (let [last-melody-m2? (= m2 (interval cantus-note previous-cantus))
@@ -95,52 +96,22 @@
                    (rest rev-cantus)]]
     (generate-dfs-solutions root-node candidates next-node solution?)))
 
-(defn play-best-second [cf key position take-n]
-  (let [cps (take take-n (generate-reverse-counterpoint-2nd-dfs position key cf))
-        _ (println "ALL" (count cps))
-        species (apply max-key #(let [e (evaluate-second-species  %)]
-                                ;; (println e)
-                                  e)
-                       (map #(make-second-species cf (dfs-solution->cp %) position) cps))
-        _ (println "RULES " (second-species-rules? species))
-        _ (println "EVAL  " (evaluate-second-species species))]
-    (species->lily species
-                   {:clef
-                    (if (= position :above)
-                      "treble"
-                      "treble_8")
-                    :pattern ""
-                    :tempo "4 = 240"})
-    (sh/sh "timidity" "resources/temp.midi")
-  ;
-    ))
+(def generate-second
+  (generate-template
+   generate-reverse-counterpoint-2nd-dfs
+   evaluate-second-species
+   make-second-species
+   second-species-rules?))
 
-(defn generate-second [n cf key position]
-  (let [cps (take n (generate-reverse-counterpoint-2nd-dfs position key cf))
-        _ (println "ALL" (count cps))
-        species (apply max-key #(let [e (evaluate-second-species  %)]
-                                ;; (println e)
-                                  e)
-                       (map #(make-second-species cf (dfs-solution->cp %) position) cps))
-        _ (println "RULES " (second-species-rules? species))
-        _ (println "EVAL  " (evaluate-second-species species))]
-    (species->lily species
-                   {:clef
-                    (if (= position :above)
-                      "treble"
-                      "treble_8")
-                    :pattern ""
-                    :tempo "4 = 180"
-                    :key key})
-    
-  ;
-    )
-  )
-
-;; (melody->lily fux-d)
-;; (play-best-second fux-d :c :below 100)
+(defn play-best-second [n cf position]
+  (generate-second n cf position
+                   {:pattern ""
+                    :midi "flute"})
+  (sh/sh "timidity" "resources/temp.midi"))
 
 (comment
+
+  (play-best-second 100 fux-d :above)
   (def position :above)
   (def cf fux-d)
   (def at-key :c)

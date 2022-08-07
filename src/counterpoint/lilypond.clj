@@ -191,25 +191,28 @@
 (defn first-voices-pattern [p species]
   (let [cantus (get-cantus species)
         counter (get-counter species)
-        position (get-position species)]
+        position (get-position species)
+        length 1]
     (str
-     (voice-pattern position p 1 cantus counter)
+     (voice-pattern position p length cantus counter)
      (figured-bass species))))
 
 (defn second-voices-pattern [p species]
   (let [cantus (double-melody (get-cantus species))
         counter (get-counter species)
-        position (get-position species)]
+        position (get-position species)
+        length 2]
     (str
-     (voice-pattern position p 2 cantus counter)
+     (voice-pattern position p length cantus counter)
      (figured-bass species))))
 
 (defn fourth-voices-pattern [p species]
   (let [cantus (double-melody (get-cantus species))
         counter (get-counter species)
-        position (get-position species)]
+        position (get-position species)
+        length 2]
     (str
-     (voice-pattern position p 2 cantus counter)
+     (voice-pattern position p length cantus counter)
      (figured-bass species))))
 
 (defn voices-pattern [p species]
@@ -224,7 +227,8 @@
                             {:clef "treble"
                              :pattern ""
                              :tempo "2 = 80"
-                             :file "temp"}))
+                             :file "temp"
+                             :key :c}))
   ([species param]
    (let [key-signature (get param :key :c)
         ;;  (get-key (get-cantus species))

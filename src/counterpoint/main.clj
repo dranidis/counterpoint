@@ -3,7 +3,9 @@
             [clojure.tools.cli :refer [parse-opts]]
             [counterpoint.cantus :refer [get-key get-melody make-cantus-firmus]]
             [counterpoint.cantus-firmi-examples :refer [cf-catalog]]
-            [counterpoint.generate :refer [generate]]
+            [counterpoint.gen-first-dfs :refer [generate-first]]
+            [counterpoint.gen-second-dfs :refer [generate-second]]
+            [counterpoint.gen-fourth-dfs :refer [generate-fourth]]
             [counterpoint.lilypond :refer [melody->lily]]
             [counterpoint.melody :refer [transpose]])
   (:gen-class))
@@ -16,6 +18,10 @@
    ["-P" "--play"]
    ["-p" "--position POSITION" "Position of counterpoint"
     :default "above"]
+   ["-T" "--pattern PATTERN" "Generated pattern"
+    :default ""]
+   ["-m" "--midi INSTRUMENT" "MIDI Instrument"
+    :default "acoustic grand piano"]
    ["-g" "--generate"]
    ["-s" "--species TYPE" "Species type"
     :default "first"]
@@ -31,9 +37,16 @@
 ;;    
    ])
 
+(defn generate
+  [species-type n cantus position options]
+  (case species-type
+    :first (generate-first n cantus position options)
+    :second (generate-second n cantus position options)
+    :fourth (generate-fourth n cantus position options)))
+
 (defn -main [& args]
   (let [parsed-args (parse-opts args cli-options)
-        ;; _ (println parsed-args)
+        _ (println parsed-args)
         c-option (get-in parsed-args [:options :cantus])
         transpose-by (get-in parsed-args [:options :transpose])
         cantus (get cf-catalog (keyword c-option))
@@ -45,17 +58,19 @@
         take-n (get-in parsed-args [:options :takeN])
         gen-species (when (get-in parsed-args [:options :generate])
                       (println "Generating" species-type)
-                      (generate species-type take-n transposed-cantus position))]
+                      (generate species-type
+                                take-n
+                                transposed-cantus
+                                position
+                                {:pattern (get-in parsed-args [:options :pattern])
+                                 :midi (get-in parsed-args [:options :midi])}))]
     (when (get-in parsed-args [:options :list])
       (println "Available cantus-firmi")
       (doseq [c (sort (map name (keys cf-catalog)))]
         (print c  " "))
       (println))
-    
+
     (when (get-in parsed-args [:options :play])
       (when (nil? gen-species)
         (melody->lily transposed-cantus))
-      (sh/sh "timidity" "resources/temp.midi")
-      )
-    ))
-  
+      (sh/sh "timidity" "resources/temp.midi"))))

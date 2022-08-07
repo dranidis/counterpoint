@@ -5,12 +5,12 @@
             [counterpoint.fourth-species :refer [evaluate-fourth-species
                                                  fourth-species-rules?
                                                  make-fourth-species]]
-            [counterpoint.gen-first-dfs :refer [dfs-solution->cp]]
             [counterpoint.gen-fourth-dfs :refer [candidates
                                                  generate-reverse-counterpoint-4th-dfs
                                                  second-to-last-measure-candidates-4th]]
             [counterpoint.melody :refer [make-melody]]
-            [counterpoint.notes :as n]))
+            [counterpoint.notes :as n]
+            [counterpoint.utils :refer [dfs-solution->cp]]))
 
 
 (deftest candidates-test
