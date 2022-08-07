@@ -33,14 +33,14 @@
           m36s nil
           cantus-note n/e4
           cantus-notes [n/f4]
-          cand-2nd-to-last (candidates [position
-                                        cantus-key
-                                        melody
-                                        m36s ;; counter of thirds & sixths
-                                        previous-melody
-                                        previous-cantus
-                                        cantus-note
-                                        cantus-notes])]
+          cand-2nd-to-last (candidates {:position position
+                                        :key cantus-key
+                                        :melody melody
+                                        :m36s m36s;; counter of thirds & sixths
+                                        :previous-melody previous-melody
+                                        :previous-cantus previous-cantus
+                                        :cantus-note cantus-note
+                                        :cantus-notes cantus-notes})]
       (is (= [[n/c#5 n/d5] [n/c#5 n/b5]] cand-2nd-to-last))))
 
   (testing "candidates 2nd-to-last below"
@@ -52,14 +52,14 @@
           m36s nil
           cantus-note n/e4
           cantus-notes [n/f4]
-          cand-2nd-to-last (candidates [position
-                                        cantus-key
-                                        melody
-                                        m36s ;; counter of thirds & sixths
-                                        previous-melody
-                                        previous-cantus
-                                        cantus-note
-                                        cantus-notes])]
+          cand-2nd-to-last (candidates {:position position
+                                        :key cantus-key
+                                        :melody melody
+                                        :m36s m36s;; counter of thirds & sixths
+                                        :previous-melody previous-melody
+                                        :previous-cantus previous-cantus
+                                        :cantus-note cantus-note
+                                        :cantus-notes cantus-notes})]
       (is (= [[n/c#3 n/d3] [n/c#3 n/a3]] cand-2nd-to-last))))
   
   (testing "2nd-to-last-below unison"
@@ -81,14 +81,14 @@
           m36s nil
           cantus-note n/g4
           cantus-notes [n/a5 n/b5]
-          cand-2nd-to-last (candidates [position
-                                        cantus-key
-                                        melody
-                                        m36s ;; counter of thirds & sixths
-                                        previous-melody
-                                        previous-cantus
-                                        cantus-note
-                                        cantus-notes])]
+          cand-2nd-to-last (candidates {:position position
+                                        :key cantus-key
+                                        :melody melody
+                                        :m36s m36s;; counter of thirds & sixths
+                                        :previous-melody previous-melody
+                                        :previous-cantus previous-cantus
+                                        :cantus-note cantus-note
+                                        :cantus-notes cantus-notes})]
       (is (= (set [[n/g4] [n/g3]]) (set cand-2nd-to-last)))))
   
   (testing "candidates 3rd-to-last"
@@ -100,14 +100,14 @@
           cantus-note n/f3
           cantus-notes [n/g3 n/d3]
           m36s {:remaining-cantus-size (inc (count cantus-notes))}
-          cand-3rd-to-last (candidates [position
-                                        cantus-key
-                                        melody
-                                        m36s
-                                        previous-melody
-                                        previous-cantus
-                                        cantus-note
-                                        cantus-notes])]
+          cand-3rd-to-last (candidates {:position position
+                                        :key cantus-key
+                                        :melody melody
+                                        :m36s m36s
+                                        :previous-melody previous-melody
+                                        :previous-cantus previous-cantus
+                                        :cantus-note cantus-note
+                                        :cantus-notes cantus-notes})]
       ;; (println cand-3rd-to-last)
       (is (= (set [[n/d4 n/e4] ;; suspension
                    [n/d4 n/a4]
@@ -125,14 +125,14 @@
           cantus-note n/g3
           cantus-notes [n/a4 n/d3]
           m36s {:remaining-cantus-size (inc (count cantus-notes))}
-          cand-4th-to-last (candidates [position
-                                        cantus-key
-                                        melody
-                                        m36s
-                                        previous-melody
-                                        previous-cantus
-                                        cantus-note
-                                        cantus-notes])]
+          cand-4th-to-last (candidates {:position position
+                                        :key cantus-key
+                                        :melody melody
+                                        :m36s m36s
+                                        :previous-melody previous-melody
+                                        :previous-cantus previous-cantus
+                                        :cantus-note cantus-note
+                                        :cantus-notes cantus-notes})]
       ;; (println cand-4th-to-last)
       (is (= (set [[n/e4 n/f4] ;; suspension
                    [n/e4 n/b4]
@@ -150,14 +150,14 @@
           cantus-note n/a4
           cantus-notes [n/f3 n/d3]
           m36s {:remaining-cantus-size (inc (count cantus-notes))}
-          cand-5th-to-last (candidates [position
-                                        cantus-key
-                                        melody
-                                        m36s
-                                        previous-melody
-                                        previous-cantus
-                                        cantus-note
-                                        cantus-notes])]
+          cand-5th-to-last (candidates {:position position
+                                        :key cantus-key
+                                        :melody melody
+                                        :m36s m36s
+                                        :previous-melody previous-melody
+                                        :previous-cantus previous-cantus
+                                        :cantus-note cantus-note
+                                        :cantus-notes cantus-notes})]
       ;; (println cand-5th-to-last)
       (is (not (nil? ((set cand-5th-to-last) [n/f4 n/a5]))))
       (is (not (nil? ((set cand-5th-to-last) [n/f4 n/c4]))))
@@ -177,14 +177,14 @@
           cantus-note n/f3
           cantus-notes [n/g3 n/d3]
           m36s {:remaining-cantus-size (inc (count cantus-notes))}
-          cand-6th-to-last (candidates [position
-                                        cantus-key
-                                        melody
-                                        m36s
-                                        previous-melody
-                                        previous-cantus
-                                        cantus-note
-                                        cantus-notes])]
+          cand-6th-to-last (candidates {:position position
+                                        :key cantus-key
+                                        :melody melody
+                                        :m36s m36s
+                                        :previous-melody previous-melody
+                                        :previous-cantus previous-cantus
+                                        :cantus-note cantus-note
+                                        :cantus-notes cantus-notes})]
       ;; (println cand-6th-to-last)
       (is (not (nil? ((set cand-6th-to-last) [n/c4 n/a4]))))
       (is (not (nil? ((set cand-6th-to-last) [n/c4 n/d4]))))
@@ -202,14 +202,14 @@
         cantus-note n/d3
         cantus-notes [n/e3 n/d3]
         m36s {:remaining-cantus-size (inc (count cantus-notes))}
-        cand (candidates [position
-                          cantus-key
-                          melody
-                          m36s
-                          previous-melody
-                          previous-cantus
-                          cantus-note
-                          cantus-notes])]
+        cand (candidates {:position position
+                          :key cantus-key
+                          :melody melody
+                          :m36s m36s
+                          :previous-melody previous-melody
+                          :previous-cantus previous-cantus
+                          :cantus-note cantus-note
+                          :cantus-notes cantus-notes})]
     ;; (println "CAND susp" cand)
     (is (every? #(not= n/g4 (first %)) cand))))
 
@@ -224,14 +224,14 @@
           cantus-note n/g3
           cantus-notes [n/d3 n/d3]
           m36s {:remaining-cantus-size (inc (count cantus-notes))}
-          cand (candidates [position
-                            cantus-key
-                            melody
-                            m36s
-                            previous-melody
-                            previous-cantus
-                            cantus-note
-                            cantus-notes])]
+          cand (candidates {:position position
+                            :key cantus-key
+                            :melody melody
+                            :m36s m36s
+                            :previous-melody previous-melody
+                            :previous-cantus previous-cantus
+                            :cantus-note cantus-note
+                            :cantus-notes cantus-notes})]
       (println cand)
       (is (not (nil? ((set cand) [n/bb3 n/c3]))))
       (is (not (nil? ((set cand) [n/bb3 n/g2])))))))

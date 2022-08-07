@@ -6,4 +6,4 @@
   rule)
 
 (defn dfs-solution->cp [solution]
-  (into [] (reverse (nth solution 2))))
+  (into [] (reverse (:melody solution))))

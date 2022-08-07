@@ -136,14 +136,14 @@
         ;;               (not (direct-motion-to-perfect? cantus-note upbeat previous-cantus previous-melody))))))
          )))
 
-(defn candidates [[position
-                   key
-                   melody
-                   m36s ;; counter of thirds & sixths
-                   previous-melody
-                   previous-cantus
-                   cantus-note
-                   cantus-notes]]
+(defn candidates [{:keys [position
+                          key
+                          melody
+                          m36s ;; counter of thirds & sixths
+                          previous-melody
+                          previous-cantus
+                          cantus-note
+                          cantus-notes]}]
   ;; (println "cantus-notes" cantus-notes)
   ;; (println melody (count melody))
   (let [cand (case (count melody)
@@ -173,14 +173,14 @@
         melody []
         previous-melody nil
         previous-cantus nil
-        root-node [position
-                   key
-                   melody
-                   m36s ;; counter of thirds & sixths
-                   previous-melody
-                   previous-cantus
-                   (first rev-cantus)
-                   (rest rev-cantus)]]
+        root-node {:position position
+                   :key key
+                   :melody melody
+                   :m36s m36s;; counter of thirds & sixths
+                   :previous-melody previous-melody
+                   :previous-cantus previous-cantus
+                   :cantus-note (first rev-cantus)
+                   :cantus-notes (rest rev-cantus)}]
     (generate-dfs-solutions root-node candidates next-node solution?)))
 
 (def generate-fourth

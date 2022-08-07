@@ -12,14 +12,14 @@
                                             M6- note-at-melodic-interval P1
                                             P8 P8-]]))
 
-(defn solution? [[position
-                  key
-                  melody
-                  m36s ;; counter of thirds & sixths
-                  previous-melody
-                  previous-cantus
-                  cantus-note
-                  cantus-notes]]
+(defn solution? [{:keys [position
+                         key
+                         melody
+                         m36s ;; counter of thirds & sixths
+                         previous-melody
+                         previous-cantus
+                         cantus-note
+                         cantus-notes]}]
   (= (get m36s :remaining-cantus-size) 0))
 
 (defn last-note-candidates [position cantus-note]
@@ -71,14 +71,14 @@
        (note-at-melodic-interval cantus-sec-to-last m10-)]
       [(note-at-melodic-interval cantus-sec-to-last M6-)])))
 
-(defn candidates [[position
-                   key
-                   melody
-                   m36s ;; counter of thirds & sixths
-                   previous-melody
-                   previous-cantus
-                   cantus-note
-                   cantus-notes]]
+(defn candidates [{:keys [position
+                          key
+                          melody
+                          m36s ;; counter of thirds & sixths
+                          previous-melody
+                          previous-cantus
+                          cantus-note
+                          cantus-notes]}]
   (case (count melody)
     0 (last-note-candidates-new position (first cantus-notes) cantus-note)
     1 (second-to-last-note-candidates position cantus-note previous-cantus)
@@ -86,24 +86,24 @@
     (next-reverse-candidates
      position key melody m36s previous-melody previous-cantus cantus-note)))
 
-(defn next-node [[position
-                  key
-                  melody
-                  m36s ;; counter of thirds & sixths
-                  previous-melody
-                  previous-cantus
-                  cantus-note
-                  cantus-notes]
+(defn next-node [{:keys [position
+                         key
+                         melody
+                         m36s ;; counter of thirds & sixths
+                         previous-melody
+                         previous-cantus
+                         cantus-note
+                         cantus-notes]}
                  current]
   ;; (println "NEXT mel" melody current)
-  [position
-   key
-   (into melody [current])
-   (update-m36-size m36s position cantus-note current)
-   current
-   cantus-note
-   (first cantus-notes)
-   (rest cantus-notes)])
+  {:position position
+   :key key
+   :melody (into melody [current])
+   :m36s (update-m36-size m36s position cantus-note current)
+   :previous-melody current
+   :previous-cantus cantus-note
+   :cantus-note (first cantus-notes)
+   :cantus-notes (rest cantus-notes)})
 
 (defn generate-reverse-counterpoint-dfs [position key cantus]
   (let [rev-cantus (reverse cantus)
@@ -111,14 +111,14 @@
         melody []
         previous-melody nil
         previous-cantus nil
-        root-node [position
-                   key
-                   melody
-                   m36s ;; counter of thirds & sixths
-                   previous-melody
-                   previous-cantus
-                   (first rev-cantus)
-                   (rest rev-cantus)]]
+        root-node {:position position
+                   :key key
+                   :melody melody
+                   :m36s m36s;; counter of thirds & sixths
+                   :previous-melody previous-melody
+                   :previous-cantus previous-cantus
+                   :cantus-note (first rev-cantus)
+                   :cantus-notes (rest rev-cantus)}]
     (generate-dfs-solutions root-node candidates next-node solution?)))
 
 (def generate-first

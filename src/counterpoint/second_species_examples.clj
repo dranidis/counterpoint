@@ -20,8 +20,6 @@
 ;; below haydn-a, cf-c, cf-a, fux-g
 
 (comment
-
-
   (def species (let [counterpoint-melody
                      (make-melody n/c4 n/b4 n/a4 n/b4
                                   n/c4 n/g4 n/e4 n/c4
