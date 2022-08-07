@@ -46,7 +46,8 @@
 
 (defn -main [& args]
   (let [parsed-args (parse-opts args cli-options)
-        _ (println parsed-args)
+        _ (when (get-in parsed-args [:options :help])
+          (println (get-in parsed-args [:summary])))
         c-option (get-in parsed-args [:options :cantus])
         transpose-by (get-in parsed-args [:options :transpose])
         cantus (get cf-catalog (keyword c-option))
@@ -64,6 +65,9 @@
                                 position
                                 {:pattern (get-in parsed-args [:options :pattern])
                                  :midi (get-in parsed-args [:options :midi])}))]
+
+    
+
     (when (get-in parsed-args [:options :list])
       (println "Available cantus-firmi")
       (doseq [c (sort (map name (keys cf-catalog)))]

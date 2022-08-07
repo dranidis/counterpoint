@@ -1,14 +1,12 @@
 (ns counterpoint.fourth-species
   (:require [counterpoint.core :refer [simple-interval]]
-            [counterpoint.first-species :refer [allowed-melodic-intervals?
-                                                get-harmonic-intervals]]
+            [counterpoint.first-species :refer [allowed-melodic-intervals?]]
             [counterpoint.first-species-type :refer [get-cantus get-counter
                                                      get-low-high get-position
                                                      make-species]]
             [counterpoint.intervals :refer [get-interval harmonic-consonant?
                                             P1 P5 P8]]
-            [counterpoint.melody :refer [double-melody melody-score
-                                         remove-last]]
+            [counterpoint.melody :refer [double-melody melody-score]]
             [counterpoint.utils :refer [rule-warning]]))
 
 (defn make-fourth-species [cantus-firmus counterpoint-melody arg3]

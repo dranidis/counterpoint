@@ -5,7 +5,6 @@
                                                         fux-e fux-f fux-g haydn
                                                         haydn-a mozart-c1 mozart-c2 salieri-c]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?]]
-            [counterpoint.generate-second-species :refer [generate-reverse-random-counterpoint-second]]
             [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.melody :refer [make-melody melodic-intervals
                                          melody-range]]
@@ -16,31 +15,6 @@
                                                  make-second-species no-undisguised-direct-motion-of-downbeats-to-perfect?
                                                  second-species-rules?]]
             [counterpoint.utils :refer [rule-warning]]))
-
-
-(defn generate-and-play [cf key position pattern]
-  (let [cp (generate-reverse-random-counterpoint-second position key cf)
-        species (make-second-species cf cp position)
-        ;; _ (println cp)
-        _ (println "RULES " (second-species-rules? species))
-        ;; _ (println "EVAL  " (evaluate-species species))
-        ]
-    (species->lily species
-                   {:clef (if (= position :above)
-                            "treble"
-                            "treble_8")
-                    ;; :pattern "baaa"
-                    :pattern pattern
-                    :tempo "4 = 200"}))
-  (sh/sh "timidity" "resources/temp.midi")
-  ;; (sh/sh "timidity" "resources/temp.mid")
-  )
-
-;; (generate-and-play
-;; ;;  (make-melody n/d3 n/g3 n/e3 n/d3)
-;;  fux-a
-;;  :c :below
-;;  "")
 
 ;; Unsolvable
 ;; below haydn-a, cf-c, cf-a, fux-g

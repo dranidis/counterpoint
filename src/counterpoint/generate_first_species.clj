@@ -2,7 +2,7 @@
   (:require [counterpoint.cantus :refer [maximum-range-M10?]]
             [counterpoint.core :refer [interval]]
             [counterpoint.intervals :refer [get-interval get-quality m10- m2
-                                            M2 m2- M2- m3 M3 m3- M3- M6 m6 m6-
+                                            M2 m2- M2- m3 M3 m3- M3- M6 m6-
                                             note-at-diatonic-interval note-at-melodic-interval P1 P4 P4- P5 P5- P8 P8-]]
             [counterpoint.melody :refer [append-to-melody]]
             [counterpoint.motion :refer [reverse-direct-perfect?]]

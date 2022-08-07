@@ -15,7 +15,7 @@
           species (make-second-species fux-d-cf cp :above)]
       ;; (println species)
       (is (second-species-rules? species))))
-  
+
   (testing "below"
     (let [fux-d-cf (get-melody fux-d)
           cps (generate-reverse-counterpoint-2nd-dfs :below (get-key fux-d) fux-d-cf)

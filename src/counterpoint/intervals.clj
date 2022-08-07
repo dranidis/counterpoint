@@ -2,8 +2,8 @@
   (:require [counterpoint.key :refer [get-note-acc-at-key]]
             [counterpoint.notes :refer [get-acc get-acc-nooctave get-nooctave
                                         get-note get-note-nooctave get-octave
-                                        make-note make-note-nooctave note->num num->note num2->note]]
-            [counterpoint.notes :as n]))
+                                        make-note make-note-nooctave note->num num->note num2->note]
+             :as n]))
 
 (defn make-interval [n q]
   [n q])
@@ -11,7 +11,7 @@
 (defn get-interval [[n _]] n)
 (defn get-quality [[_ q]] q)
 
-(defn note->number-of-semitones 
+(defn note->number-of-semitones
   "Number of semitones starting from a0"
   [note]
   (let [num-note (case (get-note note)
@@ -30,7 +30,7 @@
                    :double-sharp +2)]
     (+ (* (get-octave note) 12) num-note acc->num)))
 
-(defn distance-in-semitones 
+(defn distance-in-semitones
   "Distance in semitones between two notes"
   [note1 note2]
   (- (note->number-of-semitones note2)
@@ -40,7 +40,7 @@
   (<= (Math/abs (get-interval interval1))
       (Math/abs (get-interval interval2))))
 
-(defn note-at-diatonic-interval 
+(defn note-at-diatonic-interval
   "Returns the note in the key starting from note-nooctave at the interval"
   [key note-nooctave interval]
   (let [note-num (note->num (get-note-nooctave note-nooctave))
@@ -53,8 +53,8 @@
   (let [n (note-at-diatonic-interval key (get-nooctave note) 2)
         o (get-octave note)
         name (get-note-nooctave n)]
-    (make-note name 
-               (+ o (if (= name :a) 1 0)) 
+    (make-note name
+               (+ o (if (= name :a) 1 0))
                (get-acc-nooctave n))))
 
 ;; TODO
@@ -155,7 +155,7 @@
                  2 (raise-note (raise-note new-note))
                  nil)]
     (if (nil? result)
-     (throw (Exception. (str "note-at-melodic-interval: No case for " sem-diff " semitones!"))) 
+      (throw (Exception. (str "note-at-melodic-interval: No case for " sem-diff " semitones!")))
       result)))
 
 
@@ -195,8 +195,7 @@
 
 (def A1 (make-interval 1 :aug))
 (def A2 (make-interval 2 :aug))
-(
- def A3 (make-interval 3 :aug))
+(def A3 (make-interval 3 :aug))
 (def A4 (make-interval 4 :aug))
 (def A5 (make-interval 5 :aug))
 (def A6 (make-interval 6 :aug))
