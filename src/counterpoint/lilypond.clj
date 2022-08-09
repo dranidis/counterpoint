@@ -235,6 +235,7 @@
                              :file "temp"
                              :key :c}))
   ([species param]
+   (println "PARAM" param)
    (let [key-signature (get param :key :c)
         ;;  (get-key (get-cantus species))
          file-name (str "resources/" (get param :file "temp") ".ly")]

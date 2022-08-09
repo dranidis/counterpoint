@@ -36,6 +36,10 @@
     :default 0
     :parse-fn #(Integer/parseInt %)
     :validate [#(<= -2 % 2)]]
+   [nil "--tempo TEMPO" "Playback tempo"
+    :default 180
+    :parse-fn #(Integer/parseInt %)
+    :validate [#(<= 40 % 240)]]
    ["-h" "--help"]
 ;;    
    ])
@@ -50,6 +54,7 @@
 
 (defn -main [& args]
   (let [parsed-args (parse-opts args cli-options)
+        ;; _ (println (get parsed-args :options))
         _ (when (get-in parsed-args [:options :help])
             (println (get-in parsed-args [:summary])))
         c-option (get-in parsed-args [:options :cantus])
@@ -72,7 +77,8 @@
                                 transposed-cantus
                                 position
                                 {:pattern (get-in parsed-args [:options :pattern])
-                                 :midi (get-in parsed-args [:options :midi])}))]
+                                 :midi (get-in parsed-args [:options :midi])
+                                 :tempo (get-in parsed-args [:options :tempo])}))]
 
 
 

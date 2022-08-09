@@ -14,7 +14,7 @@
   (testing "above"
     (let [cf (make-melody n/f3 n/e3 n/d3)
           cps (generate-reverse-counterpoint-3rd-dfs :above :c cf)
-          cp (dfs-solution->cp (nth cps 3))
+          cp (dfs-solution->cp (nth cps 0))
           species (make-third-species cf cp :above)]
     ;;   (println species)
     ;;   (species->lily species)
@@ -29,8 +29,8 @@
                :above (get-key fux-d) cf)
           cp (dfs-solution->cp (nth cps 0))
           species (make-third-species cf cp :above)]
-      (println species)
-      (species->lily species)
+      ;; (println species)
+      ;; (species->lily species)
       (is (third-species-rules? species)))))
 
 (deftest generate-third-fux-e-test
@@ -41,6 +41,6 @@
                :above (get-key cantus) cf)
           cp (dfs-solution->cp (nth cps 0))
           species (make-third-species cf cp :above)]
-      (println species)
-      (species->lily species)
+      ;; (println species)
+      ;; (species->lily species)
       (is (third-species-rules? species)))))

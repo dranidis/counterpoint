@@ -2,6 +2,7 @@
   (:require [counterpoint.cantus :refer [maximum-range-M10?]]
             [counterpoint.core :refer [interval simple-interval]]
             [counterpoint.generate-first-species :refer [crossing-filter
+                                                         dim-or-aug-filter
                                                          max-harmonic-interval]]
             [counterpoint.intervals :refer [d5- get-interval
                                             harmonic-consonant? m2- M2- m6- next-diatonic
@@ -173,18 +174,18 @@
         pt1 (prev-diatonic key-sig pt2)]
     [pt4 pt3 pt2 pt1]))
 
-(def patterns [cambiata-to
-               desc-pt-to
-               asc-pt-to
-               desc-asc-pt-to
-               asc-desc-pt-to
-               asc-pt-skip3-leap-to
+(def patterns [asc-pt-skip3-leap-to
                asc-pt-skip3-to
                skip-4-asc-pt-to
                skip-3-asc-pt-to
                desc-pt-skip-3-to
                desc-pt-skip-desc-3-to
                skip-m6-asc-pt-to
+               cambiata-to
+               desc-pt-to
+               asc-pt-to
+               desc-asc-pt-to
+               asc-desc-pt-to
                desc-pt-neighbor-to
                diss-3-desc-neighbor-to])
 
@@ -247,25 +248,25 @@
 
 (def patterns-validation-fn
   {cambiata-to consonant-3rd-fn
-   desc-pt-to (and-fn consonant-3rd-fn 
+   desc-pt-to (and-fn consonant-3rd-fn
                       not-direct-to-perfect-from-3-fn)
-   asc-pt-to (and-fn consonant-3rd-fn 
+   asc-pt-to (and-fn consonant-3rd-fn
                      not-direct-to-perfect-from-3-fn)
-   desc-asc-pt-to (and-fn consonant-3rd-fn 
+   desc-asc-pt-to (and-fn consonant-3rd-fn
                           not-direct-to-perfect-from-3-fn)
-   asc-desc-pt-to (and-fn consonant-3rd-fn 
+   asc-desc-pt-to (and-fn consonant-3rd-fn
                           not-direct-to-perfect-from-3-fn)
    skip-4-asc-pt-to (and-fn consonant-2nd-fn
                             not-dim5-fn
                             not-direct-to-perfect-from-4-fn)
-   skip-3-asc-pt-to (and-fn consonant-2nd-fn 
+   skip-3-asc-pt-to (and-fn consonant-2nd-fn
                             not-direct-to-perfect-from-2-fn)
-   asc-pt-skip3-leap-to (and-fn consonant-3rd-fn 
+   asc-pt-skip3-leap-to (and-fn consonant-3rd-fn
                                 not-direct-to-perfect-from-1-fn)
    asc-pt-skip3-to (and-fn consonant-3rd-fn
                            not-direct-to-perfect-from-1-fn
                            not-direct-to-perfect-from-3-fn)
-   skip-m6-asc-pt-to (and-fn consonant-2nd-fn 
+   skip-m6-asc-pt-to (and-fn consonant-2nd-fn
                              skip-m6-fn)
    desc-pt-skip-3-to (and-fn consonant-3rd-fn
                              not-direct-to-perfect-from-1-fn
@@ -277,10 +278,7 @@
    diss-3-desc-neighbor-to (and-fn consonant-2nd-fn
                                    consonant-4th-fn
                                    not-direct-to-perfect-from-4-fn
-                                   not-direct-to-perfect-from-2-fn
-                                   )
-   
-   })
+                                   not-direct-to-perfect-from-2-fn)})
 
 
 
@@ -306,11 +304,12 @@
       (or
        (= (get m36s :remaining-cantus-size) 1)
        ((crossing-filter position cantus-note false) p1))
-      (every? #((crossing-filter position cantus-note true) %) [p4 p3 p2])
+      (every? #((crossing-filter position cantus-note false) %) [p4 p3 p2])
       (every?
        #(<= (Math/abs (get-interval (interval cantus-note %))) max-harmonic-interval)
        applied)
-      (maximum-range-M10? (append-to-melody melody [p4 p3 p2 p1])))]))
+      (maximum-range-M10? (append-to-melody melody [p4 p3 p2 p1]))
+      ((dim-or-aug-filter position p4) previous-melody))]))
 
 
 ;; (->> next-melodic-candidates

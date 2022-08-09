@@ -10,6 +10,7 @@
    make-species-fn
    species-rules-fn?]
   (fn [n cantus position options]
+    ;; (println options)
     (let [key (get-key cantus)
           cf (get-melody cantus)
           cps (take n (generate-reverse-counterpoint-dfs-fn position key cf))
@@ -29,7 +30,7 @@
                         "treble"
                         "treble_8")
                       :pattern (get options :pattern "")
-                      :tempo "4 = 180"
+                      :tempo (str "4 = " (get options :tempo))
                       :key key
                       :midi (get options :midi)})
       species)))
