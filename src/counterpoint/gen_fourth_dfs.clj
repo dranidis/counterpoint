@@ -17,7 +17,7 @@
             [counterpoint.generate-second-species :refer [next-candidate-notes
                                                           next-reverse-downbeat-candidates]]
             [counterpoint.intervals :refer [get-interval harmonic-consonant?
-                                            m2 M2 m7 M7 m9 M9
+                                            m2 M2 m7 M7 m9 M9 next-diatonic
                                             note-at-diatonic-interval note-at-melodic-interval P1 P8]]
             [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.melody :refer [append-to-melody]]
@@ -25,15 +25,21 @@
             [counterpoint.utils :refer [dfs-solution->cp]]))
 
 (defn second-to-last-measure-candidates-4th
-  [position previous-melody previous-cantus cantus-note next-cantus]
+  [position key-sig previous-melody previous-cantus cantus-note next-cantus]
   ;; (println "Next cantus" next-cantus)
-  (let [can-be-a-suspension? (harmonic-consonant?
-                              (simple-interval next-cantus previous-melody position))
+  (let [
+        sec-to-last-note (second-to-last-note position
+                                              previous-melody
+                                              previous-cantus
+                                              cantus-note)
+        third-to-last-note (next-diatonic key-sig sec-to-last-note)
+        can-be-a-suspension? (harmonic-consonant?
+                              (simple-interval next-cantus third-to-last-note position))
         sec-species-measure (second-to-last-measure-candidates-2nd
                              position previous-melody previous-cantus cantus-note)]
     (if can-be-a-suspension?
-      (into [[(second-to-last-note position previous-melody previous-cantus cantus-note)
-              previous-melody]] sec-species-measure)
+      (into [[sec-to-last-note
+              third-to-last-note]] sec-species-measure)
       sec-species-measure)))
 
 (defn- one-two-suspension? [next-cantus cantus-note suspension-note]
@@ -151,7 +157,7 @@
   (let [cand (case (count melody)
                0 (map (fn [n] [n]) (last-note-candidates position cantus-note))
                1 (second-to-last-measure-candidates-4th
-                  position previous-melody previous-cantus cantus-note (first cantus-notes))
+                  position key previous-melody previous-cantus cantus-note (first cantus-notes))
                (next-reverse-candidates-4th state))]
     ;; (when (and (empty? cand) (not (solution?
     ;;                                [position

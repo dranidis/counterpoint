@@ -21,7 +21,7 @@
           cantus-note n/e4
           next-cantus n/f4
           sec-to-last (second-to-last-measure-candidates-4th
-                       position previous-melody previous-cantus cantus-note next-cantus)]
+                       position :c previous-melody previous-cantus cantus-note next-cantus)]
       (is (= [[n/c#5 n/d5] [n/c#5 n/b5]] sec-to-last))))
 
   (testing "candidates 2nd-to-last above"
@@ -69,7 +69,7 @@
           cantus-note n/a5
           next-cantus n/b5
           sec-to-last (second-to-last-measure-candidates-4th
-                       position previous-melody previous-cantus cantus-note next-cantus)]
+                       position :g previous-melody previous-cantus cantus-note next-cantus)]
       (is (= [[n/f#4 n/g4] [n/f#4 n/d4]] sec-to-last))))
 
   (testing "candidates last below"
