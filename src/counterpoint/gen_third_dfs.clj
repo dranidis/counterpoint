@@ -1,28 +1,31 @@
 (ns counterpoint.gen-third-dfs
-  (:require [counterpoint.core :refer [simple-interval]]
+  (:require [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.gen-first-dfs :refer [last-note-candidates solution?]]
             [counterpoint.gen-second-dfs :refer [next-node]]
             [counterpoint.generate :refer [generate-template]]
-            [counterpoint.intervals :refer [harmonic-consonant?]]
+            [counterpoint.intervals :refer [m2]]
             [counterpoint.notes :refer [get-note]]
             [counterpoint.third-species :refer [evaluate-third-species
                                                 make-third-species
                                                 third-species-rules?]]
             [counterpoint.third-species-patterns :refer [ending-1 ending-1-e
                                                          ending-2 ending-below
-                                                         ending-below-e patterns pattern-fits?]]))
+                                                         ending-below-e ending-M2 pattern-fits? patterns]]))
 
 (defn- second-to-last-measure-candidates-3rd
   [{:keys [position key previous-melody previous-cantus cantus-note]}]
-  (if (= position :above)
+  (let [minor-second (= m2 (interval cantus-note previous-cantus))]
+    (if minor-second 
+    [(ending-M2 key previous-melody)]
+    (if (= position :above)
     (if (= :e (get-note previous-melody))
-      [ending-1-e]
+      [(ending-1-e key previous-melody)]
       [(ending-1 key previous-melody)
        (ending-2 key previous-melody)])
     (if (= :e (get-note previous-melody))
-      [ending-below-e]
-      [ending-below])))
+      [(ending-below-e key previous-melody)]
+      [(ending-below key previous-melody)])))))
 
 ;; (defn- next-reverse-candidates-3rd
 ;;   [{:keys [position key previous-melody cantus-note]}]

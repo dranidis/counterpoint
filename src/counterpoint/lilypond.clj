@@ -122,7 +122,8 @@
   ([melody] (melody->lily melody
                           {:clef "treble"
                            :pattern ""
-                           :tempo "2 = 80"}))
+                           :tempo "2 = 80"
+                           :midi "acoustic grand piano"}))
   ([cf param]
    (let [melody (get-melody cf)
          key-signature (get-key cf)]
@@ -139,6 +140,7 @@
    (sh/sh "lilypond" "-o" "resources" (get param :file "resources/temp.ly"))))
 
 (defn end-to-1 [melody]
+  ;; (println "MELODY" melody)
   (str (subs melody 0 (dec (count melody))) "1"))
 
 (defn voices [species]

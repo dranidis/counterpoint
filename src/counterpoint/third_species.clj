@@ -1,5 +1,7 @@
 (ns counterpoint.third-species
-  (:require [counterpoint.melody :refer [quad-melody remove-last]]
+  (:require [counterpoint.first-species :refer [evaluate-species
+                                                make-first-species]]
+            [counterpoint.melody :refer [quad-melody remove-last]]
             [counterpoint.species-type :refer [get-cantus get-counter
                                                get-low-high get-position make-species]]))
 
@@ -20,7 +22,16 @@
   (get-low-high-third species))
 
 (defn evaluate-third-species [species]
-  -999)
+  (let [counter (get-counter species)
+        first-notes (conj
+                     (mapv first (partition 4 counter))
+                     (nth counter (dec (count counter))))
+        first-sp (make-first-species (get-cantus species)
+                                     first-notes
+                                     (get-position species))
+        first-score (evaluate-species first-sp)]
+    first-score))
 
 (defn third-species-rules? [species]
-  false)
+  ;; TODO
+  true)
