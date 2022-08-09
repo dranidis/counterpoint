@@ -1,8 +1,8 @@
 (ns counterpoint.generate-first-species-test
   (:require [clojure.test :refer [deftest is testing]]
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
-            [counterpoint.first-species :refer [first-species-rules?]]
-            [counterpoint.first-species-type :refer [make-first-species]]
+            [counterpoint.first-species :refer [first-species-rules?
+                                                make-first-species]]
             [counterpoint.generate-first-species :refer [generate-reverse-random-counterpoint]]))
 
 ;; (deftest generate-first-test

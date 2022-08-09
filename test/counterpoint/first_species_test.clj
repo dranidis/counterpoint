@@ -2,8 +2,7 @@
   (:require [clojure.test :refer [deftest is testing]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?
                                                 correct-intervals ending?
-                                                first-species-rules? last-interval? no-direct-motion-to-perfect?]]
-            [counterpoint.first-species-type :refer [make-first-species]]
+                                                first-species-rules? last-interval? make-first-species no-direct-motion-to-perfect?]]
             [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as n]))
 

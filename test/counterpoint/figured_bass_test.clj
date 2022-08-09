@@ -4,7 +4,7 @@
             [counterpoint.cantus-firmi-examples :refer [fux-d salieri-c
                                                         salieri-d]]
             [counterpoint.figured-bass :refer [figured-bass]]
-            [counterpoint.first-species-type :refer [make-first-species]]
+            [counterpoint.first-species :refer [make-first-species]]
             [counterpoint.fourth-species :refer [make-fourth-species]]
             [counterpoint.melody :refer [make-melody transpose]]
             [counterpoint.notes :as n]

@@ -9,8 +9,8 @@
 (defn make-melody [note & notes]
   (into [note] notes))
 
-(defn append-to-melody [melody note]
-  (into melody [note]))
+(defn append-to-melody [melody notes]
+  (into melody notes))
 
 (defn insert-to-melody [note melody]
   (into [note] melody))
@@ -49,9 +49,7 @@
           (make-note (get-note %) (+ (get-octave %) octaves) (get-acc %))) melody))
 
 (defn- double-melody-iter [melody note notes]
-  (let [mel (-> melody
-                (append-to-melody note)
-                (append-to-melody note))]
+  (let [mel (append-to-melody melody [note note])]
     (if (empty? notes)
       mel
       (double-melody-iter mel (first notes) (rest notes)))))
@@ -59,8 +57,20 @@
 (defn double-melody [melody]
   (double-melody-iter [] (first melody) (rest melody)))
 
-(defn remove-last [melody]
-  (subvec melody 0 (dec (count melody))))
+(defn- quad-melody-iter [melody note notes]
+  (let [mel (append-to-melody melody [note note note note])]
+    (if (empty? notes)
+      mel
+      (quad-melody-iter mel (first notes) (rest notes)))))
+
+(defn quad-melody [melody]
+  (quad-melody-iter [] (first melody) (rest melody)))
+
+(defn remove-last 
+  ([melody]
+   (remove-last melody 1))
+  ([melody num-elements]
+  (subvec melody 0 ( - (count melody) num-elements))))
 
 (defn- melody-skeleton-iter  [intv intvs melody]
   (if (empty? intvs)
@@ -93,8 +103,7 @@
                  (* -50 unisons)
                  (* -2 thirds)
                  (* -100 skeleton-diminished)
-                 (* -50 (dec peaks))
-)]
+                 (* -50 (dec peaks)))]
     score))
 
 (comment

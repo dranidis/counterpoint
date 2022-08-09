@@ -66,6 +66,14 @@
                (+ o (if (= name :g) -1 0))
                (get-acc-nooctave n))))
 
+(defn diatonic [key note intval]
+  (let [n (note-at-diatonic-interval key (get-nooctave note) intval)
+        o (get-octave note)
+        name (get-note-nooctave n)]
+    (make-note name
+               (+ o (if (= name :g) -1 0))
+               (get-acc-nooctave n))))
+
 
 
 (defn- semitones-of-interval [interval]

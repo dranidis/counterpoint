@@ -7,7 +7,7 @@
             [counterpoint.first-species :refer [allowed-melodic-intervals?
                                                 correct-intervals
                                                 evaluate-species first-species-rules?]]
-            [counterpoint.first-species-type :refer [get-low-high
+            [counterpoint.species-type :refer [get-low-high
                                                      make-first-species]]
             [counterpoint.generate-first-species :refer [generate-reverse-random-counterpoint]]
             [counterpoint.lilypond :refer [species->lily]]

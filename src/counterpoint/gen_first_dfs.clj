@@ -4,22 +4,15 @@
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.first-species :refer [evaluate-species
-                                                first-species-rules?]]
-            [counterpoint.first-species-type :refer [make-first-species]]
+                                                first-species-rules? make-first-species]]
             [counterpoint.generate :refer [generate-template]]
-            [counterpoint.generate-first-species :refer [next-reverse-candidates update-m36-size]]
+            [counterpoint.generate-first-species :refer [next-reverse-candidates-1st
+                                                         update-m36-size]]
             [counterpoint.intervals :refer [get-interval m10 m10- m2 m3 m3- M6
                                             M6- note-at-melodic-interval P1
                                             P8 P8-]]))
 
-(defn solution? [{:keys [position
-                         key
-                         melody
-                         m36s ;; counter of thirds & sixths
-                         previous-melody
-                         previous-cantus
-                         cantus-note
-                         cantus-notes]}]
+(defn solution? [{:keys [m36s]}]
   (= (get m36s :remaining-cantus-size) 0))
 
 (defn last-note-candidates [position cantus-note]
@@ -81,13 +74,13 @@
                           previous-melody
                           previous-cantus
                           cantus-note
-                          cantus-notes]}]
+                          cantus-notes]
+                   :as state}]
   (case (count melody)
     0 (last-note-candidates-new position (first cantus-notes) cantus-note)
     1 (second-to-last-note-candidates position cantus-note previous-cantus)
     ;; [(second-to-last-note position previous-melody previous-cantus cantus-note)]
-    (next-reverse-candidates
-     position key melody m36s previous-melody previous-cantus cantus-note)))
+    (next-reverse-candidates-1st state)))
 
 (defn next-node [{:keys [position
                          key

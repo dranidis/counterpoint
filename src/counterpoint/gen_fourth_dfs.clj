@@ -87,13 +87,14 @@
                                 (debug "no 1-2 and 8-9 suspension (8-7 below)")
                                 (filter (crossing-filter position next-cantus))
 ;; (debug "no crossing")
-                                (filter #(maximum-range-M10? (append-to-melody melody %)))
+                                (filter #(maximum-range-M10? (append-to-melody melody [%])))
                                 (filter #(<= (Math/abs (get-interval (interval next-cantus %))) max-harmonic-interval)))]
       suspension-notes)))
 
-(defn next-reverse-candidates-4th [position key melody m36s
-                                   previous-melody previous-cantus cantus-note next-cantus]
-  (let [was-a-suspension? (not (harmonic-consonant? (simple-interval previous-cantus previous-melody position)))
+(defn next-reverse-candidates-4th [{:keys [position key melody m36s
+                                   previous-melody previous-cantus cantus-note cantus-notes]}]
+  (let [next-cantus (first cantus-notes)
+        was-a-suspension? (not (harmonic-consonant? (simple-interval previous-cantus previous-melody position)))
         ;; _ (when was-a-suspension? (println "SUSP"  previous-melody))
         upbeat-candidates
         (if was-a-suspension?
@@ -143,15 +144,15 @@
                           previous-melody
                           previous-cantus
                           cantus-note
-                          cantus-notes]}]
+                          cantus-notes]
+                   :as state}]
   ;; (println "cantus-notes" cantus-notes)
   ;; (println melody (count melody))
   (let [cand (case (count melody)
                0 (map (fn [n] [n]) (last-note-candidates position cantus-note))
                1 (second-to-last-measure-candidates-4th
                   position previous-melody previous-cantus cantus-note (first cantus-notes))
-               (next-reverse-candidates-4th
-                position key melody m36s previous-melody previous-cantus cantus-note (first cantus-notes)))]
+               (next-reverse-candidates-4th state))]
     ;; (when (and (empty? cand) (not (solution?
     ;;                                [position
     ;;                                 key

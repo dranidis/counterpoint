@@ -1,6 +1,6 @@
 (ns counterpoint.first-species
   (:require [counterpoint.core :refer [interval simple-interval]]
-            [counterpoint.first-species-type :refer [get-cantus get-counter
+            [counterpoint.species-type :refer [get-cantus get-counter
                                                      get-low-high
                                                      get-position]]
             [counterpoint.intervals :refer [get-interval get-quality
@@ -11,6 +11,9 @@
             [counterpoint.motion :refer [type-of-motion]]
             [counterpoint.rest :refer [rest?]]
             [counterpoint.utils :refer [rule-warning]]))
+
+(defn  make-first-species [cantus-firmus counterpoint-melody position]
+  [cantus-firmus counterpoint-melody position :first])
 
 (defn correct-interval [note1 note2]
   (if (or (rest? note1) (rest? note2))

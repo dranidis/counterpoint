@@ -3,8 +3,8 @@
             [counterpoint.cantus :refer [get-key get-melody]]
             [counterpoint.core :refer [interval]]
             [counterpoint.figured-bass :refer [figured-bass]]
-            [counterpoint.first-species-type :refer [get-cantus get-counter
-                                                     get-position get-type]]
+            [counterpoint.species-type :refer [get-cantus get-counter
+                                               get-position get-type]]
             [counterpoint.intervals :refer [get-interval]]
             [counterpoint.melody :refer [double-melody]]
             [counterpoint.notes :refer [get-acc get-note get-octave]]
@@ -82,8 +82,7 @@
   (apply str (fixed-to-lily-fourth-iter duration note notes)))
 
 (defn- key-signature->lily [key-signature]
-  (str (name key-signature) "\\major")
-  )
+  (str (name key-signature) "\\major"))
 
 (defn staff [clef tempo key-signature voices midi-instrument]
   (str
@@ -127,16 +126,16 @@
   ([cf param]
    (let [melody (get-melody cf)
          key-signature (get-key cf)]
-     (spit (get param :file "resources/temp.ly") 
-         (staff
-          (get param :clef "treble")
-          (get param :tempo "2 = 80")
-          key-signature
-          (let [p (get param :pattern "")]
-            (if (= p "")
-              (voice "first" "voiceOne" (fixed-melody->lily 1 melody))
-              (voice "first" "voiceOne" (fixed-melody->lily 1 melody))))
-          (get param :midi midi-instrument))))
+     (spit (get param :file "resources/temp.ly")
+           (staff
+            (get param :clef "treble")
+            (get param :tempo "2 = 80")
+            key-signature
+            (let [p (get param :pattern "")]
+              (if (= p "")
+                (voice "first" "voiceOne" (fixed-melody->lily 1 melody))
+                (voice "first" "voiceOne" (fixed-melody->lily 1 melody))))
+            (get param :midi midi-instrument))))
    (sh/sh "lilypond" "-o" "resources" (get param :file "resources/temp.ly"))))
 
 (defn end-to-1 [melody]
@@ -152,7 +151,11 @@
                         :first (partial fixed-melody->lily 1)
                         :second (fn [counter]
                                   (end-to-1 (fixed-melody->lily 2 counter)))
-                        :fourth (partial fixed-melody-fourth->lily 2))]
+                        :third (fn [counter]
+                                  (end-to-1 (fixed-melody->lily 4 counter)))
+                        :fourth (partial fixed-melody-fourth->lily 2) 
+                        (throw (Exception.
+                                (str "voices: not implemented species type " type))))]
     (str
      (voice "first" "voiceOne"
             (if (= position :above)
@@ -234,14 +237,14 @@
         ;;  (get-key (get-cantus species))
          file-name (str "resources/" (get param :file "temp") ".ly")]
      (spit file-name
-         (staff
-          (get param :clef "treble")
-          (get param :tempo "2 = 80")
-          key-signature
-          (let [p (get param :pattern "")]
-            (if (= p "")
-              (voices species)
-              (voices-pattern p species)))
-          (get param :midi midi-instrument)))
-   (sh/sh "lilypond" "-o" "resources" file-name))))
+           (staff
+            (get param :clef "treble")
+            (get param :tempo "2 = 80")
+            key-signature
+            (let [p (get param :pattern "")]
+              (if (= p "")
+                (voices species)
+                (voices-pattern p species)))
+            (get param :midi midi-instrument)))
+     (sh/sh "lilypond" "-o" "resources" file-name))))
 

@@ -98,7 +98,7 @@
 (defn debug [s c]
   (when debug? (println s c)) c)
 
-(defn next-reverse-candidates [position key melody m36s previous-melody previous-cantus cantus-note]
+(defn next-reverse-candidates-1st [{:keys [position key melody m36s previous-melody previous-cantus cantus-note]}]
   (let [next-melodic-candidates (map
                                  #(note-at-melodic-interval previous-melody %)
                                  (next-melodic-intervals-reverse melody))
@@ -114,7 +114,7 @@
          (filter (crossing-filter position cantus-note))
          (filter #(not (reverse-direct-perfect? previous-cantus previous-melody cantus-note %)))
          (debug "no direct perfect")
-         (filter #(maximum-range-M10? (append-to-melody melody %)))
+         (filter #(maximum-range-M10? (append-to-melody melody [%])))
          (debug "mel range")
          (filter #(<= (Math/abs (get-interval (interval cantus-note %))) max-harmonic-interval))
          (debug "harm range"))))
@@ -131,7 +131,7 @@
 (defn- generate-reverse-random-counterpoint-iter
   [position key melody m36s previous-melody previous-cantus cantus-note cantus-notes]
   ;; (println (reverse melody))
-  (let [candidates (next-reverse-candidates
+  (let [candidates (next-reverse-candidates-1st
                     position key melody m36s previous-melody previous-cantus cantus-note)
         ;; _ (println candidates)
         current (rand-nth candidates)]

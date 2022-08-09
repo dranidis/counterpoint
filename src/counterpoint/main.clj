@@ -3,12 +3,13 @@
             [clojure.tools.cli :refer [parse-opts]]
             [counterpoint.cantus :refer [get-key get-melody make-cantus-firmus]]
             [counterpoint.cantus-firmi-examples :refer [cf-catalog]]
-            [counterpoint.first-species-type :refer [get-counter]]
             [counterpoint.gen-first-dfs :refer [generate-first]]
             [counterpoint.gen-fourth-dfs :refer [generate-fourth]]
             [counterpoint.gen-second-dfs :refer [generate-second]]
+            [counterpoint.gen-third-dfs :refer [generate-third]]
             [counterpoint.lilypond :refer [melody->lily]]
-            [counterpoint.melody :refer [transpose]])
+            [counterpoint.melody :refer [transpose]]
+            [counterpoint.species-type :refer [get-counter]])
   (:gen-class))
 
 (def cli-options
@@ -44,6 +45,7 @@
   (case species-type
     :first (generate-first n cantus position options)
     :second (generate-second n cantus position options)
+    :third (generate-third n cantus position options)
     :fourth (generate-fourth n cantus position options)))
 
 (defn -main [& args]

@@ -3,11 +3,11 @@
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
-            [counterpoint.first-species-type :refer [get-counter]]
+            [counterpoint.species-type :refer [get-counter]]
             [counterpoint.gen-first-dfs :refer [last-note-candidates
                                                 second-to-last-note solution?]]
             [counterpoint.generate :refer [generate-template]]
-            [counterpoint.generate-second-species :refer [next-reverse-candidates update-m36-size]]
+            [counterpoint.generate-second-species :refer [next-reverse-candidates-2nd update-m36-size]]
             [counterpoint.intervals :refer [get-interval m2 m2- M3- m6 m6-
                                             note-at-melodic-interval P12- P5 P5-]]
             [counterpoint.lilypond :refer [species->lily]]
@@ -51,12 +51,12 @@
                           previous-melody
                           previous-cantus
                           cantus-note
-                          cantus-notes]}]
+                          cantus-notes]
+                   :as state}]
   (case (count melody)
     0 (map (fn [n] [n]) (last-note-candidates position cantus-note))
     1 (second-to-last-measure-candidates-2nd position previous-melody previous-cantus cantus-note)
-    (next-reverse-candidates
-     position key melody m36s previous-melody previous-cantus cantus-note)))
+    (next-reverse-candidates-2nd state)))
 
 (defn next-node [{:keys [position
                          key
@@ -104,14 +104,22 @@
    second-species-rules?))
 
 (defn play-best-second [n cf position]
-  (generate-second n cf position
-                   {:pattern ""
-                    :midi "flute"})
-  (sh/sh "timidity" "resources/temp.midi"))
+  (let [sp (generate-second n cf position
+                            {:pattern ""
+                             :midi "flute"})]
+    (sh/sh "timidity" "resources/temp.midi")
+    sp))
+
+
+
+
 
 (comment
-
   (play-best-second 100 fux-d :above)
+  (def sp (generate-second 1 fux-d :above
+                           {:pattern ""
+                            :midi "flute"}))
+
   (def position :above)
   (def cf fux-d)
   (def at-key :c)

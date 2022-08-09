@@ -77,6 +77,7 @@
 (def d2 (make-note :d 2))
 (def e2 (make-note :e 2))
 (def f2 (make-note :f 2))
+(def f1 (make-note :f 1))
 (def f3 (make-note :f 3))
 (def f4 (make-note :f 4))
 
@@ -102,6 +103,7 @@
 (def a4 (make-note :a 4))
 (def a5 (make-note :a 5))
 
+(def bb2 (make-note :b 2 :flat))
 (def bb3 (make-note :b 3 :flat))
 (def bb4 (make-note :b 4 :flat))
 (def bb5 (make-note :b 5 :flat))

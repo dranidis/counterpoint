@@ -2,7 +2,7 @@
   (:require [clojure.java.shell :as sh]
             [counterpoint.cantus-firmi-examples :refer [bellerman-a fux-d
                                                         schenker-d schoenberg-c]]
-            [counterpoint.first-species-type :refer [get-low-high]]
+            [counterpoint.species-type :refer [get-low-high]]
             [counterpoint.fourth-species :refer [fourth-species-rules?
                                                  make-fourth-species]]
             [counterpoint.lilypond :refer [species->lily]]

@@ -3,7 +3,7 @@
             [counterpoint.first-species :refer [allowed-melodic-intervals?
                                                 correct-interval
                                                 correct-intervals-iter direct-motion-to-perfect?]]
-            [counterpoint.first-species-type :refer [get-cantus get-counter
+            [counterpoint.species-type :refer [get-cantus get-counter
                                                      get-low-high get-position
                                                      make-species]]
             [counterpoint.intervals :refer [get-interval]]

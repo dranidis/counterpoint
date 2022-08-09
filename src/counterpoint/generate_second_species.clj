@@ -71,7 +71,7 @@
                               (debug "no crossing")
                               (filter #((set next-harmonic-candidates) (get-nooctave %)))
                               (debug "consonant")
-                              (filter #(maximum-range-M10? (append-to-melody melody %)))
+                              (filter #(maximum-range-M10? (append-to-melody melody [%])))
                               (filter #(<= (Math/abs (get-interval (interval cantus-note %))) max-harmonic-interval))
 
                             ;;  haydn-a is not solvable
@@ -110,8 +110,8 @@
                 (conj (if p2? [(prev-diatonic key previous-melody)
                                (prev-diatonic key (prev-diatonic key previous-melody))] nil))))))
 
-(defn next-reverse-candidates [position key melody m36s
-                               previous-melody previous-cantus cantus-note]
+(defn next-reverse-candidates-2nd [{:keys [position key melody m36s
+                               previous-melody previous-cantus cantus-note]}]
   (let [upbeat-candidates (next-candidate-notes position key melody m36s
                                                 previous-melody previous-cantus cantus-note)
         candidates (reduce
@@ -158,7 +158,7 @@
   ;; (println "PREV CAN" previous-cantus)
   ;; (println "cantus note" cantus-note)
   ;; (println "CANTUS NOTES" cantus-notes)
-  (let [candidates (next-reverse-candidates
+  (let [candidates (next-reverse-candidates-2nd
                     position key melody m36s previous-melody previous-cantus cantus-note)
         ;; _ (println "CANDIDATES" candidates)
         ;; _ (case (count candidates)

@@ -1,10 +1,9 @@
-(ns counterpoint.first-species-type)
+(ns counterpoint.species-type)
 
 (defn  make-species [cantus-firmus counterpoint-melody position type]
   [cantus-firmus counterpoint-melody position type])
 
-(defn  make-first-species [cantus-firmus counterpoint-melody position]
-  [cantus-firmus counterpoint-melody position :first])
+
 
 (defn get-cantus [[c _ _ _]] c)
 (defn get-counter [[_ m _ _]] m)
