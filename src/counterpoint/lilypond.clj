@@ -84,15 +84,11 @@
 (defn- key-signature->lily [key-signature]
   (str (name key-signature) "\\major\n"))
 
-(defn staff [clef tempo key-signature voices midi-instrument]
+(defn lilypond-file [voices]
   (str
    "\\score {
-  \\new Staff <<
-            \\clef \"" clef "\"\n
-            \\tempo " tempo "\n
-            \\key " (key-signature->lily key-signature)
-   "\\set Staff.midiInstrument = #\"" midi-instrument
-   "\"\n"
+    <<
+    "
    voices
    ">>
   \\layout { }
@@ -112,61 +108,56 @@
 ;;    (sh/sh "lilypond" "-o" "resources" "resources/temp.ly")))
 
 
-(defn voice [first voiceOne melody]
-  (str "  \\new Voice = \"" first "\"
-     { \\" voiceOne " "
-       melody
-       "}\n"))
+(defn voice [first voiceOne melody clef tempo key-signature midi]
+  (str
+   "\\new Staff {
+            \\clef \"" clef "\"\n
+            \\tempo " tempo "\n
+            \\key " (key-signature->lily key-signature)
+   "\\set Staff.midiInstrument = #\"" midi
+   "\"\n"
 
-(defn melody->lily
-  ([melody] (melody->lily melody
-                          {:clef "treble"
-                           :pattern ""
-                           :tempo "2 = 80"
-                           :midi "acoustic grand"}))
-  ([cf param]
-   (let [melody (get-melody cf)
-         key-signature (get-key cf)]
-     (spit (get param :file "resources/temp.ly")
-           (staff
-            (get param :clef "treble")
-            (get param :tempo "2 = 80")
-            key-signature
-            (let [p (get param :pattern "")]
-              (if (= p "")
-                (voice "first" "voiceOne" (fixed-melody->lily 1 melody))
-                (voice "first" "voiceOne" (fixed-melody->lily 1 melody))))
-            (get param :midi midi-instrument))))
-   (sh/sh "lilypond" "-o" "resources" (get param :file "resources/temp.ly"))))
+   "  \\new Voice = \"" first "\"
+     { \\" voiceOne " "
+   melody
+   "}\n"
+   "}"))
 
 (defn end-to-1 [melody]
   ;; (println "MELODY" melody)
   (str (subs melody 0 (dec (count melody))) "1"))
 
-(defn voices [species]
-  (let [cantus (get-cantus species)
+(defn voices [species clef tempo key-signature midi]
+  (let [[midi1 midi2] (if (vector? midi)
+                        midi
+                        [midi midi])
+        cantus (get-cantus species)
         counter (get-counter species)
         position (get-position species)
         type (get-type species)
-        _ (println "TYPE " type)
         counter->lily (case type
                         :first (partial fixed-melody->lily 1)
                         :second (fn [counter]
                                   (end-to-1 (fixed-melody->lily 2 counter)))
                         :third (fn [counter]
-                                  (end-to-1 (fixed-melody->lily 4 counter)))
-                        :fourth (partial fixed-melody-fourth->lily 2) 
+                                 (end-to-1 (fixed-melody->lily 4 counter)))
+                        :fourth (partial fixed-melody-fourth->lily 2)
                         (throw (Exception.
                                 (str "voices: not implemented species type " type))))]
     (str
+
      (voice "first" "voiceOne"
             (if (= position :above)
               (counter->lily counter)
-              (fixed-melody->lily 1 cantus)))
+              (fixed-melody->lily 1 cantus))
+            clef tempo key-signature midi1)
+
      (voice "second" "voiceTwo"
             (if (= position :above)
               (fixed-melody->lily 1 cantus)
-              (counter->lily counter)))
+              (counter->lily counter))
+            clef tempo key-signature midi2)
+
      (figured-bass species))))
 
 (defn pattern
@@ -220,12 +211,12 @@
      (voice-pattern position p length cantus counter)
      (figured-bass species))))
 
-(defn voices-pattern [p species]
+(defn voices-pattern [p species clef tempo key-signature midi]
   (case (get-type species)
     :first (first-voices-pattern p species)
     :second (second-voices-pattern p species)
     :fourth (fourth-voices-pattern p species)
-    (voices species)))
+    (voices species clef tempo key-signature midi)))
 
 (defn species->lily
   ([species] (species->lily species
@@ -237,17 +228,36 @@
   ([species param]
    (println "PARAM" param)
    (let [key-signature (get param :key :c)
-        ;;  (get-key (get-cantus species))
+         clef (get param :clef "treble")
+         tempo (get param :tempo "2 = 80")
+         midi (get param :midi "acoustic grand")
          file-name (str "resources/" (get param :file "temp") ".ly")]
      (spit file-name
-           (staff
-            (get param :clef "treble")
-            (get param :tempo "2 = 80")
-            key-signature
+           (lilypond-file
             (let [p (get param :pattern "")]
               (if (= p "")
-                (voices species)
-                (voices-pattern p species)))
-            (get param :midi midi-instrument)))
+                (voices species clef tempo key-signature midi)
+                (voices-pattern p species clef tempo key-signature midi)))))
      (sh/sh "lilypond" "-o" "resources" file-name))))
 
+(defn melody->lily
+  ([melody] (melody->lily melody
+                          {:clef "treble"
+                           :pattern ""
+                           :tempo "2 = 80"
+                           :midi "acoustic grand"}))
+  ([cf param]
+   (let [melody (get-melody cf)
+         key-signature (get-key cf)
+         clef (get param :clef "treble")
+         tempo (get param :tempo "2 = 80")
+         midi (get param :midi "acoustic grand")]
+     (spit (get param :file "resources/temp.ly")
+           (lilypond-file
+            (let [p (get param :pattern "")]
+              (if (= p "")
+                (voice "first" "voiceOne" (fixed-melody->lily 1 melody)
+                       clef tempo key-signature midi)
+                (voice "first" "voiceOne" (fixed-melody->lily 1 melody)
+                       clef tempo key-signature midi))))))
+   (sh/sh "lilypond" "-o" "resources" (get param :file "resources/temp.ly"))))

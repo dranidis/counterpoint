@@ -23,7 +23,9 @@
    ["-T" "--pattern PATTERN" "Generated pattern"
     :default ""]
    ["-m" "--midi INSTRUMENT" "MIDI Instrument"
-    :default "acoustic grand"]
+    :multi true
+    :default []
+    :update-fn conj]
    ["-g" "--generate" "Generate species"]
    ["-s" "--species TYPE" "Species type"
     :default "first"]
@@ -54,7 +56,7 @@
 
 (defn -main [& args]
   (let [parsed-args (parse-opts args cli-options)
-        ;; _ (println (get parsed-args :options))
+        _ (println (get parsed-args :options))
         _ (when (get-in parsed-args [:options :help])
             (println (get-in parsed-args [:summary])))
         c-option (get-in parsed-args [:options :cantus])
@@ -87,7 +89,8 @@
       (println))
 
     (when (get-in parsed-args [:options :play])
-      (when (nil? species-type)
+      (when (nil? gen-species)
+        (println "Playing cantus firmus only")
         (melody->lily transposed-cantus))
       (when (get-in parsed-args [:options :solo])
         (let [cp (make-cantus-firmus

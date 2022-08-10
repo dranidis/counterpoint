@@ -35,8 +35,8 @@
                                      (get-position species))
         first-score (evaluate-species first-sp)
         mel-score (melody-score counter)]
-    (println "M-score" mel-score)
-    (println "1st-score" first-score)
+    ;; (println "M-score" mel-score)
+    ;; (println "1st-score" first-score)
     ;; (println (melody-skeleton counter))
     ;; (melody->lily (make-cantus-firmus :c (melody-skeleton counter)) {:file "resources/temp1.ly"})
     mel-score))
