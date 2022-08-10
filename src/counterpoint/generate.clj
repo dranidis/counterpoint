@@ -16,22 +16,23 @@
           cps (take n (generate-reverse-counterpoint-dfs-fn position key cf))
           _ (println "ALL" (count cps))
           ;; _ (println "CPS" cps)
-          species (apply max-key #(let [e (evaluate-species-fn  %)]
+          species (if (> (count cps) 0)
+                    (apply max-key #(let [e (evaluate-species-fn  %)]
                                 ;; (println e)
-                                    e)
-                         (map #(make-species-fn cf (dfs-solution->cp %) position) cps))
-          _ (println "RULES " (species-rules-fn? species))
-          _ (println "EVAL  " (evaluate-species-fn species))
-          ;; _ (println "SPECIES" species)
-          ]
-      (species->lily species
-                     {:clef
-                      (if (= position :above)
-                        "treble"
-                        "treble_8")
-                      :pattern (get options :pattern "")
-                      :tempo (str "4 = " (get options :tempo))
-                      :key key
-                      :midi (get options :midi)})
+                                      e)
+                           (map #(make-species-fn cf (dfs-solution->cp %) position) cps))
+                    nil)]
+      (when (not (nil? species))
+        (println "RULES " (species-rules-fn? species))
+        (println "EVAL  " (evaluate-species-fn species))
+        (species->lily species
+                       {:clef
+                        (if (= position :above)
+                          "treble"
+                          "treble_8")
+                        :pattern (get options :pattern "")
+                        :tempo (str "4 = " (get options :tempo))
+                        :key key
+                        :midi (get options :midi)}))
       species)))
 

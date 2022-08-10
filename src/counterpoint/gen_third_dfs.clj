@@ -27,19 +27,12 @@
       [(ending-below-e key previous-melody)]
       [(ending-below key previous-melody)])))))
 
-;; (defn- next-reverse-candidates-3rd
-;;   [{:keys [position key previous-melody cantus-note]}]
-;;   (->> (map #(% key previous-melody) patterns)
-;;        (filter (fn [[p4 p3 p2 p1]]
-;;                  (harmonic-consonant?
-;;                   (simple-interval cantus-note p1 position))))))
-
 (defn- next-reverse-candidates-3rd
   [state]
   (reduce (fn [candidates pattern]
             (let [[applied-patern fits?] (pattern-fits? pattern state)]
               (if fits?
-              (into candidates [applied-patern])
+              (conj candidates applied-patern)
               candidates)))
           []
           patterns))

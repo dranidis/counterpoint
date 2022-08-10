@@ -75,7 +75,7 @@
   (species->lily
    bellerman-a-4-species-below
    {:pattern "abba" :tempo "4=120"
-    :midi "acoustic grand piano"
+    :midi "acoustic grand"
     })
 
   (comment

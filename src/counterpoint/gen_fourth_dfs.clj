@@ -200,7 +200,7 @@
 (defn play-best-fourth [n cf position]
   (generate-fourth n cf position 
                    {:pattern ""
-                    :midi "acoustic grand piano"})
+                    :midi "acoustic grand"})
   (sh/sh "timidity" "resources/temp.midi"))
 
 (comment
@@ -212,7 +212,7 @@
   (species->lily a-sol {:clef "treble_8"
                         :pattern ""
                         :tempo "4 = 200"
-                        :midi "acoustic grand piano"})
+                        :midi "acoustic grand"})
   (sh/sh "timidity" "resources/temp.midi")
 
   [:rest [:d 2 :natural] [:d 3 :natural] [:b 3 :flat] [:b 3 :flat] [:a 3 :natural] [:a 3 :natural] [:g 2 :natural] [:g 2 :natural] [:b 3 :flat] [:b 3 :flat] [:a 3 :natural] [:a 3 :natural] [:f 2 :natural] [:f 2 :natural] [:e 2 :natural] [:e 2 :natural] [:d 2 :natural] [:d 2 :natural] [:c 2 :sharp] [:d 2 :natural]]

@@ -8,7 +8,8 @@
                                             harmonic-consonant? m2- M2- m6- next-diatonic
                                             note-at-melodic-interval P5 P8 prev-diatonic]]
             [counterpoint.melody :refer [append-to-melody]]
-            [counterpoint.motion :refer [direct-perfect?]]))
+            [counterpoint.motion :refer [direct-perfect?]]
+            [counterpoint.notes :as n]))
 
 (defn asc-pt-to [key-sig note]
   (let [pt4 (prev-diatonic key-sig note)
@@ -189,44 +190,16 @@
                desc-pt-neighbor-to
                diss-3-desc-neighbor-to])
 
-(defn- consonant-4th-fn  [[p4 p3 p2 p1]
-                          {:keys [position cantus-note]}]
-  (harmonic-consonant?
-   (simple-interval cantus-note p4 position)))
+(defn- consonant-nth-fn [n]
+  (fn [beats {:keys [position cantus-note]}]
+    (harmonic-consonant?
+     (simple-interval cantus-note (nth (reverse beats) (dec n)) position))))
 
-(defn- consonant-3rd-fn  [[p4 p3 p2 p1]
-                          {:keys [position cantus-note]}]
-  (harmonic-consonant?
-   (simple-interval cantus-note p3 position)))
-
-(defn- consonant-2nd-fn  [[p4 p3 p2 p1]
-                          {:keys [position cantus-note]}]
-  (harmonic-consonant?
-   (simple-interval cantus-note p2 position)))
-
-(defn- not-direct-to-perfect-from-3-fn
-  [[p4 p3 p2 p1] {:keys [:previous-melody
+(defn- not-direct-to-perfect-from-nth-fn [n]
+  (fn [beats {:keys [:previous-melody
                          :previous-cantus
                          :cantus-note]}]
-  (not (direct-perfect? cantus-note p3 previous-cantus previous-melody)))
-
-(defn- not-direct-to-perfect-from-4-fn
-  [[p4 p3 p2 p1] {:keys [:previous-melody
-                         :previous-cantus
-                         :cantus-note]}]
-  (not (direct-perfect? cantus-note p4 previous-cantus previous-melody)))
-
-(defn- not-direct-to-perfect-from-1-fn
-  [[p4 p3 p2 p1] {:keys [:previous-melody
-                         :previous-cantus
-                         :cantus-note]}]
-  (not (direct-perfect? cantus-note p1 previous-cantus previous-melody)))
-
-(defn- not-direct-to-perfect-from-2-fn
-  [[p4 p3 p2 p1] {:keys [:previous-melody
-                         :previous-cantus
-                         :cantus-note]}]
-  (not (direct-perfect? cantus-note p2 previous-cantus previous-melody)))
+  (not (direct-perfect? cantus-note (nth (reverse beats) (dec n)) previous-cantus previous-melody))))
 
 (defn- skip-m6-fn
   [[p4 p3 p2 p1] _]
@@ -237,48 +210,43 @@
   (not= d5- (interval p1 p2)))
 
 (defn and-fn
-  ([fn1 fn2] (and-fn fn1 fn2 nil nil))
-  ([fn1 fn2 fn3] (and-fn fn1 fn2 fn3 nil))
-  ([fn1 fn2 fn3 fn4]
-   (fn [pattern state]
-     (and (fn1 pattern state)
-          (fn2 pattern state)
-          (or (nil? fn3) (fn3 pattern state))
-          (or (nil? fn4) (fn4 pattern state))))))
+  [& validation-fn-list]
+  (fn [pattern state]
+    (every?  #(% pattern state) validation-fn-list)))
 
 (def patterns-validation-fn
-  {cambiata-to consonant-3rd-fn
-   desc-pt-to (and-fn consonant-3rd-fn
-                      not-direct-to-perfect-from-3-fn)
-   asc-pt-to (and-fn consonant-3rd-fn
-                     not-direct-to-perfect-from-3-fn)
-   desc-asc-pt-to (and-fn consonant-3rd-fn
-                          not-direct-to-perfect-from-3-fn)
-   asc-desc-pt-to (and-fn consonant-3rd-fn
-                          not-direct-to-perfect-from-3-fn)
-   skip-4-asc-pt-to (and-fn consonant-2nd-fn
+  {cambiata-to (consonant-nth-fn 3)
+   desc-pt-to (and-fn (consonant-nth-fn 3)
+                      (not-direct-to-perfect-from-nth-fn 3))
+   asc-pt-to (and-fn (consonant-nth-fn 3)
+                     (not-direct-to-perfect-from-nth-fn 3))
+   desc-asc-pt-to (and-fn (consonant-nth-fn 3)
+                          (not-direct-to-perfect-from-nth-fn 3))
+   asc-desc-pt-to (and-fn (consonant-nth-fn 3)
+                          (not-direct-to-perfect-from-nth-fn 3))
+   skip-4-asc-pt-to (and-fn (consonant-nth-fn 2)
                             not-dim5-fn
-                            not-direct-to-perfect-from-4-fn)
-   skip-3-asc-pt-to (and-fn consonant-2nd-fn
-                            not-direct-to-perfect-from-2-fn)
-   asc-pt-skip3-leap-to (and-fn consonant-3rd-fn
-                                not-direct-to-perfect-from-1-fn)
-   asc-pt-skip3-to (and-fn consonant-3rd-fn
-                           not-direct-to-perfect-from-1-fn
-                           not-direct-to-perfect-from-3-fn)
-   skip-m6-asc-pt-to (and-fn consonant-2nd-fn
+                            (not-direct-to-perfect-from-nth-fn 4))
+   skip-3-asc-pt-to (and-fn (consonant-nth-fn 2)
+                            (not-direct-to-perfect-from-nth-fn 2))
+   asc-pt-skip3-leap-to (and-fn (consonant-nth-fn 3)
+                                (not-direct-to-perfect-from-nth-fn 1))
+   asc-pt-skip3-to (and-fn (consonant-nth-fn 3)
+                           (not-direct-to-perfect-from-nth-fn 1)
+                           (not-direct-to-perfect-from-nth-fn 3))
+   skip-m6-asc-pt-to (and-fn (consonant-nth-fn 2)
                              skip-m6-fn)
-   desc-pt-skip-3-to (and-fn consonant-3rd-fn
-                             not-direct-to-perfect-from-1-fn
-                             not-direct-to-perfect-from-3-fn)
-   desc-pt-skip-desc-3-to (and-fn consonant-3rd-fn
-                                  consonant-4th-fn
-                                  not-direct-to-perfect-from-4-fn)
-   desc-pt-neighbor-to not-direct-to-perfect-from-4-fn
-   diss-3-desc-neighbor-to (and-fn consonant-2nd-fn
-                                   consonant-4th-fn
-                                   not-direct-to-perfect-from-4-fn
-                                   not-direct-to-perfect-from-2-fn)})
+   desc-pt-skip-3-to (and-fn (consonant-nth-fn 3)
+                             (not-direct-to-perfect-from-nth-fn 1)
+                             (not-direct-to-perfect-from-nth-fn 3))
+   desc-pt-skip-desc-3-to (and-fn (consonant-nth-fn 3)
+                                  (consonant-nth-fn 4)
+                                  (not-direct-to-perfect-from-nth-fn 4))
+   desc-pt-neighbor-to (not-direct-to-perfect-from-nth-fn 4)
+   diss-3-desc-neighbor-to (and-fn (consonant-nth-fn 2)
+                                   (consonant-nth-fn 4)
+                                   (not-direct-to-perfect-from-nth-fn 4)
+                                   (not-direct-to-perfect-from-nth-fn 2))})
 
 
 

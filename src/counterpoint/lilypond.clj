@@ -82,7 +82,7 @@
   (apply str (fixed-to-lily-fourth-iter duration note notes)))
 
 (defn- key-signature->lily [key-signature]
-  (str (name key-signature) "\\major"))
+  (str (name key-signature) "\\major\n"))
 
 (defn staff [clef tempo key-signature voices midi-instrument]
   (str
@@ -123,7 +123,7 @@
                           {:clef "treble"
                            :pattern ""
                            :tempo "2 = 80"
-                           :midi "acoustic grand piano"}))
+                           :midi "acoustic grand"}))
   ([cf param]
    (let [melody (get-melody cf)
          key-signature (get-key cf)]

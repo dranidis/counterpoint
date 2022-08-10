@@ -1,7 +1,10 @@
 (ns counterpoint.third-species
-  (:require [counterpoint.first-species :refer [evaluate-species
+  (:require [counterpoint.cantus :refer [make-cantus-firmus]]
+            [counterpoint.first-species :refer [evaluate-species
                                                 make-first-species]]
-            [counterpoint.melody :refer [quad-melody remove-last]]
+            [counterpoint.lilypond :refer [melody->lily]]
+            [counterpoint.melody :refer [melody-score melody-skeleton
+                                         quad-melody remove-last]]
             [counterpoint.species-type :refer [get-cantus get-counter
                                                get-low-high get-position make-species]]))
 
@@ -23,14 +26,20 @@
 
 (defn evaluate-third-species [species]
   (let [counter (get-counter species)
+        
         first-notes (conj
                      (mapv first (partition 4 counter))
                      (nth counter (dec (count counter))))
         first-sp (make-first-species (get-cantus species)
                                      first-notes
                                      (get-position species))
-        first-score (evaluate-species first-sp)]
-    first-score))
+        first-score (evaluate-species first-sp)
+        mel-score (melody-score counter)]
+    (println "M-score" mel-score)
+    (println "1st-score" first-score)
+    ;; (println (melody-skeleton counter))
+    ;; (melody->lily (make-cantus-firmus :c (melody-skeleton counter)) {:file "resources/temp1.ly"})
+    mel-score))
 
 (defn third-species-rules? [species]
   ;; TODO

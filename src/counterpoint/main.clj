@@ -23,7 +23,7 @@
    ["-T" "--pattern PATTERN" "Generated pattern"
     :default ""]
    ["-m" "--midi INSTRUMENT" "MIDI Instrument"
-    :default "acoustic grand piano"]
+    :default "acoustic grand"]
    ["-g" "--generate" "Generate species"]
    ["-s" "--species TYPE" "Species type"
     :default "first"]
@@ -80,8 +80,6 @@
                                  :midi (get-in parsed-args [:options :midi])
                                  :tempo (get-in parsed-args [:options :tempo])}))]
 
-
-
     (when (get-in parsed-args [:options :list])
       (println "Available cantus-firmi")
       (doseq [c (sort (map name (keys cf-catalog)))]
@@ -89,7 +87,7 @@
       (println))
 
     (when (get-in parsed-args [:options :play])
-      (when (nil? gen-species)
+      (when (nil? species-type)
         (melody->lily transposed-cantus))
       (when (get-in parsed-args [:options :solo])
         (let [cp (make-cantus-firmus
