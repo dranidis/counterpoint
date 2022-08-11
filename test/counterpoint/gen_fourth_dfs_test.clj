@@ -61,7 +61,7 @@
                                         :cantus-note cantus-note
                                         :cantus-notes cantus-notes})]
       (is (= [[n/c#3 n/d3] [n/c#3 n/a3]] cand-2nd-to-last))))
-  
+
   (testing "2nd-to-last-below unison"
     (let [position :below
           previous-melody n/g4
@@ -90,7 +90,7 @@
                                         :cantus-note cantus-note
                                         :cantus-notes cantus-notes})]
       (is (= (set [[n/g4] [n/g3]]) (set cand-2nd-to-last)))))
-  
+
   (testing "candidates 3rd-to-last"
     (let [position :above
           cantus-key :c
@@ -232,9 +232,29 @@
                             :previous-cantus previous-cantus
                             :cantus-note cantus-note
                             :cantus-notes cantus-notes})]
-      (println cand)
+      ;; (println cand)
       (is (not (nil? ((set cand) [n/bb3 n/c3]))))
-      (is (not (nil? ((set cand) [n/bb3 n/g2])))))))
+      (is (not (nil? ((set cand) [n/bb3 n/g2]))))))
+
+  (testing "candidates no dim5 suspension"
+    (let [position :below
+          cantus-key :c
+          melody (make-melody n/g2 n/a3)
+          previous-melody n/a3
+          previous-cantus n/d3
+          cantus-note n/e3
+          cantus-notes [n/f3 n/c3]
+          m36s {:remaining-cantus-size (inc (count cantus-notes))}
+          cand (candidates {:position position
+                            :key cantus-key
+                            :melody melody
+                            :m36s m36s
+                            :previous-melody previous-melody
+                            :previous-cantus previous-cantus
+                            :cantus-note cantus-note
+                            :cantus-notes cantus-notes})]
+      (println cand)
+      (is (not (contains? (set cand) [n/a3 n/b3]))))))
 
 (deftest generate-fourth-test
   (testing "above"

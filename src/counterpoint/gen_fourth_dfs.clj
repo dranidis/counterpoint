@@ -13,6 +13,7 @@
                                                  second-to-last-measure-candidates-2nd]]
             [counterpoint.generate :refer [generate-template]]
             [counterpoint.generate-first-species :refer [crossing-filter debug
+                                                         dim-or-aug-filter
                                                          max-harmonic-interval next-harmonic-intervals]]
             [counterpoint.generate-second-species :refer [next-candidate-notes
                                                           next-reverse-downbeat-candidates]]
@@ -27,8 +28,7 @@
 (defn second-to-last-measure-candidates-4th
   [position key-sig previous-melody previous-cantus cantus-note next-cantus]
   ;; (println "Next cantus" next-cantus)
-  (let [
-        sec-to-last-note (second-to-last-note position
+  (let [sec-to-last-note (second-to-last-note position
                                               previous-melody
                                               previous-cantus
                                               cantus-note)
@@ -84,6 +84,7 @@
                                      ;; for the previous measure
                                      (update m36s :remaining-cantus-size dec)))
           suspension-notes (->> next-melodic-candidates
+                                (filter (dim-or-aug-filter position next-cantus))
                                 (debug "melodic m2 M2")
                                 (filter #((set next-harmonic-candidates) (get-nooctave %)))
                                 (debug "harmonic with previous")
@@ -92,13 +93,13 @@
                                 (filter #(not (not-allowed-suspension position next-cantus cantus-note %)))
                                 (debug "no 1-2 and 8-9 suspension (8-7 below)")
                                 (filter (crossing-filter position next-cantus))
-;; (debug "no crossing")
+                                (debug "no crossing")
                                 (filter #(maximum-range-M10? (append-to-melody melody [%])))
                                 (filter #(<= (Math/abs (get-interval (interval next-cantus %))) max-harmonic-interval)))]
       suspension-notes)))
 
 (defn next-reverse-candidates-4th [{:keys [position key melody m36s
-                                   previous-melody previous-cantus cantus-note cantus-notes]}]
+                                           previous-melody previous-cantus cantus-note cantus-notes]}]
   (let [next-cantus (first cantus-notes)
         was-a-suspension? (not (harmonic-consonant? (simple-interval previous-cantus previous-melody position)))
         ;; _ (when was-a-suspension? (println "SUSP"  previous-melody))
@@ -198,7 +199,7 @@
    fourth-species-rules?))
 
 (defn play-best-fourth [n cf position]
-  (generate-fourth n cf position 
+  (generate-fourth n cf position
                    {:pattern ""
                     :midi "acoustic grand"})
   (sh/sh "timidity" "resources/temp.midi"))

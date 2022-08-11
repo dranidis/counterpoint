@@ -2,7 +2,6 @@
   (:require [counterpoint.cantus :refer [make-cantus-firmus]]
             [counterpoint.first-species :refer [evaluate-species
                                                 make-first-species]]
-            [counterpoint.lilypond :refer [melody->lily]]
             [counterpoint.melody :refer [melody-score melody-skeleton
                                          quad-melody remove-last]]
             [counterpoint.species-type :refer [get-cantus get-counter

@@ -102,7 +102,7 @@
         score (+ (* -20 (dec leaps))
                  (* -50 unisons)
                  (* -2 thirds)
-                 (* -200 skeleton-diminished)
+                 (* -500 skeleton-diminished)
                  (* -50 (dec peaks)))]
     score))
 

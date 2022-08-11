@@ -14,18 +14,19 @@
                                                          ending-below-e ending-M2 pattern-fits? patterns]]))
 
 (defn- second-to-last-measure-candidates-3rd
-  [{:keys [position key previous-melody previous-cantus cantus-note]}]
+  [{:keys [position key previous-melody previous-cantus cantus-note]
+    :as state}]
   (let [minor-second (= m2 (interval cantus-note previous-cantus))]
     (if minor-second 
-    [(ending-M2 key previous-melody)]
+    [(ending-M2 state)]
     (if (= position :above)
     (if (= :e (get-note previous-melody))
-      [(ending-1-e key previous-melody)]
-      [(ending-1 key previous-melody)
-       (ending-2 key previous-melody)])
+      [(ending-1-e state)]
+      [(ending-1 state)
+       (ending-2 state)])
     (if (= :e (get-note previous-melody))
-      [(ending-below-e key previous-melody)]
-      [(ending-below key previous-melody)])))))
+      [(ending-below-e state)]
+      [(ending-below state)])))))
 
 (defn- next-reverse-candidates-3rd
   [state]
