@@ -24,7 +24,7 @@
                     nil)]
       (when (not (nil? species))
         (println "RULES " (species-rules-fn? species))
-        (println "EVAL  " (evaluate-species-fn species))
+        (println "EVAL  " (evaluate-species-fn species :verbose true))
         (species->lily species
                        {:clef
                         (if (= position :above)

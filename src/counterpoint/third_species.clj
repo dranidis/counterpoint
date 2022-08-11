@@ -23,7 +23,8 @@
   [species]
   (get-low-high-third species))
 
-(defn evaluate-third-species [species]
+(defn evaluate-third-species [species & {:keys [verbose]
+                                        :or {verbose false}}]
   (let [counter (get-counter species)
         ;; first-notes (conj
         ;;              (mapv first (partition 4 counter))
@@ -32,7 +33,7 @@
         ;;                              first-notes
         ;;                              (get-position species))
         ;; first-score (evaluate-species first-sp)
-        mel-score (melody-score counter)]
+        mel-score (melody-score counter :verbose verbose)]
     ;; (println "M-score" mel-score)
     ;; (println "1st-score" first-score)
     ;; (println (melody-skeleton counter))

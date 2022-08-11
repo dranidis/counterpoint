@@ -85,37 +85,50 @@
   (let [ints (melodic-intervals melody)]
     (into [(first melody)] (melody-skeleton-iter (first ints) (rest ints) (rest melody)))))
 
-(defn- detect-up-downs [intervals state]
+(defn- detect-up-downs [intervals state up-down?]
   (if (empty? intervals)
     (:count state)
-    (let [up-2? (= 2 (get-interval (first intervals)))
-          dn-2? (= -2 (get-interval (first intervals)))]
+    (let [interv (get-interval (first intervals))
+          up-2? (= (if up-down? 2 -2) interv)
+          dn-2? (= (if up-down? -2 2) interv)]
       (case (:state state)
         :init (if up-2?
-                (detect-up-downs (rest intervals) (assoc state :state :asc1))
-                (detect-up-downs (rest intervals) state))
+                (detect-up-downs (rest intervals)
+                                 (assoc state :state :asc1) up-down?)
+                (detect-up-downs (rest intervals) state up-down?))
         :asc1 (if up-2?
-                (detect-up-downs (rest intervals) (assoc state :state :asc2))
-                (detect-up-downs (rest intervals) (assoc state :state :init)))
+                (detect-up-downs (rest intervals)
+                                 (assoc state :state :asc2) up-down?)
+                (detect-up-downs (rest intervals)
+                                 (assoc state :state :init) up-down?))
         :asc2 (if up-2?
-                (detect-up-downs (rest intervals) state)
+                (detect-up-downs (rest intervals) state up-down?)
                 (if dn-2?
-                  (detect-up-downs (rest intervals) (assoc state :state :desc))
-                  (detect-up-downs (rest intervals) (assoc state :state :init))))
+                  (detect-up-downs (rest intervals)
+                                   (assoc state :state :desc) up-down?)
+                  (detect-up-downs (rest intervals)
+                                   (assoc state :state :init) up-down?)))
         :desc (if up-2?
-                (detect-up-downs (rest intervals) (assoc state :state :asc1))
+                (detect-up-downs (rest intervals)
+                                 (assoc state :state :asc1) up-down?)
                 (if dn-2?
                   (detect-up-downs (rest intervals) (update
                                                      (assoc state :state :init)
-                                                     :count inc))
+                                                     :count inc) up-down?)
                   (detect-up-downs (rest intervals)
-                                   (assoc state :state :init))))))))
+                                   (assoc state :state :init) up-down?)))))))
 (defn get-up-downs [melody]
   (let [intervals (melodic-intervals melody)
-        up-downs (detect-up-downs intervals {:state :init :count 0})]
+        up-downs (detect-up-downs intervals {:state :init :count 0} true)]
     up-downs))
 
-(defn melody-score [melody]
+(defn get-down-ups [melody]
+  (let [intervals (melodic-intervals melody)
+        up-downs (detect-up-downs intervals {:state :init :count 0} false)]
+    up-downs))
+
+(defn melody-score [melody & {:keys [verbose]
+                              :or {verbose false}}]
   (let [ints (map #(Math/abs (get-interval %)) (melodic-intervals melody))
         leaps (count (filter #(> % 3) ints))
         unisons (count (filter #(= % 1) ints))
@@ -127,15 +140,18 @@
                               (melodic-intervals (melody-skeleton melody))))
         peaks (count (filter #(= % (highest-note melody)) melody))
         up-downs (get-up-downs melody)
-        _ (println "UP-DNs" up-downs)
-        ;; _ (when (> skeleton-diminished 0)
-        ;;     (println "Diminished interval in melody skeleton"))
+        down-ups (get-down-ups melody)
         score (+ (* -20 (dec leaps))
                  (* -50 unisons)
                  (* -2 thirds)
                  (* -500 skeleton-diminished)
-                 (* -200 up-downs)
+                 (* -200 (+ up-downs down-ups))
                  (* -50 (dec peaks)))]
+    (when verbose
+      (println "UP-DNs" up-downs)
+      (println "DN-UPs" down-ups)
+      (when (> skeleton-diminished 0)
+        (println "Diminished interval in melody skeleton")))
     score))
 
 (comment

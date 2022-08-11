@@ -164,7 +164,8 @@
 ;;    avoid consecutive perfect intervals
    ))
 
-(defn evaluate-second-species [species]
+(defn evaluate-second-species [species & {:keys [verbose]
+                                          :or {verbose false}}]
   (let [;; harm-int (rest (remove-last (get-harmonic-intervals species)))
         ;; [p1-count p8-count p5-count] (map (fn [int]
         ;;                                     (count (filter #(= int %) harm-int)))
