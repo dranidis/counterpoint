@@ -66,11 +66,11 @@
 (defn quad-melody [melody]
   (quad-melody-iter [] (first melody) (rest melody)))
 
-(defn remove-last 
+(defn remove-last
   ([melody]
    (remove-last melody 1))
   ([melody num-elements]
-  (subvec melody 0 ( - (count melody) num-elements))))
+   (subvec melody 0 (- (count melody) num-elements))))
 
 (defn- melody-skeleton-iter  [intv intvs melody]
   (if (empty? intvs)
@@ -85,6 +85,35 @@
   (let [ints (melodic-intervals melody)]
     (into [(first melody)] (melody-skeleton-iter (first ints) (rest ints) (rest melody)))))
 
+(defn- detect-up-downs [intervals state]
+  (if (empty? intervals)
+    (:count state)
+    (let [up-2? (= 2 (get-interval (first intervals)))
+          dn-2? (= -2 (get-interval (first intervals)))]
+      (case (:state state)
+        :init (if up-2?
+                (detect-up-downs (rest intervals) (assoc state :state :asc1))
+                (detect-up-downs (rest intervals) state))
+        :asc1 (if up-2?
+                (detect-up-downs (rest intervals) (assoc state :state :asc2))
+                (detect-up-downs (rest intervals) (assoc state :state :init)))
+        :asc2 (if up-2?
+                (detect-up-downs (rest intervals) state)
+                (if dn-2?
+                  (detect-up-downs (rest intervals) (assoc state :state :desc))
+                  (detect-up-downs (rest intervals) (assoc state :state :init))))
+        :desc (if up-2?
+                (detect-up-downs (rest intervals) (assoc state :state :asc1))
+                (if dn-2?
+                  (detect-up-downs (rest intervals) (update
+                                                     (assoc state :state :init)
+                                                     :count inc))
+                  (detect-up-downs (rest intervals)
+                                   (assoc state :state :init))))))))
+(defn get-up-downs [melody]
+  (let [intervals (melodic-intervals melody)
+        up-downs (detect-up-downs intervals {:state :init :count 0})]
+    up-downs))
 
 (defn melody-score [melody]
   (let [ints (map #(Math/abs (get-interval %)) (melodic-intervals melody))
@@ -97,12 +126,15 @@
                                    (= :dim (get-quality %)))
                               (melodic-intervals (melody-skeleton melody))))
         peaks (count (filter #(= % (highest-note melody)) melody))
+        up-downs (get-up-downs melody)
+        _ (println "UP-DNs" up-downs)
         ;; _ (when (> skeleton-diminished 0)
         ;;     (println "Diminished interval in melody skeleton"))
         score (+ (* -20 (dec leaps))
                  (* -50 unisons)
                  (* -2 thirds)
                  (* -500 skeleton-diminished)
+                 (* -200 up-downs)
                  (* -50 (dec peaks)))]
     score))
 

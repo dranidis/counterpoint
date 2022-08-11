@@ -1,11 +1,11 @@
 (ns counterpoint.third-species
-  (:require [counterpoint.cantus :refer [make-cantus-firmus]]
-            [counterpoint.first-species :refer [evaluate-species
-                                                make-first-species]]
-            [counterpoint.melody :refer [melody-score melody-skeleton
-                                         quad-melody remove-last]]
-            [counterpoint.species-type :refer [get-cantus get-counter
-                                               get-low-high get-position make-species]]))
+  (:require
+   [counterpoint.first-species :refer [evaluate-species
+                                       make-first-species]]
+   [counterpoint.melody :refer [melody-score
+                                quad-melody remove-last]]
+   [counterpoint.species-type :refer [get-cantus get-counter
+                                      get-low-high get-position make-species]]))
 
 (defn make-third-species [cantus-firmus counterpoint-melody arg3]
   (make-species cantus-firmus counterpoint-melody arg3 :third))
@@ -25,14 +25,13 @@
 
 (defn evaluate-third-species [species]
   (let [counter (get-counter species)
-        
-        first-notes (conj
-                     (mapv first (partition 4 counter))
-                     (nth counter (dec (count counter))))
-        first-sp (make-first-species (get-cantus species)
-                                     first-notes
-                                     (get-position species))
-        first-score (evaluate-species first-sp)
+        ;; first-notes (conj
+        ;;              (mapv first (partition 4 counter))
+        ;;              (nth counter (dec (count counter))))
+        ;; first-sp (make-first-species (get-cantus species)
+        ;;                              first-notes
+        ;;                              (get-position species))
+        ;; first-score (evaluate-species first-sp)
         mel-score (melody-score counter)]
     ;; (println "M-score" mel-score)
     ;; (println "1st-score" first-score)
