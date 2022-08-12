@@ -2,20 +2,15 @@
   (:require [clojure.java.shell :as sh]
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.core :refer [interval]]
-            [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
-            [counterpoint.gen-first-dfs :refer [last-note-candidates next-node
-                                                second-to-last-note solution?]]
+            [counterpoint.gen-first-dfs :refer [last-note-candidates-new
+                                                second-to-last-note]]
             [counterpoint.generate :refer [generate-template]]
             [counterpoint.generate-second-species :refer [next-reverse-candidates-2nd]]
             [counterpoint.intervals :refer [get-interval m2 m2- M3- m6 m6-
                                             note-at-melodic-interval P12- P5 P5-]]
-            [counterpoint.lilypond :refer [species->lily]]
-            [counterpoint.melody :refer [melody-score]]
             [counterpoint.second-species :refer [evaluate-second-species
                                                  make-second-species
-                                                 second-species-rules?]]
-            [counterpoint.species-type :refer [get-counter]]
-            [counterpoint.utils :refer [dfs-solution->cp]]))
+                                                 second-species-rules?]]))
 
 (defn- third-to-last-note [position previous-melody previous-cantus cantus-note]
   (let [last-melody-m2? (= m2 (interval cantus-note previous-cantus))
@@ -54,29 +49,14 @@
                           cantus-notes]
                    :as state}]
   (case (count melody)
-    0 (map (fn [n] [n]) (last-note-candidates position cantus-note))
+    0 (map (fn [n] [n]) 
+           (last-note-candidates-new position (first cantus-notes) cantus-note))
     1 (second-to-last-measure-candidates-2nd position previous-melody previous-cantus cantus-note)
     (next-reverse-candidates-2nd state)))
 
-(defn generate-reverse-counterpoint-2nd-dfs [position key cantus]
-  (let [rev-cantus (reverse cantus)
-        m36s {:thirds 0 :sixths 0 :tens 0 :thirteens 0 :remaining-cantus-size (count rev-cantus)}
-        melody []
-        previous-melody nil
-        previous-cantus nil
-        root-node {:position position
-                   :key key
-                   :melody melody
-                   :m36s m36s;; counter of thirds & sixths
-                   :previous-melody previous-melody
-                   :previous-cantus previous-cantus
-                   :cantus-note (first rev-cantus)
-                   :cantus-notes (rest rev-cantus)}]
-    (generate-dfs-solutions root-node candidates next-node solution?)))
-
 (def generate-second
   (generate-template
-   generate-reverse-counterpoint-2nd-dfs
+   candidates
    evaluate-second-species
    make-second-species
    second-species-rules?))
@@ -98,35 +78,6 @@
                            {:pattern ""
                             :midi "flute"}))
 
-  (def position :above)
-  (def cf fux-d)
-  (def at-key :c)
-  (def cps (generate-reverse-counterpoint-2nd-dfs position at-key cf))
 
-  (def first-sol (make-second-species cf (dfs-solution->cp (second cps)) position))
-
-  ;; (def best-sol (apply max-key #(let [e (evaluate-second-species  %)]
-  ;;                             ;;  (println e)
-  ;;                                 e)
-  ;;                      (map #(make-second-species cf (dfs-solution->cp %) position) cps)))
-
-
-  ;; (second-species-rules? first-sol)
-  ;; (println "RULES " (second-species-rules? best-sol))
-  (evaluate-second-species first-sol)
-  (species->lily first-sol
-                 {:clef (if (= position :above)
-                          "treble"
-                          "treble_8")
-                    ;; :pattern "baaa"
-                  :pattern ""
-                  :tempo "4 = 200"})
-  (sh/sh "timidity" "resources/temp.midi")
-
-  (def cp (get-counter first-sol))
-  (melody-score cp)
-
-  (map-indexed vector cp)
-  (filter #(not= % :rest) cp)
   ;
   )

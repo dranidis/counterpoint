@@ -3,12 +3,11 @@
             [counterpoint.cantus :refer [maximum-range-M10?]]
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.core :refer [interval simple-interval]]
-            [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.fourth-species :refer [evaluate-fourth-species
                                                  fourth-species-rules?
                                                  make-fourth-species]]
-            [counterpoint.gen-first-dfs :refer [last-note-candidates next-node
-                                                second-to-last-note solution?]]
+            [counterpoint.gen-first-dfs :refer [last-note-candidates
+                                                second-to-last-note]]
             [counterpoint.gen-second-dfs :refer [second-to-last-measure-candidates-2nd]]
             [counterpoint.generate :refer [generate-template]]
             [counterpoint.generate-first-species :refer [crossing-filter debug
@@ -19,10 +18,8 @@
             [counterpoint.intervals :refer [get-interval harmonic-consonant?
                                             m2 M2 m7 M7 m9 M9 next-diatonic
                                             note-at-diatonic-interval note-at-melodic-interval P1 P8]]
-            [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.melody :refer [append-to-melody]]
-            [counterpoint.notes :refer [get-nooctave] :as n]
-            [counterpoint.utils :refer [dfs-solution->cp]]))
+            [counterpoint.notes :refer [get-nooctave] :as n]))
 
 (defn second-to-last-measure-candidates-4th
   [position key-sig previous-melody previous-cantus cantus-note next-cantus]
@@ -174,25 +171,9 @@
     ;; (println "CAND" cand)
     cand))
 
-(defn generate-reverse-counterpoint-4th-dfs [position key cantus]
-  (let [rev-cantus (reverse cantus)
-        m36s {:thirds 0 :sixths 0 :tens 0 :thirteens 0 :remaining-cantus-size (count rev-cantus)}
-        melody []
-        previous-melody nil
-        previous-cantus nil
-        root-node {:position position
-                   :key key
-                   :melody melody
-                   :m36s m36s;; counter of thirds & sixths
-                   :previous-melody previous-melody
-                   :previous-cantus previous-cantus
-                   :cantus-note (first rev-cantus)
-                   :cantus-notes (rest rev-cantus)}]
-    (generate-dfs-solutions root-node candidates next-node solution?)))
-
 (def generate-fourth
   (generate-template
-   generate-reverse-counterpoint-4th-dfs
+   candidates
    evaluate-fourth-species
    make-fourth-species
    fourth-species-rules?))
@@ -205,19 +186,6 @@
 
 (comment
   (play-best-fourth 100 fux-d :above)
-
-  (def cps (generate-reverse-counterpoint-4th-dfs :below :f fux-d))
-  (def a-sol (make-fourth-species fux-d (dfs-solution->cp (nth cps 0)) :below))
-  (evaluate-fourth-species a-sol {:verbose false})
-  (species->lily a-sol {:clef "treble_8"
-                        :pattern ""
-                        :tempo "4 = 200"
-                        :midi "acoustic grand"})
-  (sh/sh "timidity" "resources/temp.midi")
-
-  [:rest [:d 2 :natural] [:d 3 :natural] [:b 3 :flat] [:b 3 :flat] [:a 3 :natural] [:a 3 :natural] [:g 2 :natural] [:g 2 :natural] [:b 3 :flat] [:b 3 :flat] [:a 3 :natural] [:a 3 :natural] [:f 2 :natural] [:f 2 :natural] [:e 2 :natural] [:e 2 :natural] [:d 2 :natural] [:d 2 :natural] [:c 2 :sharp] [:d 2 :natural]]
-  [[:d 3 :natural] [:f 3 :natural] [:e 3 :natural] [:d 3 :natural] [:g 3 :natural] [:f 3 :natural] [:a 4 :natural] [:g 3 :natural] [:f 3 :natural] [:e 3 :natural] [:d 3 :natural]]
-; 
 
 ;
   )

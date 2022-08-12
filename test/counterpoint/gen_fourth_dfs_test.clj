@@ -6,8 +6,8 @@
                                                  fourth-species-rules?
                                                  make-fourth-species]]
             [counterpoint.gen-fourth-dfs :refer [candidates
-                                                 generate-reverse-counterpoint-4th-dfs
                                                  second-to-last-measure-candidates-4th]]
+            [counterpoint.generate :refer [generate-reverse-counterpoint-dfs]]
             [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as n]
             [counterpoint.utils :refer [dfs-solution->cp]]))
@@ -259,7 +259,7 @@
 (deftest generate-fourth-test
   (testing "above"
     (let [fux-d-cf (get-melody fux-d)
-          cps (generate-reverse-counterpoint-4th-dfs :above :f fux-d-cf)
+          cps (generate-reverse-counterpoint-dfs :above :f fux-d-cf candidates)
           cp (dfs-solution->cp (first cps))
           species (make-fourth-species fux-d-cf cp :above)]
       ;; (println species)
@@ -268,7 +268,7 @@
 
   (testing "below"
     (let [fux-d-cf (get-melody fux-d)
-          cps (generate-reverse-counterpoint-4th-dfs :below :f fux-d-cf)
+          cps (generate-reverse-counterpoint-dfs :below :f fux-d-cf candidates)
           cp (dfs-solution->cp (first cps))
           species (make-fourth-species fux-d-cf cp :below)]
       ;; (println species)

@@ -2,20 +2,19 @@
   (:require [clojure.test :refer [deftest is testing]]
             [counterpoint.cantus :refer [get-key get-melody]]
             [counterpoint.cantus-firmi-examples :refer [fux-d fux-e]]
-            [counterpoint.gen-third-dfs :refer [candidates
-                                                generate-reverse-counterpoint-3rd-dfs]]
+            [counterpoint.gen-third-dfs :refer [candidates]]
+            [counterpoint.generate :refer [generate-reverse-counterpoint-dfs]]
             [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as n]
             [counterpoint.third-species :refer [make-third-species
                                                 third-species-rules?]]
-            [counterpoint.third-species-patterns :refer [desc-pt-skip-3-to
-                                                         pattern-fits?]]
+            [counterpoint.third-species-patterns :refer [desc-pt-skip-3-to]]
             [counterpoint.utils :refer [dfs-solution->cp]]))
 
 (deftest generate-third-test
   (testing "above"
     (let [cf (make-melody n/f3 n/e3 n/d3)
-          cps (generate-reverse-counterpoint-3rd-dfs :above :c cf)
+          cps (generate-reverse-counterpoint-dfs :above :c cf candidates)
           cp (dfs-solution->cp (nth cps 0))
           species (make-third-species cf cp :above)]
     ;;   (println species)
@@ -25,8 +24,8 @@
 (deftest generate-third-fux-test
   (testing "above"
     (let [cf (get-melody fux-d)
-          cps (generate-reverse-counterpoint-3rd-dfs
-               :above (get-key fux-d) cf)
+          cps (generate-reverse-counterpoint-dfs
+               :above (get-key fux-d) cf candidates)
           cp (dfs-solution->cp (nth cps 0))
           species (make-third-species cf cp :above)]
       ;; (println species)
@@ -37,8 +36,8 @@
   (testing "above"
     (let [cantus fux-e
           cf (get-melody cantus)
-          cps (generate-reverse-counterpoint-3rd-dfs
-               :above (get-key cantus) cf)
+          cps (generate-reverse-counterpoint-dfs
+               :above (get-key cantus) cf candidates)
           cp (dfs-solution->cp (nth cps 0))
           species (make-third-species cf cp :above)]
       ;; (println species)

@@ -2,18 +2,13 @@
   (:require [clojure.java.shell :as sh]
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.core :refer [interval]]
-            [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
             [counterpoint.first-species :refer [evaluate-species
                                                 first-species-rules? make-first-species]]
             [counterpoint.generate :refer [generate-template]]
-            [counterpoint.generate-first-species :refer [next-reverse-candidates-1st
-                                                         update-m36-size]]
+            [counterpoint.generate-first-species :refer [next-reverse-candidates-1st]]
             [counterpoint.intervals :refer [get-interval m10 m10- m2 m3 m3- M6
                                             M6- note-at-melodic-interval P1
                                             P8 P8-]]))
-
-(defn solution? [{:keys [m36s]}]
-  (= (get m36s :remaining-cantus-size) 0))
 
 (defn last-note-candidates [position cantus-note]
   (mapv #(note-at-melodic-interval cantus-note %)
@@ -46,15 +41,16 @@
                      m3-)))]
     (note-at-melodic-interval cantus-note intval)))
 
-(defn- last-note-candidates-new [position cantus-sec-to-last cantus-last]
-  (map #(note-at-melodic-interval cantus-last %)
-       (if (< (get-interval (interval cantus-sec-to-last cantus-last)) 0)
+(defn last-note-candidates-new [position cantus-sec-to-last cantus-last]
+  (let [descending-cantus-end? (< (get-interval (interval cantus-sec-to-last cantus-last)) 0)]
+    (map #(note-at-melodic-interval cantus-last %)
+       (if descending-cantus-end?
          (if (= position :above)
            [P8]
            [P1 P8-])
          (if (= position :above)
            [P1 P8]
-           [P8-]))))
+           [P8-])))))
 
 (defn- second-to-last-note-candidates [position cantus-sec-to-last cantus-last]
   (if (< (get-interval (interval cantus-sec-to-last cantus-last)) 0)
@@ -81,45 +77,11 @@
                1 (second-to-last-note-candidates position cantus-note previous-cantus)
     ;; [(second-to-last-note position previous-melody previous-cantus cantus-note)]
                (next-reverse-candidates-1st state))]
-   (map (fn [c] [c]) cand)))
-
-(defn next-node [{:keys [position
-                         key
-                         melody
-                         m36s ;; counter of thirds & sixths
-                         previous-melody
-                         previous-cantus
-                         cantus-note
-                         cantus-notes]}
-                 current]
-  {:position position
-   :key key
-   :melody (into melody current)
-   :m36s (update-m36-size m36s position cantus-note current)
-   :previous-melody (last current)
-   :previous-cantus cantus-note
-   :cantus-note (first cantus-notes)
-   :cantus-notes (rest cantus-notes)})
-
-(defn generate-reverse-counterpoint-dfs [position key cantus]
-  (let [rev-cantus (reverse cantus)
-        m36s {:thirds 0 :sixths 0 :tens 0 :thirteens 0 :remaining-cantus-size (count rev-cantus)}
-        melody []
-        previous-melody nil
-        previous-cantus nil
-        root-node {:position position
-                   :key key
-                   :melody melody
-                   :m36s m36s;; counter of thirds & sixths
-                   :previous-melody previous-melody
-                   :previous-cantus previous-cantus
-                   :cantus-note (first rev-cantus)
-                   :cantus-notes (rest rev-cantus)}]
-    (generate-dfs-solutions root-node candidates next-node solution?)))
+    (map (fn [c] [c]) cand)))
 
 (def generate-first
   (generate-template
-   generate-reverse-counterpoint-dfs
+   candidates
    evaluate-species
    make-first-species
    first-species-rules?))
