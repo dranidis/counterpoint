@@ -10,12 +10,6 @@
             [counterpoint.notes :refer [get-acc get-note get-octave]]
             [counterpoint.rest :refer [rest?]]))
 
-;;
-;; GLOBAL parameters
-;;
-;; (def midi-instrument "acoustic grand")
-(def midi-instrument "flute")
-
 (defn- single-note->lily [note]
   (str " "
        (name (get-note note))
@@ -72,14 +66,37 @@
         (into [lily]
               (fixed-to-lily-fourth-iter duration (first notes) (rest notes)))))))
 
+(defn- fixed-to-lily-tied-iter [duration note notes]
+  (if (empty? notes)
+    [(note->lily duration note)]
+    (let [lily (note->lily duration note)
+          next (first notes)
+          others (rest notes)]
+      (if (= note next)
+        (into [(str lily "~")  lily]
+              (if (empty? others)
+                []
+                (fixed-to-lily-tied-iter duration (first others) (rest others))))
+        (into [lily]
+              (fixed-to-lily-tied-iter duration (first notes) (rest notes)))))))
+
 (defn relative-melody->lily [duration [note & notes]]
   (apply str (relative-to-lily-iter duration nil note notes)))
 
 (defn fixed-melody->lily [duration notes]
   (apply str (map #(note->lily duration %) notes)))
 
+(defn fixed-melody->lily-tied [duration notes]
+  (apply str (fixed-to-lily-tied-iter duration (first notes) (rest notes))))
+
 (defn fixed-melody-fourth->lily [duration [note & notes]]
   (apply str (fixed-to-lily-fourth-iter duration note notes)))
+
+(defn melody-fifth->lily [notes-with-duration]
+  (reduce (fn [s notes]
+            (str s "~" (fixed-melody->lily-tied (get notes :d)
+                                       (get notes :n)))) 
+          "" notes-with-duration))
 
 (defn- key-signature->lily [key-signature]
   (str (name key-signature) "\\major\n"))
@@ -142,20 +159,24 @@
                         :third (fn [counter]
                                  (end-to-1 (fixed-melody->lily 4 counter)))
                         :fourth (partial fixed-melody-fourth->lily 2)
+                        :fifth melody-fifth->lily
                         (throw (Exception.
-                                (str "voices: not implemented species type " type))))]
+                                (str "voices: not implemented species type " type))))
+        counter-l (counter->lily counter)
+        _ (println counter-l)
+        cantus-l (fixed-melody->lily 1 cantus)]
     (str
 
      (voice "first" "voiceOne"
             (if (= position :above)
-              (counter->lily counter)
-              (fixed-melody->lily 1 cantus))
+              counter-l
+              cantus-l)
             clef tempo key-signature midi1)
 
      (voice "second" "voiceTwo"
             (if (= position :above)
-              (fixed-melody->lily 1 cantus)
-              (counter->lily counter))
+              cantus-l
+              counter-l)
             clef tempo key-signature midi2)
 
      (figured-bass species))))
@@ -261,3 +282,4 @@
                 (voice "first" "voiceOne" (fixed-melody->lily 1 melody)
                        clef tempo key-signature midi))))))
    (sh/sh "lilypond" "-o" "resources" (get param :file "resources/temp.ly"))))
+   

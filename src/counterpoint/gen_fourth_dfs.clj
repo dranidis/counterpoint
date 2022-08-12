@@ -7,10 +7,9 @@
             [counterpoint.fourth-species :refer [evaluate-fourth-species
                                                  fourth-species-rules?
                                                  make-fourth-species]]
-            [counterpoint.gen-first-dfs :refer [last-note-candidates
+            [counterpoint.gen-first-dfs :refer [last-note-candidates next-node
                                                 second-to-last-note solution?]]
-            [counterpoint.gen-second-dfs :refer [next-node
-                                                 second-to-last-measure-candidates-2nd]]
+            [counterpoint.gen-second-dfs :refer [second-to-last-measure-candidates-2nd]]
             [counterpoint.generate :refer [generate-template]]
             [counterpoint.generate-first-species :refer [crossing-filter debug
                                                          dim-or-aug-filter

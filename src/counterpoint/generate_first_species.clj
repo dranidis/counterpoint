@@ -119,14 +119,15 @@
          (filter #(<= (Math/abs (get-interval (interval cantus-note %))) max-harmonic-interval))
          (debug "harm range"))))
 
-(defn update-m36-size [m36s position cantus-note counter-note]
-  (update (case (get-interval (species-interval position cantus-note counter-note))
+(defn update-m36-size [m36s position cantus-note counter-notes]
+  (let [counter-note (last counter-notes)]
+    (update (case (get-interval (species-interval position cantus-note counter-note))
             3 (-> m36s (update :thirds inc) (assoc :sixths 0) (assoc :tens 0) (assoc :thirteens 0))
             6 (-> m36s (update :sixths inc) (assoc :thirds 0) (assoc :tens 0) (assoc :thirteens 0))
             10 (-> m36s (update :tens inc) (assoc :thirds 0) (assoc :sixths 0) (assoc :thirteens 0))
             13 (-> m36s (update :thirteens inc) (assoc :thirds 0) (assoc :tens 0) (assoc :sixths 0))
             (-> m36s (assoc :thirds 0) (assoc :sixths 0) (assoc :tens 0) (assoc :thirteens 0)))
-          :remaining-cantus-size dec))
+          :remaining-cantus-size dec)))
 
 (defn- generate-reverse-random-counterpoint-iter
   [position key melody m36s previous-melody previous-cantus cantus-note cantus-notes]

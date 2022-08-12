@@ -1,8 +1,8 @@
 (ns counterpoint.gen-third-dfs
   (:require [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
-            [counterpoint.gen-first-dfs :refer [last-note-candidates solution?]]
-            [counterpoint.gen-second-dfs :refer [next-node]]
+            [counterpoint.gen-first-dfs :refer [last-note-candidates next-node
+                                                solution?]]
             [counterpoint.generate :refer [generate-template]]
             [counterpoint.intervals :refer [m2]]
             [counterpoint.notes :refer [get-note]]

@@ -35,4 +35,14 @@
   [species]
   (figured-bass-str 2 (get-low-high species)))
 
+(defmethod figured-bass :fifth
+  [species]
+  (let [[low high] (get-low-high species)
+        ]
+    ;; (println "LO" low)
+    ;; (println "HI" high)
+    (println "TODO Figured bass of FIFTH")
+    ""))
+
+
 

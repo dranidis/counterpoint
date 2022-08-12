@@ -3,11 +3,10 @@
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.core :refer [interval]]
             [counterpoint.dfs.dfs :refer [generate-dfs-solutions]]
-            [counterpoint.species-type :refer [get-counter]]
-            [counterpoint.gen-first-dfs :refer [last-note-candidates
+            [counterpoint.gen-first-dfs :refer [last-note-candidates next-node
                                                 second-to-last-note solution?]]
             [counterpoint.generate :refer [generate-template]]
-            [counterpoint.generate-second-species :refer [next-reverse-candidates-2nd update-m36-size]]
+            [counterpoint.generate-second-species :refer [next-reverse-candidates-2nd]]
             [counterpoint.intervals :refer [get-interval m2 m2- M3- m6 m6-
                                             note-at-melodic-interval P12- P5 P5-]]
             [counterpoint.lilypond :refer [species->lily]]
@@ -15,6 +14,7 @@
             [counterpoint.second-species :refer [evaluate-second-species
                                                  make-second-species
                                                  second-species-rules?]]
+            [counterpoint.species-type :refer [get-counter]]
             [counterpoint.utils :refer [dfs-solution->cp]]))
 
 (defn- third-to-last-note [position previous-melody previous-cantus cantus-note]
@@ -57,28 +57,6 @@
     0 (map (fn [n] [n]) (last-note-candidates position cantus-note))
     1 (second-to-last-measure-candidates-2nd position previous-melody previous-cantus cantus-note)
     (next-reverse-candidates-2nd state)))
-
-(defn next-node [{:keys [position
-                         key
-                         melody
-                         m36s ;; counter of thirds & sixths
-                         previous-melody
-                         previous-cantus
-                         cantus-note
-                         cantus-notes]}
-                 current]
-  ;; (println melody current)
-  (let [prev-melody (if (= 1 (count current))
-                      (first current)
-                      (last current))]
-    {:position position
-     :key key
-     :melody (into melody current)
-     :m36s (update-m36-size m36s position cantus-note current)
-     :previous-melody prev-melody
-     :previous-cantus cantus-note
-     :cantus-note (first cantus-notes)
-     :cantus-notes (rest cantus-notes)}))
 
 (defn generate-reverse-counterpoint-2nd-dfs [position key cantus]
   (let [rev-cantus (reverse cantus)

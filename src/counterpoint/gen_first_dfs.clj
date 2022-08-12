@@ -17,7 +17,7 @@
 
 (defn last-note-candidates [position cantus-note]
   (mapv #(note-at-melodic-interval cantus-note %)
-        (if (= position :above) 
+        (if (= position :above)
           [P8 P1]
           [P1 P8-])))
     ;; [(note-at-melodic-interval cantus-note P8)
@@ -76,11 +76,12 @@
                           cantus-note
                           cantus-notes]
                    :as state}]
-  (case (count melody)
-    0 (last-note-candidates-new position (first cantus-notes) cantus-note)
-    1 (second-to-last-note-candidates position cantus-note previous-cantus)
+  (let [cand (case (count melody)
+               0 (last-note-candidates-new position (first cantus-notes) cantus-note)
+               1 (second-to-last-note-candidates position cantus-note previous-cantus)
     ;; [(second-to-last-note position previous-melody previous-cantus cantus-note)]
-    (next-reverse-candidates-1st state)))
+               (next-reverse-candidates-1st state))]
+   (map (fn [c] [c]) cand)))
 
 (defn next-node [{:keys [position
                          key
@@ -91,12 +92,11 @@
                          cantus-note
                          cantus-notes]}
                  current]
-  ;; (println "NEXT mel" melody current)
   {:position position
    :key key
-   :melody (into melody [current])
+   :melody (into melody current)
    :m36s (update-m36-size m36s position cantus-note current)
-   :previous-melody current
+   :previous-melody (last current)
    :previous-cantus cantus-note
    :cantus-note (first cantus-notes)
    :cantus-notes (rest cantus-notes)})
