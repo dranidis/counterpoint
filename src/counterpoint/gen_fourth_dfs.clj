@@ -152,7 +152,8 @@
   ;; (println "cantus-notes" cantus-notes)
   ;; (println melody (count melody))
   (let [cand (case (count melody)
-               0 (map (fn [n] [n]) (last-note-candidates position cantus-note))
+               0 (map (fn [n] [n]) 
+                      (last-note-candidates position (first cantus-notes) cantus-note))
                1 (second-to-last-measure-candidates-4th
                   position key previous-melody previous-cantus cantus-note (first cantus-notes))
                (next-reverse-candidates-4th state))]

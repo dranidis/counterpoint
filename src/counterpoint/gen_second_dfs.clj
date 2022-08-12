@@ -2,7 +2,7 @@
   (:require [clojure.java.shell :as sh]
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.core :refer [interval]]
-            [counterpoint.gen-first-dfs :refer [last-note-candidates-new
+            [counterpoint.gen-first-dfs :refer [last-note-candidates
                                                 second-to-last-note]]
             [counterpoint.generate :refer [generate-template]]
             [counterpoint.generate-second-species :refer [next-reverse-candidates-2nd]]
@@ -50,7 +50,7 @@
                    :as state}]
   (case (count melody)
     0 (map (fn [n] [n]) 
-           (last-note-candidates-new position (first cantus-notes) cantus-note))
+           (last-note-candidates position (first cantus-notes) cantus-note))
     1 (second-to-last-measure-candidates-2nd position previous-melody previous-cantus cantus-note)
     (next-reverse-candidates-2nd state)))
 

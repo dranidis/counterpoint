@@ -46,7 +46,8 @@
                           cantus-notes]
                    :as state}]
   (case (count melody)
-    0 (map (fn [n] [n]) (last-note-candidates position cantus-note))
+    0 (map (fn [n] [n]) 
+           (last-note-candidates position (first cantus-notes) cantus-note))
     1 (second-to-last-measure-candidates-3rd state)
     (next-reverse-candidates-3rd state)))
 

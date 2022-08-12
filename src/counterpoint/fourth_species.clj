@@ -92,16 +92,16 @@
                                 0
                                 (partition 2 (rest (get-counter species))))
          diss (number-of-downbeat-dissonances species)
-         species-score (+ (* 100 diss) (* 50 number-of-suspensions))
+         species-score (+ (* 100 diss) (* 100 number-of-suspensions))
          melody-s (melody-score 
                    (filter #(not= % :rest) 
                            (get-counter species)) :verbose verbose)
          norm (fn [score] (float (/ score size)))]
-    ;;  (when (verbose)
-      ;;  (println "Melody score" (norm melody-s))
-      ;;  (println "Harmony score" (norm score-harmony))
-      ;;  (println "Species score" (norm species-score))
-      ;;  )
+     (when verbose
+       (println "Melody score" (norm melody-s))
+       (println "Harmony score" (norm score-harmony))
+       (println "Species score" (norm species-score))
+       )
      (norm (+ species-score score-harmony melody-s))))
 
 

@@ -10,16 +10,6 @@
                                             M6- note-at-melodic-interval P1
                                             P8 P8-]]))
 
-(defn last-note-candidates [position cantus-note]
-  (mapv #(note-at-melodic-interval cantus-note %)
-        (if (= position :above)
-          [P8 P1]
-          [P1 P8-])))
-    ;; [(note-at-melodic-interval cantus-note P8)
-    ;;  (note-at-melodic-interval cantus-note P1)]
-    ;; [(note-at-melodic-interval cantus-note P1)
-    ;;  (note-at-melodic-interval cantus-note P8-)])))
-
 (defn second-to-last-note [position previous-melody previous-cantus cantus-note]
   (let [last-harmony-octave? (= (Math/abs (get-interval (interval previous-cantus previous-melody))) 8)
         last-melody-m2? (= m2 (interval cantus-note previous-cantus))
@@ -41,7 +31,7 @@
                      m3-)))]
     (note-at-melodic-interval cantus-note intval)))
 
-(defn last-note-candidates-new [position cantus-sec-to-last cantus-last]
+(defn last-note-candidates [position cantus-sec-to-last cantus-last]
   (let [descending-cantus-end? (< (get-interval (interval cantus-sec-to-last cantus-last)) 0)]
     (map #(note-at-melodic-interval cantus-last %)
        (if descending-cantus-end?
@@ -53,7 +43,8 @@
            [P8-])))))
 
 (defn- second-to-last-note-candidates [position cantus-sec-to-last cantus-last]
-  (if (< (get-interval (interval cantus-sec-to-last cantus-last)) 0)
+  (let [descending-cantus-end? (< (get-interval (interval cantus-sec-to-last cantus-last)) 0)] 
+    (if descending-cantus-end?
     (if (= position :above)
       [(note-at-melodic-interval cantus-sec-to-last M6)]
       [(note-at-melodic-interval cantus-sec-to-last m3-)
@@ -61,7 +52,7 @@
     (if (= position :above)
       [(note-at-melodic-interval cantus-sec-to-last m3)
        (note-at-melodic-interval cantus-sec-to-last m10-)]
-      [(note-at-melodic-interval cantus-sec-to-last M6-)])))
+      [(note-at-melodic-interval cantus-sec-to-last M6-)]))))
 
 (defn candidates [{:keys [position
                           key
@@ -73,7 +64,7 @@
                           cantus-notes]
                    :as state}]
   (let [cand (case (count melody)
-               0 (last-note-candidates-new position (first cantus-notes) cantus-note)
+               0 (last-note-candidates position (first cantus-notes) cantus-note)
                1 (second-to-last-note-candidates position cantus-note previous-cantus)
     ;; [(second-to-last-note position previous-melody previous-cantus cantus-note)]
                (next-reverse-candidates-1st state))]

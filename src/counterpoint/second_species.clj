@@ -2,16 +2,16 @@
   (:require [counterpoint.core :refer [interval note->number]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?
                                                 correct-interval
-                                                correct-intervals-iter direct-motion-to-perfect?]]
-            [counterpoint.species-type :refer [get-cantus get-counter
-                                                     get-low-high get-position
-                                                     make-species]]
-            [counterpoint.intervals :refer [get-interval]]
+                                                correct-intervals-iter direct-motion-to-perfect? get-harmonic-intervals]]
+            [counterpoint.intervals :refer [get-interval M2 m2 M7 m7 M9 m9 P1
+                                            P4 P5 P8]]
             [counterpoint.melody :refer [double-melody melody-score
                                          remove-last]]
             [counterpoint.motion :refer [type-of-motion]]
             [counterpoint.notes :as n]
             [counterpoint.rest :refer [rest?] :as r]
+            [counterpoint.species-type :refer [get-cantus get-counter
+                                               get-low-high get-position make-species]]
             [counterpoint.utils :refer [rule-warning]]))
 
 (defn make-second-species [cantus-firmus counterpoint-melody arg3]
@@ -80,8 +80,8 @@
              (and (= note2 (inc note3))
                   (= note1 (inc note2)))))))
 (comment
-(passing-tone? [n/g4 n/f4 n/e4])
-(passing-tone? [n/a5 n/f4 n/e4])
+  (passing-tone? [n/g4 n/f4 n/e4])
+  (passing-tone? [n/a5 n/f4 n/e4])
 ;
   )
 
@@ -166,18 +166,25 @@
 
 (defn evaluate-second-species [species & {:keys [verbose]
                                           :or {verbose false}}]
-  (let [;; harm-int (rest (remove-last (get-harmonic-intervals species)))
-        ;; [p1-count p8-count p5-count] (map (fn [int]
-        ;;                                     (count (filter #(= int %) harm-int)))
-        ;;                                   [P1 P8 P5])
+  (let [harm-int (rest (remove-last (get-harmonic-intervals species)))
+        [p1-count p8-count p5-count] (map (fn [int]
+                                            (count (filter #(= int %) harm-int)))
+                                          [P1 P8 P5])
+        [m2c M2c m7c M7c m9c M9c] (map (fn [int]
+                                            (count (filter #(= int %) harm-int)))
+                                          [m2 M2 P4 m7 M7 m9 M9])
         ;; cp-ints (melodic-intervals (get-counter species))
         ;; ca-ints (melodic-intervals (get-cantus species))
         ;; simult-leaps (simultaneous-leaps ca-ints cp-ints)
-
-        ;; score (+ (* -10 p1-count)
-        ;;          (* -5 p8-count)
-        ;;          (* -2 p5-count)
-        ;;          (* -20 simult-leaps))
-        score 0
+        score (+ (* -100 p1-count)
+                 (* -50 p8-count)
+                 (* -30 p5-count)
+        ;;          (* -20 simult-leaps)
+                 (* 50 (+ m2c M2c m7c M7c m9c M9c))
+                 )
+        ;; score 0
         melody-s (melody-score (filter #(not= % :rest) (get-counter species)))]
+    (when verbose
+      (println "HARM SCORE: " score)
+      (println "MEL SCORE: " melody-s))
     (float (/ (+ score melody-s) (count (get-cantus species))))))
