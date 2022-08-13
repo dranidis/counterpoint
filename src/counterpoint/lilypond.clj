@@ -96,7 +96,7 @@
   (reduce (fn [s notes]
             (str s "~" (fixed-melody->lily-tied (get notes :d)
                                        (get notes :n)))) 
-          "" notes-with-duration))
+          "" (apply concat notes-with-duration)))
 
 (defn- key-signature->lily [key-signature]
   (str (name key-signature) "\\major\n"))

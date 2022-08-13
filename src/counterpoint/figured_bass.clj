@@ -20,8 +20,8 @@
 (defmulti figured-bass get-type)
 
 (defmethod figured-bass :first
- [species]
- (figured-bass-str 1 (get-low-high species)))
+  [species]
+  (figured-bass-str 1 (get-low-high species)))
 
 (defmethod figured-bass :second
   [species]
@@ -35,14 +35,24 @@
   [species]
   (figured-bass-str 2 (get-low-high species)))
 
+(defn- handle-measure [low1 high1]
+  (let [fb
+        (apply str
+               (apply concat
+                      (mapv
+                       #(mapv (fn [l h]
+                                (figured-bass-interval (:d %1) l h))
+                              (:n %1) (:n %2))
+                       low1 high1)))]
+    fb))
+
 (defmethod figured-bass :fifth
   [species]
-  (let [[low high] (get-low-high species)
-        ]
-    ;; (println "LO" low)
-    ;; (println "HI" high)
-    (println "TODO Figured bass of FIFTH")
-    ""))
+  (let [[low high] (get-low-high species)]
+    (str
+     "\\figures {"
+     (apply str (mapv handle-measure low high))
+     "}")))
 
 
 
