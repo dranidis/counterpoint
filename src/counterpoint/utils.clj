@@ -7,6 +7,10 @@
 
 (defn dfs-solution->cp [solution]
   (if (seq (:bar-melody solution))
-    (into [] (reverse (mapv (fn [[b]] [(update b :n reverse)])(:bar-melody solution))))
+    (into [] (reverse 
+              (mapv 
+               (fn [b] (map #(update % :n reverse) (reverse b)))
+                    
+               (:bar-melody solution))))
     (into [] (reverse (:melody solution)))))
 

@@ -12,6 +12,11 @@
             [counterpoint.species-type :refer [get-counter]])
   (:gen-class))
 
+(defn- species-validate-fn [sp-option]
+  (let [valid-options (set ["first" "second" "third" "fourth" "fifth"])]
+    (valid-options sp-option)
+  ))
+
 (def cli-options
   [;;    
    ["-c" "--cantus CANTUS"  "Cantus firmus"
@@ -28,7 +33,8 @@
     :update-fn conj]
    ["-g" "--generate" "Generate species"]
    ["-s" "--species TYPE" "Species type"
-    :default "first"]
+    :default "first"
+    :validate [species-validate-fn]]
    ["-S" "--solo" "Solo the counterpoint"]
    ["-N" "--takeN NUMBER" "How many samples to generate for the dfs search"
     :default 100

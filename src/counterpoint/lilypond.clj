@@ -12,11 +12,11 @@
 
 (defn- single-note->lily [note]
   (try (str " "
-       (name (get-note note))
-       (case (get-acc note)
-         :sharp "is"
-         :flat "es"
-         ""))
+            (name (get-note note))
+            (case (get-acc note)
+              :sharp "is"
+              :flat "es"
+              ""))
        (catch Exception e
          (println "ERROR IN CALL: single-note->lily" note)
          (throw e))))
@@ -95,15 +95,21 @@
 (defn fixed-melody-fourth->lily [duration [note & notes]]
   (apply str (fixed-to-lily-fourth-iter duration note notes)))
 
+(defn- sub-bar-fn [notes]
+  (fixed-melody->lily
+   (get notes :d)
+   (get notes :n)))
+
+(defn- bar-fn [bar]
+  (str "~" (reduce #(str %1 (sub-bar-fn %2))
+                   "" bar)))
+
 (defn melody-fifth->lily [notes-with-duration]
-  
-  (try (reduce (fn [s notes]
-            (str s "~" (fixed-melody->lily-tied (get notes :d)
-                                       (get notes :n)))) 
-          "" (apply concat notes-with-duration))
-       (catch Exception e
-         (println "ERROR IN CALL: melody-fifth->lily" notes-with-duration)
-         (throw e))))
+  (try
+    (apply str (mapv bar-fn notes-with-duration))
+    (catch Exception e
+      (println "ERROR IN CALL: melody-fifth->lily" notes-with-duration)
+      (throw e))))
 
 (defn- key-signature->lily [key-signature]
   (str (name key-signature) "\\major\n"))
@@ -170,7 +176,7 @@
                         (throw (Exception.
                                 (str "voices: not implemented species type " type))))
         counter-l (counter->lily counter)
-        _ (println counter-l)
+        ;; _ (println counter-l)
         cantus-l (fixed-melody->lily 1 cantus)]
     (str
 
@@ -289,4 +295,3 @@
                 (voice "first" "voiceOne" (fixed-melody->lily 1 melody)
                        clef tempo key-signature midi))))))
    (sh/sh "lilypond" "-o" "resources" (get param :file "resources/temp.ly"))))
-   
