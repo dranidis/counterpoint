@@ -35,7 +35,8 @@
   [species]
   (get-low-high-fifth species))
 
-(defn evaluate-fifth-species [species]
+(defn evaluate-fifth-species [species & {:keys [verbose]
+                                         :or {verbose false}}]
   -999)
 
 (defn fifth-species-rules? [species]

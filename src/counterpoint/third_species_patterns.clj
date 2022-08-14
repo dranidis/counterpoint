@@ -209,8 +209,8 @@
                cambiata-to
                desc-pt-to
                asc-pt-to
-               desc-asc-pt-to
-               asc-desc-pt-to
+              ;;  desc-asc-pt-to ;; create up-downs
+              ;;  asc-desc-pt-to ;; create up-downs
                desc-pt-neighbor-to
                diss-3-desc-neighbor-to])
 

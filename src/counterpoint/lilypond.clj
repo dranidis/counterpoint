@@ -11,12 +11,15 @@
             [counterpoint.rest :refer [rest?]]))
 
 (defn- single-note->lily [note]
-  (str " "
+  (try (str " "
        (name (get-note note))
        (case (get-acc note)
          :sharp "is"
          :flat "es"
-         "")))
+         ""))
+       (catch Exception e
+         (println "ERROR IN CALL: single-note->lily" note)
+         (throw e))))
 
 (defn- note->lily [duration note]
   (str (if (rest? note)
@@ -93,10 +96,14 @@
   (apply str (fixed-to-lily-fourth-iter duration note notes)))
 
 (defn melody-fifth->lily [notes-with-duration]
-  (reduce (fn [s notes]
+  
+  (try (reduce (fn [s notes]
             (str s "~" (fixed-melody->lily-tied (get notes :d)
                                        (get notes :n)))) 
-          "" (apply concat notes-with-duration)))
+          "" (apply concat notes-with-duration))
+       (catch Exception e
+         (println "ERROR IN CALL: melody-fifth->lily" notes-with-duration)
+         (throw e))))
 
 (defn- key-signature->lily [key-signature]
   (str (name key-signature) "\\major\n"))

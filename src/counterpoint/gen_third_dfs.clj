@@ -26,7 +26,7 @@
           [(ending-below-e state)]
           [(ending-below state)])))))
 
-(defn- next-reverse-candidates-3rd
+(defn next-reverse-candidates-3rd
   [state]
   (reduce (fn [candidates pattern]
             (let [[applied-patern fits?] (pattern-fits? pattern state)]
