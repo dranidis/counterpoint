@@ -27,13 +27,14 @@
   (case (count bar-melody)
     0 (map (fn [n] [{:d 1 :n [n]}])
            (last-note-candidates position (first cantus-notes) cantus-note))
-    1 (map (fn [n] (elaborate-4th [{:d 2 :n n}]))
+    1 (map (fn [n] (elaborate-4th state [{:d 2 :n n}]))
            (second-to-last-measure-candidates-4th
             position key previous-melody previous-cantus
             cantus-note (first cantus-notes)))
-    2 (map (fn [n] [{:d 2 :n n}])
+    (map (fn [n] (elaborate-4th state [{:d 2 :n n}]))
            (next-reverse-candidates-4th state))
-    (map (fn [n] [{:d 4 :n n}]) (next-reverse-candidates-3rd state))))
+    ;; (map (fn [n] [{:d 2 :n n}]) (next-reverse-candidates-4th state))
+    ))
 
 
 ;; (apply concat (map #(get % :n) [{:n [1 2]} {:n [3 4]}]))
@@ -48,9 +49,9 @@
                                 cantus-note
                                 cantus-notes]}
                         current]
-  (println "CURRENT" current)
-  (println "BAR MELODY" bar-melody)
-  (println "NEW BAR MELODY" (conj bar-melody current))
+  ;; (println "CURRENT" current)
+  ;; (println "BAR MELODY" bar-melody)
+  ;; (println "NEW BAR MELODY" (conj bar-melody current))
   (let [current-melody (apply concat (map #(get % :n) current))]
     {:position position
      :key key

@@ -68,7 +68,7 @@
                     (generate-reverse-counterpoint-dfs 
                      position key cf candidates next-node))
           _ (println "ALL" (count cps))
-          _ (println "CPS" cps)
+          ;; _ (println "CPS" cps)
           species (if (> (count cps) 0)
                     (apply max-key #(let [e (evaluate-species-fn  %)]
                                 ;; (println e)

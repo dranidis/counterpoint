@@ -17,7 +17,7 @@
                                                           next-reverse-downbeat-candidates]]
             [counterpoint.intervals :refer [get-interval harmonic-consonant?
                                             m2 M2 m7 M7 m9 M9 next-diatonic
-                                            note-at-diatonic-interval note-at-melodic-interval P1 P8]]
+                                            nooctave-note-at-diatonic-interval note-at-melodic-interval P1 P8]]
             [counterpoint.melody :refer [append-to-melody]]
             [counterpoint.notes :refer [get-nooctave] :as n]))
 
@@ -74,7 +74,7 @@
                                    #(note-at-melodic-interval upbeat-note %)
                                    [m2 M2])
           next-harmonic-candidates (map
-                                    #(note-at-diatonic-interval key (get-nooctave next-cantus) %)
+                                    #(nooctave-note-at-diatonic-interval key (get-nooctave next-cantus) %)
                                     (next-harmonic-intervals
                                      position
                                      ;; for the previous measure
@@ -95,7 +95,9 @@
       suspension-notes)))
 
 (defn next-reverse-candidates-4th [{:keys [position key melody m36s
-                                           previous-melody previous-cantus cantus-note cantus-notes]}]
+                                           previous-melody previous-cantus cantus-note cantus-notes]
+                                    :as state}]
+;;  (println "NEXT REV CAND call" state)
   (let [next-cantus (first cantus-notes)
         was-a-suspension? (not (harmonic-consonant? (simple-interval previous-cantus previous-melody position)))
         ;; _ (when was-a-suspension? (println "SUSP"  previous-melody))

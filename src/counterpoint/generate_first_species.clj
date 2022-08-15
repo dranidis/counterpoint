@@ -3,7 +3,7 @@
             [counterpoint.core :refer [interval]]
             [counterpoint.intervals :refer [get-interval get-quality m10- m2
                                             M2 m2- M2- m3 M3 m3- M3- M6 m6-
-                                            note-at-diatonic-interval note-at-melodic-interval P1 P4 P4- P5 P5- P8 P8-]]
+                                            nooctave-note-at-diatonic-interval note-at-melodic-interval P1 P4 P4- P5 P5- P8 P8-]]
             [counterpoint.melody :refer [append-to-melody make-melody]]
             [counterpoint.motion :refer [reverse-direct-perfect?]]
             [counterpoint.notes :refer [get-nooctave] :as n]))
@@ -103,7 +103,7 @@
                                  #(note-at-melodic-interval previous-melody %)
                                  (next-melodic-intervals-reverse melody))
         next-harmonic-candidates (map
-                                  #(note-at-diatonic-interval key (get-nooctave cantus-note) %)
+                                  #(nooctave-note-at-diatonic-interval key (get-nooctave cantus-note) %)
                                   (next-harmonic-intervals position m36s))
         _ (debug "next-harmonic-candidates" next-harmonic-candidates)]
     (->> next-melodic-candidates

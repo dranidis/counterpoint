@@ -6,7 +6,7 @@
                                                          dim-or-aug-filter
                                                          max-harmonic-interval next-harmonic-intervals next-melodic-intervals-reverse]]
             [counterpoint.intervals :refer [get-interval m10- m3- M6
-                                            next-diatonic note-at-diatonic-interval
+                                            next-diatonic nooctave-note-at-diatonic-interval
                                             note-at-melodic-interval P1 P12- P5 P5- P8 P8- prev-diatonic]]
             [counterpoint.melody :refer [append-to-melody]]
             [counterpoint.notes :refer [get-nooctave get-note]]
@@ -56,7 +56,7 @@
                                   #(note-at-melodic-interval previous-melody %)
                                   (next-melodic-intervals-reverse melody))
          next-harmonic-candidates (map
-                                   #(note-at-diatonic-interval key (get-nooctave cantus-note) %)
+                                   #(nooctave-note-at-diatonic-interval key (get-nooctave cantus-note) %)
                                    (next-harmonic-intervals position m36s))
         ;;  _ (println "HARM Cand", next-harmonic-candidates)
          next-candidates (->> next-melodic-candidates
@@ -94,10 +94,10 @@
     downbeat-cands))
 
 (defn passing-tones [position key previous-melody cantus-note]
-  (let [p1 (note-at-diatonic-interval key (get-nooctave previous-melody) 3)
-        p2 (note-at-diatonic-interval key (get-nooctave previous-melody) -3)
+  (let [p1 (nooctave-note-at-diatonic-interval key (get-nooctave previous-melody) 3)
+        p2 (nooctave-note-at-diatonic-interval key (get-nooctave previous-melody) -3)
         next-harmonic-candidates (set (map
-                                       #(note-at-diatonic-interval key (get-nooctave cantus-note) %)
+                                       #(nooctave-note-at-diatonic-interval key (get-nooctave cantus-note) %)
                                        (if (= position :above)
                                          [1 3 5 6]
                                          [1 -3 -5 -6])))

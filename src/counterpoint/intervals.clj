@@ -8,7 +8,7 @@
 (defn make-interval [n q]
   [n q])
 
-(defn get-interval [[n _]] n)
+(defn get-interval ([[n _]] n))
 (defn get-quality [[_ q]] q)
 
 (defn note->number-of-semitones
@@ -21,14 +21,24 @@
                    :d 5
                    :e 7
                    :f 8
-                   :g 10)
+                   :g 10
+                   (throw (Exception. 
+                           (str "note->number-of-semitones: 
+                                 Unknown note "
+                                           note))))
         acc->num (case (get-acc note)
                    :natural 0
                    :double-flat -2
                    :flat -1
                    :sharp +1
-                   :double-sharp +2)]
+                   :double-sharp +2
+                   0)]
     (+ (* (get-octave note) 12) num-note acc->num)))
+
+(comment
+  (note->number-of-semitones n/c4)
+  ;; 51
+  )
 
 (defn distance-in-semitones
   "Distance in semitones between two notes"
@@ -40,7 +50,7 @@
   (<= (Math/abs (get-interval interval1))
       (Math/abs (get-interval interval2))))
 
-(defn note-at-diatonic-interval
+(defn nooctave-note-at-diatonic-interval
   "Returns the note in the key starting from note-nooctave at the interval"
   [key note-nooctave interval]
   (let [note-num (note->num (get-note-nooctave note-nooctave))
@@ -50,7 +60,7 @@
 
 ;; TODO
 (defn next-diatonic [key note]
-  (let [n (note-at-diatonic-interval key (get-nooctave note) 2)
+  (let [n (nooctave-note-at-diatonic-interval key (get-nooctave note) 2)
         o (get-octave note)
         name (get-note-nooctave n)]
     (make-note name
@@ -59,7 +69,7 @@
 
 ;; TODO
 (defn prev-diatonic [key note]
-  (let [n (note-at-diatonic-interval key (get-nooctave note) -2)
+  (let [n (nooctave-note-at-diatonic-interval key (get-nooctave note) -2)
         o (get-octave note)
         name (get-note-nooctave n)]
     (make-note name
@@ -67,14 +77,48 @@
                (get-acc-nooctave n))))
 
 (defn diatonic [key note intval]
-  (let [n (note-at-diatonic-interval key (get-nooctave note) intval)
+  (when (= 0 intval)
+    (throw (Exception. (str "diatonic: Unexpected interval "
+                            intval))))
+  (let [n (nooctave-note-at-diatonic-interval key (get-nooctave note) intval)
         o (get-octave note)
-        name (get-note-nooctave n)]
+        name (get-note-nooctave n)
+        oname (get-note note)
+        [newnote o-diff] (num2->note (+ (note->num (get-note note)) 
+                                        intval (if (> intval 0) -1 1)))
+        new-octave (+ o
+                      o-diff
+                      ;; (quot intval 8)
+                      )]
+    ;; (println "n o name" n o name)
     (make-note name
-               (+ o (if (= name :g) -1 0))
+               new-octave
                (get-acc-nooctave n))))
 
+(def intval 4)
+(num2->note (+ (note->num :a) intval  ))
+(num2->note (+ (note->num :a) intval (if (> intval 0) -1 1)))
 
+
+(defn consonant-diatonic-nooctave [key cantus position]
+  (map
+   #(nooctave-note-at-diatonic-interval key (get-nooctave cantus) %)
+   (if (= position :above)
+     [1 3 5 6]
+     [1 -3 -5 -6])))
+
+(comment
+  ;; (diatonic :c n/c4 0)
+  (nooctave-note-at-diatonic-interval :c n/c4 4)
+  (consonant-diatonic-nooctave :c n/c4 :above)
+
+  (= n/a0 (num2->note (note->number-of-semitones n/a0)))
+  (num2->note (note->number-of-semitones n/a0))
+  n/a0
+
+  (num2->note 7)
+  (note->number-of-semitones [:a 0])
+  (note->number-of-semitones (num2->note 1)))
 
 (defn- semitones-of-interval [interval]
   (let [i (Math/abs (get-interval interval))
@@ -131,8 +175,6 @@
       (throw (Exception. (str "raise-note: " note " not possible")))
       (make-note n o new-acc))))
 
-(raise-note [:c 4 :natural])
-
 (defn- flatten-note [note]
   (let [n (get-note note)
         o (get-octave note)
@@ -151,6 +193,7 @@
   (let [i (get-interval interval)
         note-num (note->num (get-note note))
         [note' o-diff] (num2->note (+ note-num i (if (pos? i) -1 1)))
+        ;; _ (println "NOTE" note "NOTE-NUM" note-num "NOTE'" note' "O-DIFF" o-diff)
         o (+ (get-octave note) o-diff)
         new-note (make-note note' o :natural)
         semitones (distance-in-semitones note new-note)

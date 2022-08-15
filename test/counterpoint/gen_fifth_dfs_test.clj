@@ -15,5 +15,5 @@
                                n/f3 
                                n/e3 
                                n/d3))]
-      (play-best-fifth 1 test-cf :above)
+      ;; (play-best-fifth 1 test-cf :above)
       (is true))))

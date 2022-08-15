@@ -34,6 +34,9 @@
     :g 6
     nil))
 
+(note->num :c)
+(note->num :a)
+
 (defn num->note [num]
  (case (mod num 7)
    0 :a
@@ -63,7 +66,9 @@
 
 (comment
   
-  (num2->note -7)
+  (note->num :c)
+  
+  (num2->note 51)
 (map num2->note (range -15 1))
 
   ;
@@ -73,6 +78,7 @@
 
 
 
+(def a0 (make-note :a 0))
 
 (def d2 (make-note :d 2))
 (def e2 (make-note :e 2))
@@ -85,6 +91,7 @@
 (def f#3 (make-note :f 3 :sharp))
 (def f#4 (make-note :f 4 :sharp))
 
+(def a1 (make-note :a 1))
 (def g1 (make-note :g 1))
 (def g2 (make-note :g 2))
 (def g3 (make-note :g 3))

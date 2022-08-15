@@ -3,6 +3,7 @@
             [clojure.tools.cli :refer [parse-opts]]
             [counterpoint.cantus :refer [get-key get-melody make-cantus-firmus]]
             [counterpoint.cantus-firmi-examples :refer [cf-catalog]]
+            [counterpoint.gen-fifth-species :refer [generate-fifth]]
             [counterpoint.gen-first-dfs :refer [generate-first]]
             [counterpoint.gen-fourth-dfs :refer [generate-fourth]]
             [counterpoint.gen-second-dfs :refer [generate-second]]
@@ -58,7 +59,8 @@
     :first (generate-first n cantus position options)
     :second (generate-second n cantus position options)
     :third (generate-third n cantus position options)
-    :fourth (generate-fourth n cantus position options)))
+    :fourth (generate-fourth n cantus position options)
+    :fifth (generate-fifth n cantus position options)))
 
 (defn -main [& args]
   (let [parsed-args (parse-opts args cli-options)
