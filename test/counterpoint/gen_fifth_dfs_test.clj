@@ -14,5 +14,6 @@
                                n/f3
                                n/e3
                                n/d3))
-          sp (generate-fifth 1 test-cf :above {})]
+          sp (generate-fifth 1 test-cf :above 
+                             {:file "test_gen_5"})]
       (is (not (nil? sp))))))

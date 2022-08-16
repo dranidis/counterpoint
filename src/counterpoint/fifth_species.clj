@@ -1,6 +1,9 @@
 (ns counterpoint.fifth-species
-  (:require [counterpoint.species-type :refer [get-cantus get-counter
-                                               get-low-high get-position make-species]]))
+  (:require [counterpoint.fourth-species :refer [evaluate-fourth-species
+                                                 make-fourth-species]]
+            [counterpoint.species-type :refer [get-cantus get-counter
+                                               get-low-high get-position make-species]]
+            [counterpoint.utils :refer [get-4th-species-from-bar-melody]]))
 
 ;; Quadruple meter
 ;;
@@ -22,7 +25,7 @@
           (assoc % :n c))
        counter-notes-duration))
 
-(defn counter-cantus 
+(defn counter-cantus
   "Returns a copy of the counter notes and durations
    with all notes replaced
    by notes of the cantus"
@@ -42,7 +45,14 @@
 
 (defn evaluate-fifth-species [species & {:keys [verbose]
                                          :or {verbose false}}]
-  -999)
+  (let [fourth-sp-cp (get-4th-species-from-bar-melody (get-counter species))
+        fourth-sp (make-fourth-species (get-cantus species)
+                                       fourth-sp-cp
+                                       (get-position species))
+        score-4 (evaluate-fourth-species fourth-sp :verbose verbose)]
+    (when verbose
+      (println "EVL 4 SP" score-4))
+    score-4))
 
 (defn fifth-species-rules? [species]
   true)

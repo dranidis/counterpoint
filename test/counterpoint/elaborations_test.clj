@@ -1,6 +1,7 @@
 (ns counterpoint.elaborations-test
   (:require [clojure.test :refer [deftest is testing]]
-            [counterpoint.elaborations :refer [fourth-diminution-to-previous]]
+            [counterpoint.elaborations :refer [elaborate-suspension-with-next-working-bar
+                                               fourth-diminution-to-previous]]
             [counterpoint.notes :as n]))
 
 (deftest fourth-diminution-high-to-previous-test
@@ -24,3 +25,12 @@
                     {:d 2, :n [[:d 4 :natural]]}]]
       (is (= expected actual)))))
 
+(deftest elaborate-suspension-with-next-working-bar-test
+  (testing "testing with a bar with 2 notes dur 2"
+    (let [elaborated-bar [{:d 2, :n [[:b 5 :natural] [:e 4 :natural]]}]
+          previous-working-bar [{:d 2, :n [[:f 4 :natural] [:g 4 :natural]]}]
+          actual (elaborate-suspension-with-next-working-bar
+                  elaborated-bar previous-working-bar)
+          expected [{:d 2 :n [n/b5]}
+                    {:d 4 :n [n/e4 n/f4]}]]
+      (is (= expected actual)))))

@@ -9,8 +9,8 @@
             [counterpoint.melody :refer [double-melody melody-score]]
             [counterpoint.utils :refer [rule-warning]]))
 
-(defn make-fourth-species [cantus-firmus counterpoint-melody arg3]
-  (make-species cantus-firmus counterpoint-melody arg3 :fourth))
+(defn make-fourth-species [cantus-firmus counterpoint-melody position]
+  (make-species cantus-firmus counterpoint-melody position :fourth))
 
 (defn get-low-high-fourth [species]
   (let [counter (get-counter species)

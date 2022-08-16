@@ -55,11 +55,11 @@
     species-rules-fn?]
    (generate-template candidates evaluate-species-fn
                       make-species-fn species-rules-fn?
-                      next-node))
+                      next-node nil))
   ([candidates
     evaluate-species-fn
     make-species-fn
-    species-rules-fn? next-node]
+    species-rules-fn? next-node elaborate-fn]
    (fn [n cantus position options]
     ;; (println options)
      (let [key (get-key cantus)
@@ -79,10 +79,14 @@
          (println "RULES " (species-rules-fn? species))
          (println "EVAL  " (evaluate-species-fn species :verbose true))
 
+         (let [elab-species (if (nil? elaborate-fn)
+                              species
+                              (elaborate-fn species))]
+           
          (spit (str "resources/" (get options :file "temp") ".clj")
-               (str species))
+               (str elab-species))
 
-         (species->lily species
+         (species->lily elab-species
                         {:clef
                          (if (= position :above)
                            "treble"
@@ -90,6 +94,7 @@
                          :pattern (get options :pattern "")
                          :tempo (str "4 = " (get options :tempo 160))
                          :key key
-                         :midi (get options :midi)}))
+                         :midi (get options :midi)
+                         :file (get options :file "temp")})))
        species))))
 

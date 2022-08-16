@@ -4,7 +4,8 @@
                                             note->number-of-semitones]]
             [counterpoint.notes :as n :refer [get-acc get-note get-octave
                                               make-note]]
-            [counterpoint.rest :refer [rest?]]))
+            [counterpoint.rest :refer [rest?]]
+            [counterpoint.utils :as utils]))
 
 (defn make-melody [note & notes]
   (into [note] notes))
@@ -66,11 +67,13 @@
 (defn quad-melody [melody]
   (quad-melody-iter [] (first melody) (rest melody)))
 
-(defn remove-last
-  ([melody]
-   (remove-last melody 1))
-  ([melody num-elements]
-   (subvec melody 0 (- (count melody) num-elements))))
+;; (defn remove-last
+;;   ([melody]
+;;    (remove-last melody 1))
+;;   ([melody num-elements]
+;;    (subvec melody 0 (- (count melody) num-elements))))
+
+(def remove-last utils/remove-last)
 
 (defn- melody-skeleton-iter  [intv intvs melody]
   (if (empty? intvs)

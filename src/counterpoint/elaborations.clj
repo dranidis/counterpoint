@@ -2,7 +2,8 @@
   (:require [counterpoint.core :refer [interval simple-interval]]
             [counterpoint.intervals :refer [diatonic get-interval
                                             harmonic-consonant? M2- next-diatonic
-                                            note-at-melodic-interval prev-diatonic]]))
+                                            note-at-melodic-interval prev-diatonic]]
+            [counterpoint.utils :refer [remove-last]]))
 
 (defn- suspension-embelishment-1 [key-sig n1 n2]
   [{:d 2 :n [n1]}
@@ -140,4 +141,32 @@
                           first-beat-emb)]
     second-beat-emb))
 
+(defn elaborate-suspension-with-next-working-bar [elaborated-bar prev-working-bar]
+  ;; IMPORTANT prev bar has not been elaborated YET!!!
+  ;; the last note is the 4th species last note
+  (let [last-note-of-prev (first (:n (first prev-working-bar)))
+        first-note-of-current (last (:n (last elaborated-bar)))
+        desc-2nd? (= -2 (get-interval (interval
+                                       last-note-of-prev
+                                       first-note-of-current)))
+        duration-2? (= 2 (:d (last elaborated-bar)))
+        alone-in-the-list? (= 1 (count (:n (last elaborated-bar))))
+        result (if (and desc-2nd? duration-2?)
+                 (if alone-in-the-list?
+                   (conj (remove-last elaborated-bar)
+                         {:d 4 :n [first-note-of-current last-note-of-prev]})
+                   (into (remove-last elaborated-bar)
+                         (conj [{:d 2 :n (remove-last (:n (last elaborated-bar)))}]
+                               {:d 4 :n [first-note-of-current last-note-of-prev]})))
+      ;; elaborated-bar
+                 elaborated-bar)]
+    (when (and desc-2nd? duration-2?)
+      ;; (println "LAST NOTE OF PREV BAR" last-note-of-prev)
+      ;; (println "FIRST NOTE OF CURR BAR" first-note-of-current)
+      ;; (println desc-2nd?)
+      ;; (println alone-in-the-list?)
+      ;; (println "PREV" prev-working-bar)
+      ;; (println "WAS" elaborated-bar)
+      (println "IS" result))
+    result))
 

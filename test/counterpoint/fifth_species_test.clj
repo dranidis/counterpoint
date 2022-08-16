@@ -2,9 +2,7 @@
   (:require [clojure.test :refer [deftest is testing]]
             [counterpoint.cantus :refer [get-melody]]
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
-            [counterpoint.fifth-species :refer [counter-cantus
-                                                make-fifth-species]]
-            [counterpoint.lilypond :refer [species->lily]]
+            [counterpoint.fifth-species :refer [counter-cantus]]
             [counterpoint.notes :as n]
             [counterpoint.rest :as r]))
 

@@ -30,8 +30,11 @@
     ;; 8 (case distance-semitones 11 :dim 12 :perfect 13 :aug nil)
     nil))
 
-(defn interval [note1 note2]
-  (if (or (rest? note1) (rest? note2))
+(defn interval 
+  ([note1 note2] (interval note1 note2 :above))
+  ([n1 n2 position]
+  (let [[note1 note2] (if (= position :above) [n1 n2] [n2 n1])]
+    (if (or (rest? note1) (rest? note2))
     :rest-interval
     (try (let [distance (- (note->number note2) (note->number note1))
           octave-distance (Math/abs (if (> distance 0)
@@ -47,7 +50,7 @@
                      quality))
          (catch Exception e
            (println "ERROR IN CALL: interval" note1 note2)
-           (throw e)))))
+           (throw e)))))))
 
 (defn simple-interval 
   ([note1 note2]
