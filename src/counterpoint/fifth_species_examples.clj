@@ -2,7 +2,6 @@
   (:require [counterpoint.cantus :refer [get-melody]]
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.fifth-species :refer [make-fifth-species]]
-            [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.notes :as n]
             [counterpoint.rest :as r]))
 
@@ -37,6 +36,8 @@
         sp (make-fifth-species (get-melody fux-d) notes :above)]
     sp))
 
+;; (species->lily mozart-fux-5th)
+
 (def shenker-fux-5th
   (let [notes [[{:d 2  :n [r/r n/d4]}]
                [{:d 4 :n [n/d4 n/c4 n/a4 n/b4]}] ;; cambiata
@@ -52,4 +53,4 @@
         sp (make-fifth-species (get-melody fux-d) notes :above)]
     sp))
 
-(species->lily shenker-fux-5th)
+;; (species->lily shenker-fux-5th)

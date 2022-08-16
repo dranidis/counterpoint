@@ -7,7 +7,7 @@
 ;; Dissonant passing tones can occur at half-note level on beat 3
 ;; or a quarter-note level at beats 2, 3 and 4.
 ;;
-;; Dissonant neighbor tones can occur as quarter notes canoccur on
+;; Dissonant neighbor tones can occur as quarter notes on
 ;; beats 2 3.
 
 (defn make-fifth-species [cantus-firmus counterpoint-melody position]
@@ -22,14 +22,12 @@
           (assoc % :n c))
        counter-notes-duration))
 
-(defn- multiply
-  "Doubles or triples or .... the cantus note depending on the number of lists in each
-   measure in the counter"
-  [cantus counter]
-  cantus)
-
-(defn counter-cantus [counter cantus]
-  (map #(replace-notes-with %1 %2) (multiply cantus counter) counter))
+(defn counter-cantus 
+  "Returns a copy of the counter notes and durations
+   with all notes replaced
+   by notes of the cantus"
+  [counter cantus]
+  (map #(replace-notes-with %1 %2) cantus counter))
 
 (defn- get-low-high-fifth [species]
   (let [counter (get-counter species)
