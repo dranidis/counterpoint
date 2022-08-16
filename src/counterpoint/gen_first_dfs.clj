@@ -2,7 +2,7 @@
   (:require [clojure.java.shell :as sh]
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.core :refer [interval]]
-            [counterpoint.first-species :refer [evaluate-species
+            [counterpoint.first-species :refer [evaluate-species-first
                                                 first-species-rules? make-first-species]]
             [counterpoint.generate :refer [generate-template]]
             [counterpoint.generate-first-species :refer [next-reverse-candidates-1st]]
@@ -73,7 +73,7 @@
 (def generate-first
   (generate-template
    candidates
-   evaluate-species
+   evaluate-species-first
    make-first-species
    first-species-rules?))
 

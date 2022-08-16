@@ -100,9 +100,11 @@
      (when verbose
        (println "Melody score" (norm melody-s))
        (println "Harmony score" (norm score-harmony))
+       (println "Num of suspensions diss/total"
+                diss "/" number-of-suspensions)
        (println "Species score" (norm species-score))
        )
-     (norm (+ species-score score-harmony melody-s))))
+     (norm (+ (* 100 species-score) score-harmony melody-s))))
 
 
 

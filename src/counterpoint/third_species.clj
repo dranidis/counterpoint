@@ -1,6 +1,6 @@
 (ns counterpoint.third-species
   (:require
-   [counterpoint.first-species :refer [evaluate-species
+   [counterpoint.first-species :refer [evaluate-species-first
                                        make-first-species]]
    [counterpoint.melody :refer [melody-score
                                 quad-melody remove-last]]
