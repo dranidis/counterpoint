@@ -1,14 +1,14 @@
 (ns counterpoint.elaborations
   (:require [counterpoint.core :refer [interval simple-interval]]
             [counterpoint.generate-first-species :refer [dim-or-aug-filter]]
-            [counterpoint.intervals :refer [diatonic get-interval
+            [counterpoint.intervals :refer [d5- diatonic get-interval
                                             harmonic-consonant? M2- next-diatonic
                                             note-at-melodic-interval prev-diatonic]]
             [counterpoint.utils :refer [remove-last]]))
 
-(defn- suspension-embelishment-1 [key-sig n1 n2]
-  [{:d 2 :n [n1]}
-   {:d 4 :n [n1 n2]}])
+(defn- suspension-embelishment-anticipate-res [key-sig res diss]
+  [{:d 2 :n [res]}
+   {:d 4 :n [res diss]}])
 
 (defn- suspension-embelishment-2 [key-sig position cantus-note n1 n2]
   (let [notes (map #(diatonic key-sig n1 %) [-2 -3 -4 -5 -6])
@@ -20,11 +20,12 @@
                         (dim-or-aug-filter position n1)))
         n3 (first consonant)]
     (if (nil? n3)
-      (suspension-embelishment-1 key-sig n1 n2)
+      (suspension-embelishment-anticipate-res key-sig n1 n2)
       [{:d 2 :n [n1]}
        {:d 4 :n [n3 n2]}])))
 
 (defn- suspension-embelishment-3 [key-sig n1 n2 bar-melody]
+  ;; (println "KEY" key-sig)
   (let [last? (= 1 (count bar-melody))
         n3 (if last?
              (note-at-melodic-interval n1 M2-)
@@ -32,6 +33,27 @@
     [{:d 2 :n [n1]}
      {:d 8 :n [n3 n1]}
      {:d 4 :n [n2]}]))
+
+(defn- suspension-mozart-embelishment-5 [key-sig position cantus-note res diss]
+  (let [n3 (next-diatonic key-sig res)
+        n4 (next-diatonic key-sig n3)
+        n5 (next-diatonic key-sig n4)
+        consonant? (harmonic-consonant? (simple-interval cantus-note n5 position))]
+    (if consonant?
+      [{:d 2 :n [res]}
+       {:d 8 :n [n3 n4 n5 diss]}]
+      (suspension-embelishment-2 key-sig position cantus-note res diss))))
+
+(defn- suspension-embelishment-4 [key-sig position cantus-note res diss]
+  (let [n3 (prev-diatonic key-sig res)
+        n4 (prev-diatonic key-sig n3)
+        n5 (prev-diatonic key-sig n4)
+        consonant? (harmonic-consonant? (simple-interval cantus-note n5 position))
+        no-dim? (not= d5- (interval diss n5))]
+    (if (and consonant? no-dim?)
+      [{:d 2 :n [res]}
+       {:d 8 :n [n3 n4 n5 diss]}]
+      (suspension-mozart-embelishment-5 key-sig position cantus-note res diss))))
 
 (defn- third-diminution-low [key-sig n1 n2]
   (let [n3 (prev-diatonic key-sig n2)]
@@ -113,36 +135,41 @@
 (defn elaborate-4th [{:keys [key position cantus-note
                              previous-melody bar-melody]}
                      [{:keys [d n] :as bar}]]
+  ;; (println "elaborate 4th KEY" key)
   (when (not= 2 d)
     (throw (Exception. (str "elaborate-4th: wrong duration :d" d))))
   (let [[n1 n2] n
         int-val (interval n2 n1)
         int-val-next (interval n1 previous-melody)
-        first-beat-emb (if (= :rest-interval int-val)
-                         [bar]
-                         (case (get-interval int-val)
-                           -2 (if (harmonic-consonant? (simple-interval
-                                                        cantus-note n2 position))
-                                [bar]
-                                (case (mod (count bar-melody) 2)
-                                  ;; 0 (suspension-embelishment-1 key n1 n2)
-                                  0 (suspension-embelishment-2 key position cantus-note n1 n2)
-                                  1 (suspension-embelishment-3 key n1 n2 bar-melody)))
-                           -3 (third-diminution-low key n1 n2)
-                           3 (third-diminution-high key n1 n2)
-                           -4 (fourth-diminution-low key n1 n2)
-                           4 (fourth-diminution-high key n1 n2)
-                           [bar]))
-        second-beat-emb (case (get-interval int-val-next)
-                          4 (fourth-diminution-to-previous
-                             key first-beat-emb previous-melody)
-                          -4 (fourth-diminution-to-previous
-                              key first-beat-emb previous-melody)
-                          3 (third-diminution-to-previous
-                             key first-beat-emb previous-melody)
-                          -3 (third-diminution-to-previous
-                              key first-beat-emb previous-melody)
-                          first-beat-emb)]
+        first-beat-emb
+        (if (= :rest-interval int-val)
+          [bar]
+          (case (get-interval int-val)
+            -2 (if (harmonic-consonant? (simple-interval
+                                         cantus-note n2 position))
+                 [bar]
+                 (case (mod (count bar-melody) 4)
+                  ;;  3 (suspension-embelishment-anticipate-res key n1 n2)
+                   3 (suspension-embelishment-2 key position cantus-note n1 n2)
+                   1 (suspension-embelishment-3 key n1 n2 bar-melody)
+                   0 (suspension-embelishment-4 key position cantus-note n1 n2)
+                   2 (suspension-mozart-embelishment-5 key position cantus-note n1 n2)))
+            -3 (third-diminution-low key n1 n2)
+            3 (third-diminution-high key n1 n2)
+            -4 (fourth-diminution-low key n1 n2)
+            4 (fourth-diminution-high key n1 n2)
+            [bar]))
+        second-beat-emb
+        (case (get-interval int-val-next)
+          4 (fourth-diminution-to-previous
+             key first-beat-emb previous-melody)
+          -4 (fourth-diminution-to-previous
+              key first-beat-emb previous-melody)
+          3 (third-diminution-to-previous
+             key first-beat-emb previous-melody)
+          -3 (third-diminution-to-previous
+              key first-beat-emb previous-melody)
+          first-beat-emb)]
     second-beat-emb))
 
 (defn elaborate-suspension-with-next-working-bar [elaborated-bar prev-working-bar]

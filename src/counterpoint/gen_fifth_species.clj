@@ -1,6 +1,5 @@
 (ns counterpoint.gen-fifth-species
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus :refer [get-key]]
             [counterpoint.elaborations :refer [elaborate-4th
                                                elaborate-suspension-with-next-working-bar]]
             [counterpoint.fifth-species :refer [evaluate-fifth-species
@@ -69,12 +68,13 @@
 
 (defn- elaborate-bar-melody-iter
   [current-working-bar rest-working-bars
-   {:keys [bar-melody position previous-melody cantus-note rest-cantus]
+   {:keys [bar-melody key position previous-melody cantus-note rest-cantus]
     :as state}]
   ;; (println "CANTUS NOTE" cantus-note)
   ;; (println "BAR-MELODY" bar-melody)
   ;; (println "Working bar" current-working-bar)
   ;; (println "Prev melody" previous-melody)
+  ;; (println "elaborate-bar-melody-iter KEY" key)
   (let [elaborated-bar (if (seq bar-melody)
                          (elaborate-4th state current-working-bar)
                          current-working-bar)
@@ -96,11 +96,10 @@
        new-state)
       (:bar-melody new-state))))
 
-(defn- elaborate-4th-species [species]
+(defn- elaborate-4th-species [species key-sig]
   (let [cantus (get-cantus species)
         rev-cantus (reverse cantus)
         position (get-position species)
-        key-sig (get-key cantus)
         working-bar-melody (reverse-bar-melody (get-counter species))
         elab-bars (reverse-bar-melody
                    (elaborate-bar-melody-iter

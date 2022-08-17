@@ -15,8 +15,7 @@
 
 (defn- species-validate-fn [sp-option]
   (let [valid-options (set ["first" "second" "third" "fourth" "fifth"])]
-    (valid-options sp-option)
-  ))
+    (valid-options sp-option)))
 
 (def cli-options
   [;;    
@@ -66,6 +65,12 @@
     :fourth (generate-fourth n cantus position options)
     :fifth (generate-fifth n cantus position options)))
 
+(defn- list-cf []
+  (println "Available cantus-firmi")
+  (doseq [c (sort (map name (keys cf-catalog)))]
+    (print c  " "))
+  (println))
+
 (defn -main [& args]
   (let [parsed-args (parse-opts args cli-options)
         _ (println (get parsed-args :options))
@@ -76,6 +81,7 @@
         cantus (get cf-catalog (keyword c-option))
         _ (when (nil? cantus)
             (println "No cantus found with name: " c-option)
+            (list-cf)
             (System/exit -1))
         key-sig (get-key cantus)
         transposed-cantus (make-cantus-firmus (get-key cantus)
@@ -96,10 +102,7 @@
                                  :tempo (get-in parsed-args [:options :tempo])}))]
 
     (when (get-in parsed-args [:options :list])
-      (println "Available cantus-firmi")
-      (doseq [c (sort (map name (keys cf-catalog)))]
-        (print c  " "))
-      (println))
+      (list-cf))
 
     (when (get-in parsed-args [:options :play])
       (when (nil? gen-species)

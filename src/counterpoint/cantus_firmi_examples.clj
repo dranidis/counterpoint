@@ -1,5 +1,5 @@
 (ns counterpoint.cantus-firmi-examples
-  (:require [counterpoint.cantus :refer [make-cantus-firmus]]
+  (:require [counterpoint.cantus :refer [get-key make-cantus-firmus]]
             [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as n]))
 
@@ -20,6 +20,7 @@
 (def mozart-c1 (make-cantus-firmus :c (make-melody n/c3 n/g3 n/e3 n/a4 n/g3 n/c3 n/f3 n/d3 n/e3 n/c3 n/d3 n/c3)))
 (def mozart-c2 (make-cantus-firmus :c (make-melody n/c3 n/f3 n/e3 n/d3 n/g3 n/f3 n/e3 n/a4 n/d3 n/g3 n/c3 n/e3 n/f3 n/e3 n/d3 n/c3)))
 (def mozart-d (make-cantus-firmus :c (make-melody n/d3 n/e3 n/f3 n/d3 n/g3 n/e3 n/f3 n/d3 n/e3 n/d3)))
+(def mozart-d2 (make-cantus-firmus :c (make-melody n/d3 n/c3 n/d3 n/f3 n/e3 n/c3 n/e3 n/a4 n/d3 n/g3 n/f3 n/e3 n/d3)))
 
 
 
@@ -105,6 +106,7 @@
    :mozart-c1 mozart-c1
    :mozart-c2 mozart-c2
    :mozart-d mozart-d
+   :mozart-d2 mozart-d2
    :albrechtsberger-d albrechtsberger-d
    :albrechtsberger-f albrechtsberger-f
    :haydn-a haydn-a

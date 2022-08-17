@@ -83,7 +83,7 @@
            (species->lily species {:file "temp-4"}))
          (let [elab-species (if (nil? elaborate-fn)
                               species
-                              (elaborate-fn species))]
+                              (elaborate-fn species key))]
            
          (spit (str "resources/" (get options :file "temp") ".clj")
                (str elab-species))
