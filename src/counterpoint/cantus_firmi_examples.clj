@@ -11,18 +11,16 @@
 (def fux-a (make-cantus-firmus :c (make-melody n/a3 n/c3 n/b3 n/d3 n/c3 n/e3 n/f3 n/e3 n/d3 n/c3 n/b3 n/a3)))
 (def fux-c (make-cantus-firmus :c (make-melody n/c3 n/e3 n/f3 n/g3 n/e3 n/a4 n/g3 n/e3 n/f3 n/e3 n/d3 n/c3)))
 
-(def haydn (make-cantus-firmus :c (make-melody n/d3 n/e3 n/f3 n/d3 n/a4 n/f3 n/e3 n/g3 n/f3 n/e3 n/d3)))
+(def haydn-d (make-cantus-firmus :c (make-melody n/d3 n/e3 n/f3 n/d3 n/a4 n/f3 n/e3 n/g3 n/f3 n/e3 n/d3)))
 (def haydn-a (make-cantus-firmus :c (make-melody n/a3 n/c3 n/b3 n/e3 n/c3 n/f3 n/d3 n/e3 n/c3 n/b3 n/a3)))
-(def haydn-d 
-  (make-cantus-firmus 
-   :c (make-melody 
-       n/d3 n/e3 n/f3 n/d3 n/a4 n/f3 n/e3 n/g3 n/f3 n/e3 n/d3)))
 
 (def salieri-c (make-cantus-firmus :c (make-melody n/c3 n/f3 n/e3 n/a4 n/g3 n/f3 n/e3 n/d3 n/c3)))
 (def salieri-d (make-cantus-firmus :f (make-melody n/d3 n/e3 n/f3 n/d3 n/a4 n/e3 n/f3 n/d3 n/c#3 n/d3)))
 
 (def mozart-c1 (make-cantus-firmus :c (make-melody n/c3 n/g3 n/e3 n/a4 n/g3 n/c3 n/f3 n/d3 n/e3 n/c3 n/d3 n/c3)))
 (def mozart-c2 (make-cantus-firmus :c (make-melody n/c3 n/f3 n/e3 n/d3 n/g3 n/f3 n/e3 n/a4 n/d3 n/g3 n/c3 n/e3 n/f3 n/e3 n/d3 n/c3)))
+(def mozart-d (make-cantus-firmus :c (make-melody n/d3 n/e3 n/f3 n/d3 n/g3 n/e3 n/f3 n/d3 n/e3 n/d3)))
+
 
 
 (def fetis-c (make-cantus-firmus :c (make-melody n/c3 n/d3 n/e3 n/c3
@@ -106,9 +104,9 @@
    :schenker-d schenker-d
    :mozart-c1 mozart-c1
    :mozart-c2 mozart-c2
+   :mozart-d mozart-d
    :albrechtsberger-d albrechtsberger-d
    :albrechtsberger-f albrechtsberger-f
-   :haydn haydn
    :haydn-a haydn-a
    :haydn-d haydn-d
    :boulanger-e boulanger-e

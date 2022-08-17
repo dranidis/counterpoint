@@ -79,6 +79,8 @@
          (println "RULES " (species-rules-fn? species))
          (println "EVAL  " (evaluate-species-fn species :verbose true))
 
+         (when (not (nil? elaborate-fn))
+           (species->lily species {:file "temp-4"}))
          (let [elab-species (if (nil? elaborate-fn)
                               species
                               (elaborate-fn species))]
