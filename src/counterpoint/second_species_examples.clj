@@ -6,7 +6,7 @@
                                                         haydn-a mozart-c1 mozart-c2 salieri-c]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?]]
             [counterpoint.lilypond :refer [species->lily]]
-            [counterpoint.melody :refer [make-melody melodic-intervals
+            [counterpoint.melody :refer [make-melody melodic-intervals-no-rest
                                          melody-range]]
             [counterpoint.notes :as n]
             [counterpoint.rest :as rest]
@@ -187,7 +187,7 @@
                                 n/b4 n/c#4
                                 n/d4))
 
-  (melodic-intervals rest-melody)
+  (melodic-intervals-no-rest rest-melody)
 
   (def salzer-fux-d (let [counterpoint-melody
                           (make-melody rest/r

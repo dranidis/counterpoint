@@ -10,7 +10,7 @@
                                                 first-species-rules? make-first-species]]
             [counterpoint.generate-first-species :refer [generate-reverse-random-counterpoint]]
             [counterpoint.lilypond :refer [species->lily]]
-            [counterpoint.melody :refer [make-melody melodic-intervals
+            [counterpoint.melody :refer [make-melody melodic-intervals-no-rest
                                          transpose]]
             [counterpoint.notes :as n]
             [counterpoint.species-type :refer [get-low-high]]))
@@ -198,7 +198,7 @@
   (def species
     (let [counterpoint-melody
           (make-melody n/e4 n/f4 n/g4 n/a5 n/e4 n/f4 n/f4 n/d4 n/e4)
-          _ (print (melodic-intervals counterpoint-melody))
+          _ (print (melodic-intervals-no-rest counterpoint-melody))
           cantus-firmus
           (make-melody n/e3 n/d3 n/e3 n/f3 n/g3 n/a4 n/d3 n/f3 n/e3)]
       (make-first-species cantus-firmus counterpoint-melody :above)))

@@ -38,7 +38,12 @@
     (into [(interval note (first notes))]
           (melodic-intervals-iter (first notes) (rest notes)))))
 
-(defn melodic-intervals [melody]
+(defn melodic-intervals-all [melody]
+  (if (> (count melody) 1)
+    (melodic-intervals-iter (first melody) (rest melody))
+    []))
+
+(defn melodic-intervals-no-rest [melody]
   (filter #(not= :rest-interval %)
           (if (> (count melody) 1)
             (melodic-intervals-iter (first melody) (rest melody))
@@ -85,7 +90,7 @@
      (melody-skeleton-iter (first intvs) (rest intvs) (rest melody)))))
 
 (defn melody-skeleton [melody]
-  (let [ints (melodic-intervals melody)]
+  (let [ints (melodic-intervals-no-rest melody)]
     (into [(first melody)] (melody-skeleton-iter (first ints) (rest ints) (rest melody)))))
 
 (defn- detect-up-downs [intervals state up-down?]
@@ -121,18 +126,18 @@
                   (detect-up-downs (rest intervals)
                                    (assoc state :state :init) up-down?)))))))
 (defn get-up-downs [melody]
-  (let [intervals (melodic-intervals melody)
+  (let [intervals (melodic-intervals-no-rest melody)
         up-downs (detect-up-downs intervals {:state :init :count 0} true)]
     up-downs))
 
 (defn get-down-ups [melody]
-  (let [intervals (melodic-intervals melody)
+  (let [intervals (melodic-intervals-no-rest melody)
         up-downs (detect-up-downs intervals {:state :init :count 0} false)]
     up-downs))
 
 (defn melody-score [melody & {:keys [verbose]
                               :or {verbose false}}]
-  (let [ints (map #(Math/abs (get-interval %)) (melodic-intervals melody))
+  (let [ints (map #(Math/abs (get-interval %)) (melodic-intervals-no-rest melody))
         leaps (count (filter #(> % 3) ints))
         unisons (count (filter #(= % 1) ints))
         thirds (count (filter #(= % 3) ints))
@@ -140,7 +145,7 @@
                              (filter
                               #(or (= :aug (get-quality %))
                                    (= :dim (get-quality %)))
-                              (melodic-intervals (melody-skeleton melody))))
+                              (melodic-intervals-no-rest (melody-skeleton melody))))
         peaks (count (filter #(= % (highest-note melody)) melody))
         up-downs (get-up-downs melody)
         down-ups (get-down-ups melody)
@@ -157,9 +162,26 @@
         (println "Diminished interval in melody skeleton")))
     score))
 
+(defn melody-motion-score [low high]
+  (* -1 (reduce (fn [total [li hi]]
+                  (+ total (* (get-interval li)
+                              (get-interval hi))))
+                0
+                (->> (mapv (fn [li hi] [li hi])
+                           (melodic-intervals-all low)
+                           (melodic-intervals-all high))
+                     (filter (fn [[li hi]] (and (not= li :rest-interval)
+                                                (not= hi :rest-interval))))
+                     (filter (fn [[li hi]]
+                               (>  (* (get-interval li)
+                                      (get-interval hi)) 0)
+                              ;;  (and (not= 1 (get-interval li))
+                              ;;                   (not= 1 (get-interval hi)))
+                               ))))))
+
 (comment
   (def diminished-melody (make-melody n/d4 n/g4 n/f4 n/g4 n/a5 n/b5 n/a5))
-  (melodic-intervals (melody-skeleton diminished-melody))
+  (melodic-intervals-no-rest (melody-skeleton diminished-melody))
   (melody-score diminished-melody)
   ;
   )

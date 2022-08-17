@@ -3,7 +3,7 @@
             [counterpoint.intervals :refer [get-interval get-quality
                                             harmonic-consonant? m6 make-interval P1 P5
                                             P8 P8-]]
-            [counterpoint.melody :refer [last-interval melodic-intervals
+            [counterpoint.melody :refer [last-interval melodic-intervals-no-rest
                                          melody-score remove-last]]
             [counterpoint.motion :refer [type-of-motion]]
             [counterpoint.rest :refer [rest?]]
@@ -120,7 +120,7 @@
 
 (defn allowed-melodic-intervals? [species]
   (rule-warning
-   (allowed-melodic-intervals-iter? (melodic-intervals (get-counter species)))
+   (allowed-melodic-intervals-iter? (melodic-intervals-no-rest (get-counter species)))
    #(str "Not allowd interval in melody: " (get-counter species))))
 
 (defn first-species-rules? [species]
@@ -155,8 +155,8 @@
         [p1-count p8-count p5-count] (map (fn [int]
                                             (count (filter #(= int %) harm-int)))
                                           [P1 P8 P5])
-        cp-ints (melodic-intervals (get-counter species))
-        ca-ints (melodic-intervals (get-cantus species))
+        cp-ints (melodic-intervals-no-rest (get-counter species))
+        ca-ints (melodic-intervals-no-rest (get-cantus species))
         simult-leaps (simultaneous-leaps ca-ints cp-ints)
 
         score (+ (* -10 p1-count)
