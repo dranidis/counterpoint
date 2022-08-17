@@ -89,10 +89,7 @@
                (str elab-species))
 
          (species->lily elab-species
-                        {:clef
-                         (if (= position :above)
-                           "treble"
-                           "treble_8")
+                        {:clef (get options :clef)
                          :pattern (get options :pattern "")
                          :tempo (str "4 = " (get options :tempo 160))
                          :key key

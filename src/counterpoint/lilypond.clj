@@ -161,6 +161,9 @@
   (let [[midi1 midi2] (if (vector? midi)
                         midi
                         [midi midi])
+        [clef1 clef2] (if (vector? clef)
+                        clef
+                        [clef clef])
         cantus (get-cantus species)
         counter (get-counter species)
         position (get-position species)
@@ -184,13 +187,13 @@
             (if (= position :above)
               counter-l
               cantus-l)
-            clef tempo key-signature midi1)
+            clef1 tempo key-signature midi1)
 
      (voice "second" "voiceTwo"
             (if (= position :above)
               cantus-l
               counter-l)
-            clef tempo key-signature midi2)
+            clef2 tempo key-signature midi2)
 
      (figured-bass species))))
 
@@ -262,9 +265,15 @@
   ([species param]
    (println "PARAM" param)
    (let [key-signature (get param :key :c)
-         clef (get param :clef "treble")
          tempo (get param :tempo "2 = 80")
          midi (get param :midi "acoustic grand")
+         param-clef (get param :clef)
+         position (get-position species)
+         clef (if (and param-clef (seq param-clef))
+                param-clef
+                (if (= position :above)
+                  "treble"
+                  ["treble" "treble_8"]))
          file-name (str "resources/" (get param :file "temp") ".ly")]
      (spit file-name
            (lilypond-file

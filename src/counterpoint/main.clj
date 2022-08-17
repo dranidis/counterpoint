@@ -32,6 +32,10 @@
     :multi true
     :default []
     :update-fn conj]
+   ["-C" "--clef CLEF" "Clefs for voices"
+    :multi true
+    :default []
+    :update-fn conj]
    ["-g" "--generate" "Generate species"]
    ["-s" "--species TYPE" "Species type"
     :default "first"
@@ -64,7 +68,7 @@
 
 (defn -main [& args]
   (let [parsed-args (parse-opts args cli-options)
-        ;; _ (println (get parsed-args :options))
+        _ (println (get parsed-args :options))
         _ (when (get-in parsed-args [:options :help])
             (println (get-in parsed-args [:summary])))
         c-option (get-in parsed-args [:options :cantus])
@@ -88,6 +92,7 @@
                                 position
                                 {:pattern (get-in parsed-args [:options :pattern])
                                  :midi (get-in parsed-args [:options :midi])
+                                 :clef (get-in parsed-args [:options :clef])
                                  :tempo (get-in parsed-args [:options :tempo])}))]
 
     (when (get-in parsed-args [:options :list])
