@@ -1,5 +1,6 @@
 (ns counterpoint.elaborations
   (:require [counterpoint.core :refer [interval simple-interval]]
+            [counterpoint.generate-first-species :refer [dim-or-aug-filter]]
             [counterpoint.intervals :refer [diatonic get-interval
                                             harmonic-consonant? M2- next-diatonic
                                             note-at-melodic-interval prev-diatonic]]
@@ -10,10 +11,13 @@
    {:d 4 :n [n1 n2]}])
 
 (defn- suspension-embelishment-2 [key-sig position cantus-note n1 n2]
-  (let [notes (map #(diatonic key-sig n1 %) [-3 -4 -5 -6])
-        consonant (filter
-                   #(harmonic-consonant? (simple-interval cantus-note % position))
-                   notes)
+  (let [notes (map #(diatonic key-sig n1 %) [-2 -3 -4 -5 -6])
+        consonant (->> notes
+                       (filter
+                        #(harmonic-consonant?
+                          (simple-interval cantus-note % position)))
+                       (filter
+                        (dim-or-aug-filter position n1)))
         n3 (first consonant)]
     (if (nil? n3)
       (suspension-embelishment-1 key-sig n1 n2)
@@ -160,13 +164,13 @@
                                {:d 4 :n [first-note-of-current last-note-of-prev]})))
       ;; elaborated-bar
                  elaborated-bar)]
-    (when (and desc-2nd? duration-2?)
+    ;; (when (and desc-2nd? duration-2?)
       ;; (println "LAST NOTE OF PREV BAR" last-note-of-prev)
       ;; (println "FIRST NOTE OF CURR BAR" first-note-of-current)
       ;; (println desc-2nd?)
       ;; (println alone-in-the-list?)
       ;; (println "PREV" prev-working-bar)
       ;; (println "WAS" elaborated-bar)
-      (println "IS" result))
+      ;; (println "IS" result))
     result))
 
