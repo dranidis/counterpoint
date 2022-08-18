@@ -66,8 +66,17 @@
 
 (defn- number-of-downbeat-dissonances [species]
   (let [[low high] (get-low-high species)
-        downbeat-intervals (rest (map first (partition 2 (map simple-interval low high))))]
+        downbeat-intervals (rest 
+                            (map first 
+                                 (partition 2 
+                                            (map simple-interval low high))))]
     (count (filter #(not (harmonic-consonant? %)) downbeat-intervals))))
+
+(defn- number-of-suspensions [species]
+  (reduce
+   #(+ %1 (if (= (first %2) (second %2)) 1 0))
+   0
+   (partition 2 (rest (get-counter species)))))
 
 (defn evaluate-fourth-species
   [species & {:keys [verbose]
@@ -87,12 +96,9 @@
                          (* -20 p5-count)
                 ;;  (* -20 simult-leaps)
                          )
-        number-of-suspensions (reduce
-                               #(+ %1 (if (= (first %2) (second %2)) 1 0))
-                               0
-                               (partition 2 (rest (get-counter species))))
+        susp (number-of-suspensions species)
         diss (number-of-downbeat-dissonances species)
-        species-score (+ (* 100 diss) (* 100 number-of-suspensions))
+        species-score (+ (* 100 diss) (* 100 susp))
         melody-s (melody-score
                   (filter #(not= % :rest)
                           (get-counter species)) :verbose verbose)
@@ -105,7 +111,7 @@
       (println "Melody score" (norm melody-s))
       (println "Harmony score" (norm score-harmony))
       (println "Num of suspensions diss/total"
-               diss "/" number-of-suspensions)
+               diss "/" susp)
       (println "Species score" (norm species-score)))
     (norm (+
            (* 100 species-score)

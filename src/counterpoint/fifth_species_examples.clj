@@ -6,7 +6,7 @@
             [counterpoint.notes :as n]
             [counterpoint.rest :as r]))
 
-(def fux-5th (let [notes [[{:d 2  :n [r/r n/a4]}]
+(def fux-fux-d-5th (let [notes [[{:d 2  :n [r/r n/a4]}]
                           [{:d 4 :n [n/a4 n/d3 n/e3 n/f3]}]
                           [{:d 4 :n [n/g3 n/f3 n/e3 n/g3]}]
                           [{:d 4 :n [n/f3 n/d3]} {:d 2 :n [n/d4]}]
@@ -20,7 +20,7 @@
                    sp (make-fifth-species (get-melody fux-d) notes :above)]
                sp))
 
-;; (species->lily fux-5th)
+(species->lily fux-fux-d-5th)
 
 (def mozart-fux-5th
   (let [notes [[{:d 2  :n [r/r n/a4]}]

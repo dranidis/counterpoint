@@ -1,11 +1,12 @@
 (ns counterpoint.intervals-test
   (:require [clojure.test :refer [deftest is testing]]
-            [counterpoint.intervals :refer [A1 A2 A3 diatonic m10 m13 m14 M14
-                                            m2 M2 m2- M2- m3 M3 m3- M3- m6 M6
-                                            m6- M6- m7 M7 m7- M7- m9 M9 make-interval nooctave-note-at-diatonic-interval
-                                            note->number-of-semitones note-at-melodic-interval P1 P11 P12 P4 P4- P5 P5- P8 P8-]]
+            [counterpoint.intervals :refer [A1 A2 A3 d5 diatonic
+                                            harmonic-consonant? m10 m13 m14 M14 m2 M2 m2-
+                                            M2- m3 M3 m3- M3- m6 M6 m6- M6- m7 M7 m7- M7- m9 M9 make-interval
+                                            nooctave-note-at-diatonic-interval note->number-of-semitones note-at-melodic-interval P1 P11
+                                            P12 P4 P4- P5 P5- P8 P8-]]
             [counterpoint.key :refer [make-key]]
-            [counterpoint.notes :as n :refer [num2->note]]))
+            [counterpoint.notes :as n]))
 
 
 (deftest note->number-of-semitones-test
@@ -92,35 +93,31 @@
           [A1 A2 A3]))))
 
 (deftest some-test
-      (testing "Context of the test assertions"
-        (is (= n/a5 (note-at-melodic-interval n/c4 M6))))) 
+  (testing "Context of the test assertions"
+    (is (= n/a5 (note-at-melodic-interval n/c4 M6)))))
 
 (deftest diatonic-test
   (testing "testing diatonic intervals from c"
-    (let [
-          actual (mapv #(diatonic :c n/c4 %)
+    (let [actual (mapv #(diatonic :c n/c4 %)
                        (range 1 11))
-          expected [n/c4 n/d4 n/e4 n/f4 n/g4 n/a5 n/b5 n/c5 n/d5 n/e5]
-          ]
+          expected [n/c4 n/d4 n/e4 n/f4 n/g4 n/a5 n/b5 n/c5 n/d5 n/e5]]
       (is (= n/a5 (diatonic :c n/c4 6)))
       (is (= n/b5 (diatonic :c n/c4 7)))
-      
+
       ;; (map #(is %1 %2) expected actual)
-      (is (= expected actual))
-      ))
-  
+      (is (= expected actual))))
+
   (testing "testing diatonic intervals from a"
     (let [actual (mapv #(diatonic :c n/a4 %)
                        (range 1 11))
           expected [n/a4 n/b4 n/c4 n/d4 n/e4 n/f4 n/g4 n/a5 n/b5 n/c5]]
-      
+
       (is (= n/b5 (diatonic :c n/a5 2)))
       ;; (map #(is %1 %2) expected actual)
       (is (= expected actual))))
-  
+
   (testing "testing diatonic intervals from a"
-    (let [
-          ;; actual (mapv #(diatonic :c n/a4 %)
+    (let [;; actual (mapv #(diatonic :c n/a4 %)
           ;;              (range 1 11))
           ;; expected [n/a4 n/b4 n/c4 n/d4 n/e4 n/f4 n/g4 n/a5 n/b5 n/c5]
           ]
@@ -128,7 +125,23 @@
       (is (= n/e4 (diatonic :c n/a5 -4)))
       ;; (map #(is %1 %2) expected actual)
       ;; (is (= expected actual))
-          )))
+      )))
+
+(deftest harmonic-consonant?-test
+  (testing "harmonic consonant intervals"
+    (is (harmonic-consonant? P1))
+    (is (harmonic-consonant? m3))
+    (is (harmonic-consonant? M3))
+    (is (harmonic-consonant? P5))
+    (is (harmonic-consonant? m6))
+    (is (harmonic-consonant? M6))
+    (is (not (harmonic-consonant? m2)))
+    (is (not (harmonic-consonant? d5)))
+    (is (not (harmonic-consonant? M2)))
+    (is (not (harmonic-consonant? m7)))
+    (is (not (harmonic-consonant? M7)))
+    (is (not (harmonic-consonant? m2)))))
+
 
 
 

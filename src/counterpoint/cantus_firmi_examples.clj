@@ -3,7 +3,7 @@
             [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as n]))
 
-(def fux-d (make-cantus-firmus :c
+(def fux-d (make-cantus-firmus :f
                                (make-melody n/d3 n/f3 n/e3 n/d3 n/g3 n/f3 n/a4 n/g3 n/f3 n/e3 n/d3)))
 (def fux-e (make-cantus-firmus :c (make-melody n/e3 n/c3 n/d3 n/c3 n/a3 n/a4 n/g3 n/e3 n/f3 n/e3)))
 (def fux-f (make-cantus-firmus :c (make-melody n/f3 n/g3 n/a4 n/f3 n/d3 n/e3 n/f3 n/c4 n/a4 n/f3 n/g3 n/f3)))
