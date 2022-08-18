@@ -114,10 +114,10 @@
                diss "/" susp)
       (println "Species score" (norm species-score)))
     (norm (+
-           (* 100 species-score)
-           (* 1000 motion-score)
+           (* 10 species-score)
+           (* 10 motion-score)
            score-harmony
-           melody-s))))
+           (* 10 melody-s)))))
 
 
 

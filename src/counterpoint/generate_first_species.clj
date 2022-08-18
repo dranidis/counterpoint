@@ -56,8 +56,8 @@
        (cond (and (= position :below) (= (get m36s :remaining-cantus-size) 1))
              [1]
              (and (= position :above) (= (get m36s :remaining-cantus-size) 1))
-            ;;  [1 3 5]
-             [5 1]
+             [1 3 5]
+            ;;  [5 1]
              :else
              [1 3 5 6]
             ;;  [3 5 6]

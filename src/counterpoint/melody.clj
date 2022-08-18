@@ -149,15 +149,20 @@
         peaks (count (filter #(= % (highest-note melody)) melody))
         up-downs (get-up-downs melody)
         down-ups (get-down-ups melody)
+        m-range (get-interval (melody-range melody))
+        range-score (* -100 (Math/abs (- m-range 10)))
         score (+ (* -20 (dec leaps))
                  (* -50 unisons)
                  (* -2 thirds)
                  (* -500 skeleton-diminished)
                  (* -200 (+ up-downs down-ups))
-                 (* -50 (dec peaks)))]
+                 (* -50 (dec peaks))
+                 range-score)
+        ]
     (when verbose
       (println "UP-DNs" up-downs)
       (println "DN-UPs" down-ups)
+      (println "MEL RANGE" m-range)
       (when (> skeleton-diminished 0)
         (println "Diminished interval in melody skeleton")))
     score))

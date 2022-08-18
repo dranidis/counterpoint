@@ -7,9 +7,9 @@
                                                 make-fifth-species]]
             [counterpoint.gen-first-dfs :refer [last-note-candidates]]
             [counterpoint.gen-fourth-dfs :refer [next-reverse-candidates-4th
-                                                 second-to-last-measure-candidates-4th]]
+                                                 no-suspension?
+                                                 second-to-last-measure-candidates-4th update-m36-size-4th]]
             [counterpoint.generate :refer [generate-template]]
-            [counterpoint.generate-first-species :refer [update-m36-size]]
             [counterpoint.species-type :refer [get-cantus get-counter
                                                get-position]]
             [counterpoint.utils :refer [reverse-bar-melody]]))
@@ -26,18 +26,20 @@
                    :as state}]
   ;; (println "(REV) MELODY" melody)
   ;; (println "(BAR) MELODY" bar-melody)
-
-  (case (count bar-melody)
-    0 (map (fn [n] [{:d 1 :n [n]}])
-           (last-note-candidates position (first cantus-notes) cantus-note))
-    1 (map (fn [n]  [{:d 2 :n n}])
-           (second-to-last-measure-candidates-4th
-            position key previous-melody previous-cantus
-            cantus-note (first cantus-notes)))
-    (map (fn [n] [{:d 2 :n n}])
-         (next-reverse-candidates-4th state))
+  ;; (println "M36 5" m36s)
+  (if (> (get m36s :no-suspensions-cnt 0) 1)
+    []
+    (case (count bar-melody)
+      0 (map (fn [n] [{:d 1 :n [n]}])
+             (last-note-candidates position (first cantus-notes) cantus-note))
+      1 (map (fn [n]  [{:d 2 :n n}])
+             (second-to-last-measure-candidates-4th
+              position key previous-melody previous-cantus
+              cantus-note (first cantus-notes)))
+      (map (fn [n] [{:d 2 :n n}])
+           (next-reverse-candidates-4th state))
     ;; (map (fn [n] [{:d 2 :n n}]) (next-reverse-candidates-4th state))
-    ))
+      )))
 
 
 ;; (apply concat (map #(get % :n) [{:n [1 2]} {:n [3 4]}]))
@@ -60,7 +62,12 @@
      :key key
      :melody (into melody current-melody)
      :bar-melody (conj bar-melody current)
-     :m36s (update-m36-size m36s position cantus-note current-melody)
+     :m36s (update-m36-size-4th m36s
+                                position
+                                cantus-note current-melody
+                                (no-suspension? melody
+                                                previous-melody
+                                                current-melody))
      :previous-melody (last current-melody)
      :previous-cantus cantus-note
      :cantus-note (first cantus-notes)

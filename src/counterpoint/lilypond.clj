@@ -114,7 +114,7 @@
 (defn- key-signature->lily [key-signature]
   (str (name key-signature) "\\major\n"))
 
-(defn lilypond-file [voices]
+(defn lilypond-score [voices]
   (str
    "\\score {
     <<
@@ -255,15 +255,14 @@
     :fourth (fourth-voices-pattern p species)
     (voices species clef tempo key-signature midi)))
 
-(defn species->lily
-  ([species] (species->lily species
+(defn species->lily-text
+  ([species] (species->lily-text species
                             {:clef "treble"
                              :pattern ""
                              :tempo "2 = 80"
-                             :file "temp"
                              :key :c}))
   ([species param]
-   (println "PARAM" param)
+  ;;  (println "PARAM" param)
    (let [key-signature (get param :key :c)
          tempo (get param :tempo "2 = 80")
          midi (get param :midi "acoustic grand")
@@ -273,14 +272,26 @@
                 param-clef
                 (if (= position :above)
                   "treble"
-                  ["treble" "treble_8"]))
-         file-name (str "resources/" (get param :file "temp") ".ly")]
+                  ["treble" "treble_8"]))]
+     (lilypond-score
+      (let [p (get param :pattern "")]
+        (if (= p "")
+          (voices species clef tempo key-signature midi)
+          (voices-pattern p species clef tempo key-signature midi))))
+     )))
+
+(defn species->lily
+  ([species] (species->lily species
+                            {:clef "treble"
+                             :pattern ""
+                             :tempo "2 = 80"
+                             :file "temp"
+                             :key :c}))
+  ([species param]
+   (println "PARAM" param)
+   (let [file-name (str "resources/" (get param :file "temp") ".ly")]
      (spit file-name
-           (lilypond-file
-            (let [p (get param :pattern "")]
-              (if (= p "")
-                (voices species clef tempo key-signature midi)
-                (voices-pattern p species clef tempo key-signature midi)))))
+           (species->lily-text species param))
      (sh/sh "lilypond" "-o" "resources" file-name))))
 
 (defn melody->lily
@@ -296,7 +307,7 @@
          tempo (get param :tempo "2 = 80")
          midi (get param :midi "acoustic grand")]
      (spit (get param :file "resources/temp.ly")
-           (lilypond-file
+           (lilypond-score
             (let [p (get param :pattern "")]
               (if (= p "")
                 (voice "first" "voiceOne" (fixed-melody->lily 1 melody)

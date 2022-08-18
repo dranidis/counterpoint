@@ -1,13 +1,15 @@
 (ns counterpoint.gen-fourth-dfs-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [clojure.java.shell :as sh]
+            [clojure.test :refer [deftest is testing]]
             [counterpoint.cantus :refer [get-melody]]
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
             [counterpoint.fourth-species :refer [evaluate-fourth-species
                                                  fourth-species-rules?
                                                  make-fourth-species]]
-            [counterpoint.gen-fourth-dfs :refer [candidates
+            [counterpoint.gen-fourth-dfs :refer [candidates next-node-4th
                                                  second-to-last-measure-candidates-4th]]
             [counterpoint.generate :refer [generate-reverse-counterpoint-dfs]]
+            [counterpoint.lilypond :refer [species->lily-text]]
             [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as n]
             [counterpoint.utils :refer [dfs-solution->cp]]))
@@ -274,3 +276,35 @@
       ;; (println species)
       (is (evaluate-fourth-species species))
       (is (fourth-species-rules? species)))))
+
+(defn- markup [text]
+  (str "\\markup {\n"
+  text   
+ "\n}")
+  )
+
+(deftest generate-fourth-short-test
+  (testing "consecutive suspensions of same kind"
+    (let [test-cf 
+          (make-melody n/d3 n/a4 n/g3 n/f3 n/e3 n/d3)
+          cps (generate-reverse-counterpoint-dfs :above :c test-cf 
+                                                 candidates
+                                                 next-node-4th)
+          all-str (apply str 
+                 (map-indexed (fn [idx cp]
+                        (let [sp (make-fourth-species test-cf
+                                                      (dfs-solution->cp cp)
+                                                      :above)
+                              score (evaluate-fourth-species sp)]
+                          (str
+                         (markup (str "Ex. " idx " score: " score))
+                         (species->lily-text sp)))) 
+                      cps))
+          ]
+      ;; (println species)
+      
+      (println "CPS" (count cps))
+      (spit "resources/all/all.ly" all-str)
+      (sh/sh "lilypond" "-o" "resources/all/" "resources/all/all.ly")
+      
+      )))

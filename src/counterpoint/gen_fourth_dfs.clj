@@ -12,7 +12,7 @@
             [counterpoint.generate :refer [generate-template]]
             [counterpoint.generate-first-species :refer [crossing-filter debug
                                                          dim-or-aug-filter
-                                                         max-harmonic-interval next-harmonic-intervals]]
+                                                         max-harmonic-interval next-harmonic-intervals update-m36-size]]
             [counterpoint.generate-second-species :refer [next-candidate-notes
                                                           next-reverse-downbeat-candidates]]
             [counterpoint.intervals :refer [get-interval harmonic-consonant?
@@ -99,10 +99,10 @@
                                     :as state}]
 ;;  (println "NEXT REV CAND call" state)
   (let [next-cantus (first cantus-notes)
-        was-a-suspension? (not (harmonic-consonant? (simple-interval previous-cantus previous-melody position)))
-        ;; _ (when was-a-suspension? (println "SUSP"  previous-melody))
+        was-a-dissonant-suspension? (not (harmonic-consonant?
+                                          (simple-interval previous-cantus previous-melody position)))
         upbeat-candidates
-        (if was-a-suspension?
+        (if was-a-dissonant-suspension?
           [previous-melody]
           (next-candidate-notes
            position key melody m36s
@@ -151,35 +151,67 @@
                           cantus-note
                           cantus-notes]
                    :as state}]
-  ;; (println "cantus-notes" cantus-notes)
-  ;; (println melody (count melody))
-  (let [cand (case (count melody)
-               0 (map (fn [n] [n]) 
-                      (last-note-candidates position (first cantus-notes) cantus-note))
-               1 (second-to-last-measure-candidates-4th
-                  position key previous-melody previous-cantus cantus-note (first cantus-notes))
-               (next-reverse-candidates-4th state))]
-    ;; (when (and (empty? cand) (not (solution?
-    ;;                                [position
-    ;;                                 key
-    ;;                                 melody
-    ;;                                 m36s ;; counter of thirds & sixths
-    ;;                                 previous-melody
-    ;;                                 previous-cantus
-    ;;                                 cantus-note
-    ;;                                 cantus-notes])))
-    ;;   ;; (println "DEADEND:" melody)
-    ;;   ;; (melody->lily (reverse melody) {:file "resources/temp1.ly"})
-    ;;   )
-    ;; (println "CAND" cand)
-    cand))
+  (if (> (get m36s :no-suspensions-cnt 0) 1)
+    []
+    (let [cand (case (count melody)
+                 0 (map (fn [n] [n])
+                        (last-note-candidates position (first cantus-notes) cantus-note))
+                 1 (second-to-last-measure-candidates-4th
+                    position key previous-melody previous-cantus cantus-note (first cantus-notes))
+                 (next-reverse-candidates-4th state))]
+      cand)))
+
+(defn update-m36-size-4th
+  [m36s position cantus-note current no-suspension?]
+
+  (let [new-m36 (update-m36-size m36s position cantus-note current)
+        m36-with-susp-counter (if (get new-m36 :no-suspensions-cnt)
+                                new-m36
+                                (assoc new-m36 :no-suspensions-cnt 0))
+        updated-m36 (if no-suspension?
+                      (update m36-with-susp-counter :no-suspensions-cnt inc)
+                      (assoc m36-with-susp-counter :no-suspensions-cnt 0))]
+    ;; (println "M36s" updated-m36 "CANTUS" cantus-note "S" no-suspension?)
+    updated-m36))
+
+(defn no-suspension? [melody previous-melody current]
+  ;; (print "NO SUSP? current " current)
+  (and (> (count melody) 1)
+       (not
+        (and
+         (not (nil? previous-melody))
+         (= (first current) previous-melody)))))
+
+(defn next-node-4th [{:keys [position
+                             key
+                             melody
+                             m36s ;; counter of thirds & sixths
+                             previous-melody
+                             previous-cantus
+                             cantus-note
+                             cantus-notes]}
+                     current]
+  {:position position
+   :key key
+   :melody (into melody current)
+   :m36s (update-m36-size-4th m36s
+                              position cantus-note current
+                              (no-suspension? melody
+                                              previous-melody
+                                              current))
+   :previous-melody (last current)
+   :previous-cantus cantus-note
+   :cantus-note (first cantus-notes)
+   :cantus-notes (rest cantus-notes)})
 
 (def generate-fourth
   (generate-template
    candidates
    evaluate-fourth-species
    make-fourth-species
-   fourth-species-rules?))
+   fourth-species-rules?
+   next-node-4th
+   nil))
 
 (defn play-best-fourth [n cf position]
   (generate-fourth n cf position

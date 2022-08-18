@@ -7,7 +7,8 @@
             [counterpoint.utils :refer [dfs-solution->cp]]))
 
 (defn solution? [{:keys [m36s]}]
-  (= (get m36s :remaining-cantus-size) 0))
+  (and (= (get m36s :remaining-cantus-size) 0)
+       (< (get m36s :no-suspensions-cnt 0) 2)))
 
 (defn next-node [{:keys [position
                          key
