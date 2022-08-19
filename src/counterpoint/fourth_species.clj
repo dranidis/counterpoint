@@ -66,9 +66,9 @@
 
 (defn- number-of-downbeat-dissonances [species]
   (let [[low high] (get-low-high species)
-        downbeat-intervals (rest 
-                            (map first 
-                                 (partition 2 
+        downbeat-intervals (rest
+                            (map first
+                                 (partition 2
                                             (map simple-interval low high))))]
     (count (filter #(not (harmonic-consonant? %)) downbeat-intervals))))
 
@@ -84,9 +84,10 @@
   (let [size (count (get-cantus species))
         [low high] (get-low-high species)
         harm-int (map simple-interval low high)
-        [p1-count p8-count p5-count] (map (fn [int]
-                                            (count (filter #(= int %) harm-int)))
-                                          [P1 P8 P5])
+        [p1-count p8-count p5-count]
+        (map (fn [int]
+               (count (filter #(= int %) harm-int)))
+             [P1 P8 P5])
         ;; cp-ints (melodic-intervals (get-counter species))
         ;; ca-ints (melodic-intervals (get-cantus species))
         ;; simult-leaps (simultaneous-leaps ca-ints cp-ints)

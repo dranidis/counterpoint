@@ -85,6 +85,20 @@
                 n/e3 n/d3 n/f3 n/e3
                 n/d3)))
 
+(def salzer-gm
+  (make-cantus-firmus
+   :bb
+   (make-melody n/g2 n/d3 n/c3 n/eb3
+                n/d3 n/c3 n/bb3 n/c3
+                n/d3 n/bb3 n/a3 n/g2)))
+
+(def salzer-a
+  (make-cantus-firmus
+   :a
+   (make-melody n/a3 n/b3 n/c#3 n/f#3
+                n/e3 n/a3 n/b3 n/d3
+                n/c#3 n/b3 n/a3)))
+
 (def test-cf (make-cantus-firmus :c (make-melody n/d3 n/f3 n/e3 n/d3)))
 (def test-cf2 (make-cantus-firmus :c (make-melody n/d3 n/c3 n/bb3 n/c#3 n/d3)))
 (def test-cf3 (make-cantus-firmus :c (make-melody n/d3 n/e3 n/f3 n/e3 n/c#3 n/d3)))
@@ -93,7 +107,9 @@
 
 
 (def cf-catalog
-  {:fux-d fux-d
+  {:cf-a cf-a
+   :cf-c cf-c
+   :fux-d fux-d
    :fux-g fux-g
    :fux-a fux-a
    :fux-c fux-c
@@ -103,6 +119,8 @@
    :salieri-c salieri-c
    :salieri-d salieri-d
    :schenker-d schenker-d
+   :salzer-a salzer-a
+   :salzer-gm salzer-gm
    :mozart-c1 mozart-c1
    :mozart-c2 mozart-c2
    :mozart-d mozart-d

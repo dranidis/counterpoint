@@ -157,20 +157,21 @@
                  (* -500 skeleton-diminished)
                  (* -200 (+ up-downs down-ups))
                  (* -50 (dec peaks))
-                 range-score)
-        ]
+                 range-score)]
     (when verbose
-      (println "UP-DNs" up-downs)
-      (println "DN-UPs" down-ups)
-      (println "MEL RANGE" m-range)
+      (println "Melody evalution")
+      (println "-- UP-DNs" up-downs)
+      (println "-- DN-UPs" down-ups)
+      (println "-- MEL RANGE" m-range)
+      (println (melody-skeleton melody))
       (when (> skeleton-diminished 0)
-        (println "Diminished interval in melody skeleton")))
-    score))
+        (println "-- Diminished interval in melody skeleton")))
+    (float (/ score 50))))
 
 (defn melody-motion-score [low high]
   (* -1 (reduce (fn [total [li hi]]
-                  (+ total (* (get-interval li)
-                              (get-interval hi))))
+                  (+ total (* (Math/abs (get-interval li))
+                              (Math/abs (get-interval hi)))))
                 0
                 (->> (mapv (fn [li hi] [li hi])
                            (melodic-intervals-all low)
@@ -178,8 +179,11 @@
                      (filter (fn [[li hi]] (and (not= li :rest-interval)
                                                 (not= hi :rest-interval))))
                      (filter (fn [[li hi]]
-                               (>  (* (get-interval li)
-                                      (get-interval hi)) 0)
+                               (let [[ili ihi] (map get-interval [li hi])]
+                                 (or (>  (* ili ihi) 0) ;; similar motion
+                                     ;; simult skips (similar or contrary)
+                                     (and (> (Math/abs ili) 2)
+                                          (> (Math/abs ihi) 2))))
                               ;;  (and (not= 1 (get-interval li))
                               ;;                   (not= 1 (get-interval hi)))
                                ))))))

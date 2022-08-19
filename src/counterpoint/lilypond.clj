@@ -111,8 +111,20 @@
       (println "ERROR IN CALL: melody-fifth->lily" notes-with-duration)
       (throw e))))
 
+(defn- key->lily [key-sig]
+  (case key-sig
+    :bb "bes"
+    :eb "ees"
+    :ab "aes"
+    :db "des"
+    :gb "ges"
+    :cb "ces"
+    :f# "fis"
+    :c# "cis"
+    (name key-sig)))
+
 (defn- key-signature->lily [key-signature]
-  (str (name key-signature) "\\major\n"))
+  (str (key->lily key-signature) "\\major\n"))
 
 (defn lilypond-score [voices]
   (str
@@ -257,10 +269,10 @@
 
 (defn species->lily-text
   ([species] (species->lily-text species
-                            {:clef "treble"
-                             :pattern ""
-                             :tempo "2 = 80"
-                             :key :c}))
+                                 {:clef "treble"
+                                  :pattern ""
+                                  :tempo "2 = 80"
+                                  :key :c}))
   ([species param]
   ;;  (println "PARAM" param)
    (let [key-signature (get param :key :c)
@@ -277,8 +289,7 @@
       (let [p (get param :pattern "")]
         (if (= p "")
           (voices species clef tempo key-signature midi)
-          (voices-pattern p species clef tempo key-signature midi))))
-     )))
+          (voices-pattern p species clef tempo key-signature midi)))))))
 
 (defn species->lily
   ([species] (species->lily species
@@ -315,3 +326,28 @@
                 (voice "first" "voiceOne" (fixed-melody->lily 1 melody)
                        clef tempo key-signature midi))))))
    (sh/sh "lilypond" "-o" "resources" (get param :file "resources/temp.ly"))))
+
+(defn- markup [text]
+  (str "\\markup {\n"
+       text
+       "\n}"))
+
+(defn species-coll->lily [species-coll {:keys [markup-fn file folder]}]
+  (let [all-str (apply str
+                       (map-indexed
+                        (fn [idx sp]
+                          (str
+                           (if markup-fn
+                             (markup (markup-fn idx))
+                             "")
+                           (species->lily-text sp)))
+                        species-coll))
+        folder-name (str "resources/" folder "/")
+        file-name (str "resources/" folder "/" file ".ly")]
+    (println "Saving into " folder-name file-name)
+    (sh/sh "mkdir" "-p" folder-name)
+    (spit (str "resources/" folder "/" file ".ly") all-str)
+    (sh/sh "lilypond" "-o" folder-name file-name)))
+
+(apply str (map-indexed (fn [idx n] [idx n])
+                        (range 1000)))

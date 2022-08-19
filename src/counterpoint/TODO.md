@@ -2,8 +2,20 @@
 
 ## Elaborations
 
-- Check application of each suspension embelishment and choose only from the applicable.
+- (DONE) Check application of each suspension embelishment and choose only from the applicable.
 - Check melody business for the application of an elaboration.
+
+## 4th species
+
+- Check recovery after leaps
+
+## 2nd species
+
+- Check if dim outlines are generated. 2 downbeats d5.
+
+## Species evaluation
+
+- Homogenise
 
 ## Melody scoring
 

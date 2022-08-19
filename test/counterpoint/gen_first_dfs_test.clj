@@ -2,11 +2,14 @@
   (:require [clojure.test :refer [deftest is testing]]
             [counterpoint.cantus :refer [get-melody]]
             [counterpoint.cantus-firmi-examples :refer [fux-d]]
-            [counterpoint.first-species :refer [first-species-rules?
+            [counterpoint.first-species :refer [evaluate-first-species
+                                                first-species-rules?
                                                 make-first-species]]
             [counterpoint.gen-first-dfs :refer [candidates]]
             [counterpoint.generate :refer [generate-reverse-counterpoint-dfs]]
             [counterpoint.generate-first-species :refer [next-reverse-candidates-1st]]
+            [counterpoint.lilypond :refer [species-coll->lily]]
+            [counterpoint.melody :refer [make-melody]]
             [counterpoint.notes :as n]
             [counterpoint.utils :refer [dfs-solution->cp]]))
 
@@ -37,3 +40,21 @@
           cand (next-reverse-candidates-1st state)
           _ (println cand)]
       (is (nil? ((set cand) n/a5))))))
+
+(deftest generate-first-all-eval
+  (testing "evaluation of 1st species"
+    (let [test-cf
+          (make-melody n/d3 n/a4 n/g3 n/f3 n/e3 n/d3)
+          cps (generate-reverse-counterpoint-dfs :above :c test-cf
+                                                 candidates)
+          sp-coll (mapv #(make-first-species test-cf
+                                              (dfs-solution->cp %)
+                                              :above)
+                        cps)
+          scores (map #(evaluate-first-species %) sp-coll)
+          markup-fn (fn [idx] (str "Ex. " idx " score: " (nth scores idx)))]
+      (println "CPS" (count cps))
+      (species-coll->lily sp-coll
+                          {:markup-fn markup-fn
+                           :file "all"
+                           :folder "first"}))))

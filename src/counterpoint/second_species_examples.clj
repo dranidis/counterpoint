@@ -1,9 +1,9 @@
 (ns counterpoint.second-species-examples
   (:require [clojure.java.shell :as sh]
-            [counterpoint.cantus :refer [maximum-range-M10?]]
+            [counterpoint.cantus :refer [get-melody maximum-range-M10?]]
             [counterpoint.cantus-firmi-examples :refer [fux-a fux-c fux-d
-                                                        fux-e fux-f fux-g haydn
-                                                        haydn-a mozart-c1 mozart-c2 salieri-c]]
+                                                        fux-e fux-f fux-g haydn-a
+                                                        mozart-c1 mozart-c2 salieri-c]]
             [counterpoint.first-species :refer [allowed-melodic-intervals?]]
             [counterpoint.lilypond :refer [species->lily]]
             [counterpoint.melody :refer [make-melody melodic-intervals-no-rest
@@ -14,6 +14,7 @@
                                                  correct-upbeat-intervals
                                                  make-second-species no-undisguised-direct-motion-of-downbeats-to-perfect?
                                                  second-species-rules?]]
+            [counterpoint.species-type :refer [get-low-high]]
             [counterpoint.utils :refer [rule-warning]]))
 
 ;; Unsolvable
@@ -169,9 +170,14 @@
                                        n/d4 n/a4
                                        n/b4 n/c#4
                                        n/d4)]
-                      (make-second-species fux-d counterpoint-melody :above)))
+                      (make-second-species (get-melody fux-d) counterpoint-melody :above)))
   (second-species-rules? mozart-fux-d)
   (species->lily mozart-fux-d)
+
+  (let [[low high ] (get-low-high mozart-fux-d)]
+    (println "H" high)
+    (println "L" low))
+
 
   (def rest-melody (make-melody rest/r
                           ;;  n/a4 ;; first a4 should be a rest when implemented!!
@@ -204,6 +210,8 @@
                                        n/b4 n/c#4
                                        n/d4)]
                       (make-second-species fux-d counterpoint-melody :above)))
+  
+  (species->lily salzer-fux-d)
 
   (def fux-g-2nd (let [counterpoint-melody
                        (make-melody rest/r

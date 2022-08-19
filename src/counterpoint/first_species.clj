@@ -1,15 +1,14 @@
 (ns counterpoint.first-species
   (:require [counterpoint.core :refer [interval simple-interval]]
             [counterpoint.intervals :refer [get-interval get-quality
-                                            harmonic-consonant? m6 make-interval P1 P5
-                                            P8 P8-]]
-            [counterpoint.melody :refer [last-interval melodic-intervals-no-rest
-                                         melody-score remove-last]]
+                                            harmonic-consonant? m6 make-interval P1 P8
+                                            P8-]]
+            [counterpoint.melody :refer [last-interval
+                                         melodic-intervals-no-rest melody-motion-score melody-score]]
             [counterpoint.motion :refer [type-of-motion]]
             [counterpoint.rest :refer [rest?]]
-            [counterpoint.species-type :refer [get-cantus
-                                               get-counter get-low-high
-                                               get-position]]
+            [counterpoint.species-type :refer [get-cantus get-counter
+                                               get-low-high get-position harmony-score]]
             [counterpoint.utils :refer [rule-warning]]))
 
 (defn  make-first-species [cantus-firmus counterpoint-melody position]
@@ -110,8 +109,6 @@
          (= interval P8-))
      #(str "Not allowed interval in melody: " interval))))
 
-(Math/abs 3)
-
 (defn allowed-melodic-intervals-iter? [counter-intervals]
   (if (empty? counter-intervals)
     true
@@ -135,39 +132,25 @@
 ;;    avoid consecutive perfect intervals
    ))
 
-(defn get-harmonic-intervals [species]
-  (let [[low high] (get-low-high species)]
-    (mapv simple-interval low high)))
-
-
-(defn simultaneous-leaps [ca-ints cp-ints]
-  (if (empty? ca-ints)
-    0
-    (+ (if (and (> (Math/abs (get-interval (first ca-ints))) 3)
-                (> (Math/abs (get-interval (first cp-ints))) 3))
-         1
-         0)
-       (simultaneous-leaps (rest ca-ints) (rest cp-ints)))))
-
-(defn evaluate-species-first [species & {:keys [verbose]
+(defn evaluate-first-species [species & {:keys [verbose]
                                          :or {verbose false}}]
-  (let [harm-int (rest (remove-last (get-harmonic-intervals species)))
-        [p1-count p8-count p5-count] (map (fn [int]
-                                            (count (filter #(= int %) harm-int)))
-                                          [P1 P8 P5])
-        cp-ints (melodic-intervals-no-rest (get-counter species))
-        ca-ints (melodic-intervals-no-rest (get-cantus species))
-        simult-leaps (simultaneous-leaps ca-ints cp-ints)
-
-        score (+ (* -10 p1-count)
-                 (* -5 p8-count)
-                 (* -2 p5-count)
-                 (* -20 simult-leaps))
-        melody-s (melody-score (get-counter species))]
+  (let [[low high] (get-low-high species)
+        score (harmony-score low high)
+        melody-s (melody-score (get-counter species)
+                               :verbose verbose)
+        motion-score (melody-motion-score low high)
+        total (float (/ (+ score
+                           melody-s
+                           motion-score) (count (get-cantus species))))]
     (when verbose
-      (println "HARMONY SCORE" score)
-      (println "MELODY SCORE" melody-s))
-    (float (/ (+ score melody-s) (count (get-cantus species))))))
+      (println "1st species evalution")
+      (println "-- HARMONY SCORE" score)
+      (println "-- MELODY SCORE" melody-s)
+      (println "-- MOTION SCORE" motion-score))
+    total
+    ;; {:harm score :motion-score motion-score :mel melody-s :total total}
+    ;;
+    ))
 ;; avoid consecutive perfect harmonic intervals
 ;; prefer stepwise movement
 

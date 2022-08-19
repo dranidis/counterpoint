@@ -73,7 +73,7 @@
 
 (defn -main [& args]
   (let [parsed-args (parse-opts args cli-options)
-        _ (println (get parsed-args :options))
+        ;; _ (println (get parsed-args :options))
         _ (when (get-in parsed-args [:options :help])
             (println (get-in parsed-args [:summary])))
         c-option (get-in parsed-args [:options :cantus])

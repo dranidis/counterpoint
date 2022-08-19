@@ -1,6 +1,6 @@
 (ns counterpoint.third-species
   (:require
-   [counterpoint.first-species :refer [evaluate-species-first
+   [counterpoint.first-species :refer [evaluate-first-species
                                        make-first-species]]
    [counterpoint.melody :refer [melody-score
                                 quad-melody remove-last]]
@@ -26,19 +26,25 @@
 (defn evaluate-third-species [species & {:keys [verbose]
                                         :or {verbose false}}]
   (let [counter (get-counter species)
-        ;; first-notes (conj
-        ;;              (mapv first (partition 4 counter))
-        ;;              (nth counter (dec (count counter))))
-        ;; first-sp (make-first-species (get-cantus species)
-        ;;                              first-notes
-        ;;                              (get-position species))
-        ;; first-score (evaluate-species first-sp)
+        first-notes (conj
+                     (mapv first (partition 4 counter))
+                     (nth counter (dec (count counter))))
+        first-sp (make-first-species (get-cantus species)
+                                     first-notes
+                                     (get-position species))
+        first-score (evaluate-first-species first-sp
+                                            :verbose verbose)
         mel-score (melody-score counter :verbose verbose)]
     ;; (println "M-score" mel-score)
-    ;; (println "1st-score" first-score)
+    
     ;; (println (melody-skeleton counter))
     ;; (melody->lily (make-cantus-firmus :c (melody-skeleton counter)) {:file "resources/temp1.ly"})
-    mel-score))
+    (when verbose
+      (println "3rd species evalution")
+      (println "-- MELODY SCORE" mel-score)
+      (println "-- 1st-score" first-score))
+    (+ mel-score
+       first-score)))
 
 (defn third-species-rules? [species]
   ;; TODO
