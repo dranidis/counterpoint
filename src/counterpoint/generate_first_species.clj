@@ -13,11 +13,11 @@
 ;;
 (def harmonic-repetition-limit 3)
 (def max-harmonic-interval 10)
-(def debug? true)
+(def debug? false)
 
 
 (defn melody-reverse-leap [melody]
-  (println "MEL-REV-LEAP" melody)
+  ;; (println "MEL-REV-LEAP" melody)
   (if (= 1 (count melody))
     :no-leap-low
     (let [i (get-interval (interval (nth melody (- (count melody) 2)) (last melody)))]
@@ -32,7 +32,7 @@
 (melody-reverse-leap (make-melody n/c4 n/b4))
 
 (defn next-melodic-intervals-reverse [melody]
-  (println "next-melodic-intervals-reverse" (melody-reverse-leap melody))
+  ;; (println "next-melodic-intervals-reverse" (melody-reverse-leap melody))
   (case (melody-reverse-leap melody)
     :unison [m2 M2 m3 M3
              m2- M2- m3- M3-

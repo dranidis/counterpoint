@@ -97,7 +97,7 @@
 (defn next-reverse-candidates-4th [{:keys [position key melody m36s
                                            previous-melody previous-cantus cantus-note cantus-notes]
                                     :as state}]
- (println "NEXT REV CAND call" state)
+;;  (println "NEXT REV CAND call" state)
   (let [next-cantus (first cantus-notes)
         was-a-dissonant-suspension? (not (harmonic-consonant?
                                           (simple-interval previous-cantus previous-melody position)))
@@ -108,12 +108,14 @@
            position key melody m36s
            previous-melody previous-cantus cantus-note
            {:melodic-unison-allowed true}))
-        _ (println "UPC" upbeat-candidates)
+        ;; _ (println "UPC" upbeat-candidates)
         candidates
         (reduce
          #(into %1 %2) []
          (map (fn [upc]
-                (for [downbeat
+                (let [suspension? (= upc previous-melody)]
+                  ;; (println "IS suspension?" suspension?)
+                  (for [downbeat
                       (into
                        (next-reverse-downbeat-candidates position
                                                          key
@@ -122,11 +124,13 @@
                                                          upc
                                                           ;; same note in cantus (held)
                                                          cantus-note
-                                                         cantus-note)
+                                                         cantus-note
+                                                         ;; is it a suspension?
+                                                         suspension?)
                        (suspension-notes position
                                          key (into  melody [upc]) m36s upc cantus-note next-cantus))
                       upbeat [upc]]
-                  (vector upbeat downbeat)))
+                  (vector upbeat downbeat))))
               upbeat-candidates))]
     ;; (println "Candidates" candidates)
     (->> (remove nil?
