@@ -97,7 +97,7 @@
 (defn next-reverse-candidates-4th [{:keys [position key melody m36s
                                            previous-melody previous-cantus cantus-note cantus-notes]
                                     :as state}]
-;;  (println "NEXT REV CAND call" state)
+ (println "NEXT REV CAND call" state)
   (let [next-cantus (first cantus-notes)
         was-a-dissonant-suspension? (not (harmonic-consonant?
                                           (simple-interval previous-cantus previous-melody position)))
@@ -108,7 +108,7 @@
            position key melody m36s
            previous-melody previous-cantus cantus-note
            {:melodic-unison-allowed true}))
-        ;; _ (println "UPC" upbeat-candidates)
+        _ (println "UPC" upbeat-candidates)
         candidates
         (reduce
          #(into %1 %2) []

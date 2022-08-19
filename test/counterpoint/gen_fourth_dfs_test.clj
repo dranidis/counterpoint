@@ -257,6 +257,30 @@
       (println cand)
       (is (not (contains? (set cand) [n/a3 n/b3]))))))
 
+(deftest candidates-leap-recovery
+  ;; check fux-f 100
+  (testing "candidates for leap recovery"
+    (let [position :above
+          cantus-key :c
+          melody (make-melody n/c5 n/a5)
+          previous-melody n/a5
+          previous-cantus n/a4
+          cantus-note n/c4
+          cantus-notes [n/f3 n/e3]
+          m36s {:remaining-cantus-size (inc (count cantus-notes))}
+          cand (candidates {:position position
+                            :key cantus-key
+                            :melody melody
+                            :m36s m36s
+                            :previous-melody previous-melody
+                            :previous-cantus previous-cantus
+                            :cantus-note cantus-note
+                            :cantus-notes cantus-notes})]
+      (println "CAND" cand)
+      ;; a5 is a suspension; e4 to a5 is a leap of 4
+      ;; which is not recovered in next measure
+      (is (nil? ((set cand) [n/a5 n/e4]))))))
+
 (deftest generate-fourth-test
   (testing "above"
     (let [fux-d-cf (get-melody fux-d)
@@ -284,14 +308,13 @@
                                                  candidates
                                                  next-node-4th)
           sp-coll (mapv #(make-fourth-species test-cf
-                                            (dfs-solution->cp %)
-                                            :above) 
-                       cps)
+                                              (dfs-solution->cp %)
+                                              :above)
+                        cps)
           scores (map #(evaluate-fourth-species %) sp-coll)
-          markup-fn (fn [idx] (str "Ex. " idx " score: " (nth scores idx)))
-          ]
+          markup-fn (fn [idx] (str "Ex. " idx " score: " (nth scores idx)))]
       (println "CPS" (count cps))
       (species-coll->lily sp-coll
-                         {:markup-fn markup-fn
-                          :file "all"
-                          :folder "all"} ))))
+                          {:markup-fn markup-fn
+                           :file "all"
+                           :folder "all"}))))

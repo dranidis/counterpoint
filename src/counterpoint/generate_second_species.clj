@@ -58,7 +58,7 @@
          next-harmonic-candidates (map
                                    #(nooctave-note-at-diatonic-interval key (get-nooctave cantus-note) %)
                                    (next-harmonic-intervals position m36s))
-        ;;  _ (println "HARM Cand", next-harmonic-candidates)
+         _ (println "HARM Cand", next-harmonic-candidates)
          next-candidates (->> next-melodic-candidates
                               (filter #(or (get options :melodic-unison-allowed)
                                            (not= previous-melody %)))
@@ -72,11 +72,13 @@
                               (filter #((set next-harmonic-candidates) (get-nooctave %)))
                               (debug "consonant")
                               (filter #(maximum-range-M10? (append-to-melody melody [%])))
+                              (debug "range 10")
                               (filter #(<= (Math/abs (get-interval (interval cantus-note %))) max-harmonic-interval))
 
                             ;;  haydn-a is not solvable
                              ;; is this examined twice??
-                              (filter #(not (direct-motion-to-perfect? cantus-note % previous-cantus previous-melody))))]
+                              (filter #(not (direct-motion-to-perfect? cantus-note % previous-cantus previous-melody)))
+                              (debug "no direct motion to perfect"))]
      next-candidates)))
 
 (defn next-reverse-downbeat-candidates [position key melody m36s
