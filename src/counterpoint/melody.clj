@@ -163,7 +163,7 @@
       (println "-- UP-DNs" up-downs)
       (println "-- DN-UPs" down-ups)
       (println "-- MEL RANGE" m-range)
-      (println (melody-skeleton melody))
+      ;; (println (melody-skeleton melody))
       (when (> skeleton-diminished 0)
         (println "-- Diminished interval in melody skeleton")))
     (float (/ score 50))))

@@ -134,17 +134,18 @@
 
 (defn evaluate-first-species [species & {:keys [verbose]
                                          :or {verbose false}}]
-  (let [[low high] (get-low-high species)
-        score (harmony-score low high)
+  (let [size (count (get-cantus species))
+        [low high] (get-low-high species)
+        harmony-score (harmony-score low high)
         melody-s (melody-score (get-counter species)
                                :verbose verbose)
         motion-score (melody-motion-score low high)
-        total (float (/ (+ score
+        total (float (/ (+ harmony-score
                            melody-s
-                           motion-score) (count (get-cantus species))))]
+                           motion-score) size))]
     (when verbose
       (println "1st species evalution")
-      (println "-- HARMONY SCORE" score)
+      (println "-- HARMONY SCORE" harmony-score)
       (println "-- MELODY SCORE" melody-s)
       (println "-- MOTION SCORE" motion-score))
     total

@@ -12,8 +12,8 @@
             [counterpoint.rest :as rest]
             [counterpoint.second-species :refer [correct-downbeat-intervals
                                                  correct-upbeat-intervals
-                                                 make-second-species no-undisguised-direct-motion-of-downbeats-to-perfect?
-                                                 second-species-rules?]]
+                                                 evaluate-second-species make-second-species
+                                                 no-undisguised-direct-motion-of-downbeats-to-perfect? second-species-rules?]]
             [counterpoint.species-type :refer [get-low-high]]
             [counterpoint.utils :refer [rule-warning]]))
 
@@ -172,11 +172,14 @@
                                        n/d4)]
                       (make-second-species (get-melody fux-d) counterpoint-melody :above)))
   (second-species-rules? mozart-fux-d)
+  (evaluate-second-species mozart-fux-d :verbose true)
   (species->lily mozart-fux-d)
 
   (let [[low high ] (get-low-high mozart-fux-d)]
     (println "H" high)
-    (println "L" low))
+    (println "L" low)
+    (println "HP" (map first (partition 2 high)))
+    (println "LP" (map first (partition 2 low))))
 
 
   (def rest-melody (make-melody rest/r
@@ -209,8 +212,9 @@
                                        n/a5 n/a4
                                        n/b4 n/c#4
                                        n/d4)]
-                      (make-second-species fux-d counterpoint-melody :above)))
+                      (make-second-species (get-melody fux-d) counterpoint-melody :above)))
   
+  (evaluate-second-species salzer-fux-d :verbose true)
   (species->lily salzer-fux-d)
 
   (def fux-g-2nd (let [counterpoint-melody

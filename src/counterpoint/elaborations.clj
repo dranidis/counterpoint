@@ -20,7 +20,7 @@
         ascending? (> (get-interval (interval res previous-melody)) 0)]
     (if (or last? ascending?)
       nil
-      (let [diatonic-notes-lower-than-res (map #(diatonic key res %) 
+      (let [diatonic-notes-lower-than-res (map #(diatonic key res %)
                                                [-3 -4 -5])
             consonant (->> diatonic-notes-lower-than-res
                            (filter
@@ -154,46 +154,49 @@
 ;;             (rest first-beat-emb)))))
 
 (defn elaborate-4th [{:keys [key position cantus-note
-                             previous-melody bar-melody]
+                             previous-melody bar-melody
+                             rest-cantus]
                       :as state}
                      [{:keys [d n] :as bar}]]
   ;; (println "elaborate 4th KEY" key)
   (when (not= 2 d)
     (throw (Exception. (str "elaborate-4th: wrong duration :d" d))))
-  (let [[up-beat dn-beat] n
-        dn-up-interval (interval dn-beat up-beat)
-        up-next-bar-interval (interval up-beat previous-melody)
-        first-beat-emb
-        (if (= :rest-interval dn-up-interval)
-          [bar]
-          (case (get-interval dn-up-interval)
-            -2 (if (harmonic-consonant? (simple-interval
-                                         cantus-note dn-beat position))
-                 [bar]
-                 (let [suspensions
-                       (map
-                        (fn [emb-fn] (emb-fn state up-beat dn-beat))
-                        suspension-embelishments-fn)
-                       applicable (remove nil? suspensions)]
-                   (nth applicable (mod (count bar-melody)
-                                        (count applicable)))))
-            -3 (third-diminution-low key up-beat dn-beat)
-            3 (third-diminution-high key up-beat dn-beat)
-            -4 (fourth-diminution-low key up-beat dn-beat)
-            4 (fourth-diminution-high key up-beat dn-beat)
-            [bar]))
-        second-beat-emb
-        (case (get-interval up-next-bar-interval)
-          4 (fourth-diminution-to-previous
-             key first-beat-emb previous-melody)
-          -4 (fourth-diminution-to-previous
-              key first-beat-emb previous-melody)
-          3 (third-diminution-to-previous
-             key first-beat-emb previous-melody)
-          -3 (third-diminution-to-previous
-              key first-beat-emb previous-melody)
-          first-beat-emb)]
-    second-beat-emb))
+  (if (< (count rest-cantus) 1)
+    [bar]
+    (let [[up-beat dn-beat] n
+          dn-up-interval (interval dn-beat up-beat)
+          up-next-bar-interval (interval up-beat previous-melody)
+          first-beat-emb
+          (if (= :rest-interval dn-up-interval)
+            [bar]
+            (case (get-interval dn-up-interval)
+              -2 (if (harmonic-consonant? (simple-interval
+                                           cantus-note dn-beat position))
+                   [bar]
+                   (let [suspensions
+                         (map
+                          (fn [emb-fn] (emb-fn state up-beat dn-beat))
+                          suspension-embelishments-fn)
+                         applicable (remove nil? suspensions)]
+                     (nth applicable (mod (count bar-melody)
+                                          (count applicable)))))
+              -3 (third-diminution-low key up-beat dn-beat)
+              3 (third-diminution-high key up-beat dn-beat)
+              -4 (fourth-diminution-low key up-beat dn-beat)
+              4 (fourth-diminution-high key up-beat dn-beat)
+              [bar]))
+          second-beat-emb
+          (case (get-interval up-next-bar-interval)
+            4 (fourth-diminution-to-previous
+               key first-beat-emb previous-melody)
+            -4 (fourth-diminution-to-previous
+                key first-beat-emb previous-melody)
+            3 (third-diminution-to-previous
+               key first-beat-emb previous-melody)
+            -3 (third-diminution-to-previous
+                key first-beat-emb previous-melody)
+            first-beat-emb)]
+      second-beat-emb)))
 
 (defn elaborate-suspension-with-next-working-bar
   "Adds a suspension when the previous bar note is a 2nd higher.

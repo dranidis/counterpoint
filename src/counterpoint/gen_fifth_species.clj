@@ -44,7 +44,7 @@
 
 ;; (apply concat (map #(get % :n) [{:n [1 2]} {:n [3 4]}]))
 
-(defn- next-node-fifth [{:keys [position
+(defn next-node-fifth [{:keys [position
                                 key
                                 melody
                                 bar-melody
@@ -103,7 +103,7 @@
        new-state)
       (:bar-melody new-state))))
 
-(defn- elaborate-4th-species [species key-sig]
+(defn elaborate-4th-species [species key-sig]
   (let [cantus (get-cantus species)
         rev-cantus (reverse cantus)
         position (get-position species)

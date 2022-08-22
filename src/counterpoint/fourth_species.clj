@@ -6,7 +6,8 @@
             [counterpoint.melody :refer [double-melody melody-motion-score
                                          melody-score]]
             [counterpoint.species-type :refer [get-cantus get-counter
-                                               get-low-high get-position make-species]]
+                                               get-low-high get-position harmony-score
+                                               make-species]]
             [counterpoint.utils :refer [rule-warning]]))
 
 (defn make-fourth-species [cantus-firmus counterpoint-melody position]
@@ -83,42 +84,34 @@
               :or {verbose false}}]
   (let [size (count (get-cantus species))
         [low high] (get-low-high species)
-        harm-int (map simple-interval low high)
-        [p1-count p8-count p5-count]
-        (map (fn [int]
-               (count (filter #(= int %) harm-int)))
-             [P1 P8 P5])
-        ;; cp-ints (melodic-intervals (get-counter species))
-        ;; ca-ints (melodic-intervals (get-cantus species))
-        ;; simult-leaps (simultaneous-leaps ca-ints cp-ints)
-
-        score-harmony (+ (* -100 p1-count)
-                         (* -50 p8-count)
-                         (* -20 p5-count)
-                ;;  (* -20 simult-leaps)
-                         )
-        susp (number-of-suspensions species)
-        diss (number-of-downbeat-dissonances species)
-        species-score (+ (* 100 diss) (* 100 susp))
+        harmony-score (harmony-score
+                       (map first (partition 2 low))
+                       (map first (partition 2 high)))
         melody-s (melody-score
                   (filter #(not= % :rest)
                           (get-counter species)) :verbose verbose)
+        motion-score (melody-motion-score low high)
+        susp (number-of-suspensions species)
+        diss (number-of-downbeat-dissonances species)
+        species-score (* 5 (+ diss susp))
         norm (fn [score] (float (/ score size)))
-        motion-score (melody-motion-score low high)]
+        total (norm (+
+                     (* 1.5 species-score)
+                     (* 0.5 motion-score)
+                     (* 0.1 harmony-score)
+                     (* 1.5 melody-s)))]
     (when verbose
-      ;;  (println "L " (melodic-intervals-all low) (count (melodic-intervals-all low)))
-      ;;  (println "H " (melodic-intervals-all high) (count (melodic-intervals-all high)))
       (println "Motion score" motion-score)
       (println "Melody score" (norm melody-s))
-      (println "Harmony score" (norm score-harmony))
+      (println "Harmony score" (norm harmony-score))
       (println "Num of suspensions diss/total"
                diss "/" susp)
       (println "Species score" (norm species-score)))
-    (norm (+
-           (* 10 species-score)
-           (* 10 motion-score)
-           score-harmony
-           (* 10 melody-s)))))
+    total
+    ;; {:H harmony-score :M melody-s :motion motion-score :d-s 
+    ;;  (str diss "/" susp) :sp-score total}
+    ;
+    ))
 
 
 

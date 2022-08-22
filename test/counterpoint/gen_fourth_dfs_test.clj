@@ -300,9 +300,9 @@
       (is (fourth-species-rules? species)))))
 
 (deftest generate-fourth-all-eval
-  (testing "consecutive suspensions of same kind"
+  (testing "score with all"
     (let [test-cf
-          (make-melody n/d3 n/a4 n/g3 n/f3 n/e3 n/d3)
+          (make-melody n/d3 n/a4 n/f3 n/g3 n/e3 n/d3)
           cps (generate-reverse-counterpoint-dfs :above :c test-cf
                                                  candidates
                                                  next-node-4th)
@@ -311,9 +311,11 @@
                                               :above)
                         cps)
           scores (map #(evaluate-fourth-species %) sp-coll)
-          markup-fn (fn [idx] (str "Ex. " idx " score: " (nth scores idx)))]
+          markup-fn (fn [idx] 
+                      ;; (println idx (nth scores idx))
+                      (str "Ex. " idx " score: " (nth scores idx)))]
       (println "CPS" (count cps))
       (species-coll->lily sp-coll
                           {:markup-fn markup-fn
                            :file "all"
-                           :folder "all"}))))
+                           :folder "fourth"}))))
